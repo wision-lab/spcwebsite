@@ -1,15 +1,39 @@
 from zipfile import ZipFile
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.views import View
 from django.views.generic import DetailView, UpdateView
 from django.views.generic.edit import FormView
 
 from .constants import EVAL_FILES, MAX_UPLOAD_SIZE, MAX_UPLOAD_SIZE_STR
 from .forms import EditResultEntryForm, UploadFileForm
 from .models import EntryStatus, EntryVisibility, ReconstructionEntry
+
+
+class ReconstructionEntriesView(View):
+    VALID_KEYS = set(m.name for m in ReconstructionEntry.metric_fields)
+
+    def get(self, request):
+        sortby = request.GET.get("sortby", "")
+
+        if sortby.removeprefix("-") not in self.VALID_KEYS:
+            sortby = ReconstructionEntry.metric_fields[0].name
+
+        entries = (
+            ReconstructionEntry.objects.exclude(visibility=EntryVisibility.PRIV)
+            .filter(process_status=EntryStatus.SUCCESS)
+            .order_by(sortby)
+        )
+        context = {
+            "entries": entries,
+            "sortby": sortby.removeprefix("-"),
+            "direction": "-" not in sortby,
+            "metric_fields": ReconstructionEntry.metric_fields,
+        }
+        return render(request, "reconstruction.html", context)
 
 
 class SubmitView(LoginRequiredMixin, UserPassesTestMixin, FormView):

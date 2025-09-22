@@ -34,22 +34,11 @@
                     Toronto, <sup>5</sup>US Naval Research Lab</i></p>
         </div>
         <nav>
-            {% if request.path == "/download" %}
-            <a href="{% url 'download' %}" class="current">Download</a>
-            {% else %}
-            <a href="{% url 'download' %}">Download</a>
-            {% endif %}
-            {% if request.path == "/eval/submit" %}
-            <a href="{% url 'eval:submit' %}" class="current">Submit</a>
-            {% else %}
-            <a href="{% url 'eval:submit' %}">Submit</a>
-            {% endif %}
+            <a href="{% url 'download' %}" {% if request.resolver_match.view_name == "download" %}class="current"{% endif %}>Download</a>
+            <a href="{% url 'eval:reconstruction' %}" {% if request.resolver_match.view_name == "eval:reconstruction" %}class="current"{% endif %}>Reconstruction</a>
+            <a href="{% url 'eval:submit' %}" {% if request.resolver_match.view_name == "eval:submit" %}class="current"{% endif %}>Submit</a>            
             <a href="https://visionsim.readthedocs.io/en/latest/">VisionSIM Toolkit</a>
-            {% if request.path == "/faq" %}
-            <a href="{% url 'faq' %}" class="current">FAQ</a>
-            {% else %}
-            <a href="{% url 'faq' %}">FAQ</a>
-            {% endif %}
+            <a href="{% url 'faq' %}" {% if request.resolver_match.view_name == "faq" %}class="current"{% endif %}>FAQ</a>
         </nav>
         <div style="float:left; text-align: center;">
             {% if user.is_superuser %}

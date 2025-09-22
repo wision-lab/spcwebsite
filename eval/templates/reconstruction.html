@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load na_filters %}
+
+{% block content %}
+
+{% if entries %}
+<div style="overflow-x:auto;">
+<table>
+    <tr>
+        <th style="width:0;"></th>
+        <th style="width:100%;">Name</th>
+        
+        {% for metric in metric_fields %}
+        <th class="{% if forloop.counter == 1 %}leftbig{% endif %} clickable">
+            <a href="{% url 'eval:reconstruction' %}?sortby={% if direction %}-{% endif %}{{ metric.name }}">
+                {{ metric.verbose_name }} {% if sortby == metric.name %}{% if direction %}▲{% else %}▼{% endif %}{% endif %}
+            </a>
+        </th>
+        {% endfor %}
+    </tr>
+
+    {% for entry in entries %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>
+            <div class="namebox">
+                <span>
+                    <a href="{% url 'eval:detail' entry.id %}">{{ entry.name }}</a>
+                </span>
+                {% if entry.visibility != "ANON" and entry.code_url|length > 0 %}
+                    <a href="{{ entry.code_url }}" target="_blank" rel="noopener noreferrer" class="codebutton">code</a>
+                {% endif %}
+            </div>
+        </td>
+        {% for metric in entry.metrics %}
+        <td class="num {% if forloop.counter == 1 %}leftbig{% endif %}">{{ metric|na_if_missing:3 }}</td>
+        {% endfor %}
+    </tr>
+    <tr>
+        <td class="citation">
+            {% if entry.visibility == "ANON" %}
+                Anonymous.
+            {% else %}
+                {% if entry.citation|length > 0 %}
+                    {{ entry.citation }}
+                {% else %}
+                    &nbsp;
+                {% endif %}
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+    
+</table>
+</div>
+{% else %}
+<p>No data available.</p>
+{% endif %}
+{% endblock %}
