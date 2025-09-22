@@ -17,7 +17,7 @@ class EntryStatus(models.TextChoices):
     FAIL = "FAIL", "There was a problem with the submission."
 
 
-class ReconstructionEntry(models.Model):
+class ResultEntry(models.Model):
     name = models.CharField(max_length=RESULTENTRY_NAME_MAX_LENGTH)
     creator = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     pub_date = models.DateTimeField("date published")
@@ -30,15 +30,26 @@ class ReconstructionEntry(models.Model):
     )
     code_url = models.URLField("Link to code", blank=True, null=True)
 
+    class Meta:
+        abstract = True
+
+    @property
+    def upload_path(self):
+        return (
+            UPLOAD_DIRECTORY / self.PREFIX / f"upload_{self.creator.id}_{self.id}.zip"
+        )
+
+
+class ReconstructionEntry(ResultEntry):
+    # Upload directory prefix
+    PREFIX = "reconstruction"
+    (UPLOAD_DIRECTORY / PREFIX).mkdir(exist_ok=True)
+
     # Evaluation fields
     mean_psnr = models.FloatField("Mean PSNR ↑", default=-1)
     mean_ssim = models.FloatField("Mean SSIM ↑", default=-1)
     mean_lpips = models.FloatField("Mean LPIPS ↓", default=-1)
     metric_fields = [mean_psnr, mean_ssim, mean_lpips]
-
-    @property
-    def upload_path(self):
-        return UPLOAD_DIRECTORY / f"upload_{self.creator.id}_{self.id}.zip"
 
     @property
     def metrics(self):

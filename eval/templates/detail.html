@@ -11,24 +11,18 @@
 <p>&nbsp;&#x2716; <i>{{entry.get_process_status_display}}</i></p>
 {% endif %}
 <p>{{entry.pub_date}} &nbsp;&mdash;&nbsp; {{entry.get_visibility_display}}</p>
-<p>
 {% if entry.visibility == "ANON" %}
-Anonymous.
-{% else %}
-    {% if entry.citation|length > 0 %}
-        {{ entry.citation }}
-    {% else %}
-        &nbsp;
-    {% endif %}
+<p>Anonymous.</p>
+{% elif entry.citation|length > 0 %}
+<p>{{ entry.citation }}</p>
 {% endif %}
-</p>
 
 <p>
-{% if entry.visibility != "ANON" and entry.code_url|length > 0 %}
+    {% if entry.visibility != "ANON" and entry.code_url|length > 0 %}
     Code: <a href="{{ entry.code_url }}" target="_blank" rel="noopener noreferrer">{{ entry.code_url }}</a>
-{% else %}
+    {% else %}
     &nbsp;
-{% endif %}
+    {% endif %}
 </p>
 
 {% if user.is_authenticated and user.pk == entry.creator.pk and entry.process_status == "SUCCESS"%}
@@ -39,12 +33,12 @@ Anonymous.
 <table>
     <tr>
         {% for metric in entry.metric_fields %}
-            <th>{{ metric.verbose_name }}</th>
+        <th>{{ metric.verbose_name }}</th>
         {% endfor %}
     </tr>
     <tr>
         {% for metric in entry.metrics %}
-            <td>{{ metric|na_if_missing:3 }}</td>
+        <td>{{ metric|na_if_missing:3 }}</td>
         {% endfor %}
     </tr>
     <td colspan="7" class="citation">

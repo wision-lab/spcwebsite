@@ -8,7 +8,7 @@ from django.views.generic import DetailView, UpdateView
 from django.views.generic.edit import FormView
 
 from .constants import EVAL_FILES, MAX_UPLOAD_SIZE, MAX_UPLOAD_SIZE_STR
-from .forms import UploadFileForm
+from .forms import EditResultEntryForm, UploadFileForm
 from .models import EntryStatus, EntryVisibility, ReconstructionEntry
 
 
@@ -96,62 +96,14 @@ class DetailView(UserPassesTestMixin, DetailView):
         return context
 
 
-class EditView(UserPassesTestMixin, UpdateView):
+class EditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = ReconstructionEntry
-    # form_class = EditResultEntryForm
-    # template_name = "springeval/resultentry_form.html"
+    form_class = EditResultEntryForm
+    template_name = "resultentry_form.html"
 
-    # def test_func(self):
-    #     obj = self.get_object()
-    #     return self.request.user.is_authenticated and (self.request.user == obj.creator)
+    def test_func(self):
+        obj = self.get_object()
+        return self.request.user == obj.creator
 
-    # def get_success_url(self):
-    #     return reverse_lazy("springeval:detail", kwargs={"pk": self.object.id})
-
-    # def form_valid(self, form):
-    #     # First, let Django save the model fields (name, visibility, etc.)
-    #     response = super().form_valid(form)
-    #     entry = self.object
-    #     mt = entry.method_type
-    #     files = self.request.FILES
-
-    #     # Only proceed if user checked the toggle
-    #     if form.cleaned_data["evaluate_robustness"]:
-    #         # disp1 robustness (for ST & SF)
-    #         if mt in ["ST", "SF"] and files.get("robustness_disp1file"):
-    #             f = files["robustness_disp1file"]
-    #             path = os.path.join(
-    #                 UPLOAD_DIRECTORY,
-    #                 f"upload__{entry.id}__{entry.imghash.hex}__robust_disp1.hdf5",
-    #             )
-    #             with open(path, "wb+") as dest:
-    #                 for chunk in f.chunks():
-    #                     dest.write(chunk)
-
-    #         # flow robustness (for FL & SF)
-    #         if mt in ["FL", "SF"] and files.get("robustness_flowfile"):
-    #             f = files["robustness_flowfile"]
-    #             path = os.path.join(
-    #                 UPLOAD_DIRECTORY,
-    #                 f"upload__{entry.id}__{entry.imghash.hex}__robust_flow.hdf5",
-    #             )
-    #             with open(path, "wb+") as dest:
-    #                 for chunk in f.chunks():
-    #                     dest.write(chunk)
-
-    #         # disp2 robustness (only for SF)
-    #         if mt == "SF" and files.get("robustness_disp2file"):
-    #             f = files["robustness_disp2file"]
-    #             path = os.path.join(
-    #                 UPLOAD_DIRECTORY,
-    #                 f"upload__{entry.id}__{entry.imghash.hex}__robust_disp2.hdf5",
-    #             )
-    #             with open(path, "wb+") as dest:
-    #                 for chunk in f.chunks():
-    #                     dest.write(chunk)
-
-    #         # After adding robustness files, re-queue for processing
-    #         entry.process_status = "WAIT_PROC"
-    #         entry.save()
-
-    #     return response
+    def get_success_url(self):
+        return reverse_lazy("eval:detail", kwargs={"pk": self.object.id})

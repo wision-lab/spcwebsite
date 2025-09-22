@@ -1,6 +1,7 @@
 from django import forms
 
 from .constants import MAX_UPLOAD_SIZE, MAX_UPLOAD_SIZE_STR, RESULTENTRY_NAME_MAX_LENGTH
+from .models import ResultEntry
 
 
 def validate_zip(data):
@@ -31,3 +32,9 @@ class UploadFileForm(forms.Form):
         widget=forms.ClearableFileInput,
         validators=[validate_zip, validate_size],
     )
+
+
+class EditResultEntryForm(forms.ModelForm):
+    class Meta:
+        model = ResultEntry
+        fields = ["name", "visibility", "citation", "code_url"]
