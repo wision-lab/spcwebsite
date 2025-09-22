@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {% if next %}
+    {% if user.is_authenticated %}
+      <p>Your account doesn't have access to this page. To proceed,
+      please login with an account that has access.</p>
+    {% else %}
+      <p>Please login to see this page.</p>
+    {% endif %}
+  {% endif %}
+
+  <form method="post" action="{% url 'core:login' %}">
+    <table class="noborder">
+    {% csrf_token %}
+    {{ form.as_table }}
+    </table>
+    <input type="hidden" name="next" value="{{ next }}">
+    <button type="submit" style="width: auto;">Login</button>
+  </form>
+
+  <p><a href="{% url 'core:password_reset' %}">Lost password?</a> | <a href="{% url 'core:signup' %}">Create Account</a></p>
+{% endblock %}

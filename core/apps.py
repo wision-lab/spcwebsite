@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class SpcevalConfig(AppConfig):
+class CoreConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "spceval"
+    name = "core"

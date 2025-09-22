@@ -1,0 +1,33 @@
+from django import forms
+
+from .constants import MAX_UPLOAD_SIZE, MAX_UPLOAD_SIZE_STR, RESULTENTRY_NAME_MAX_LENGTH
+
+
+def validate_zip(data):
+    if not data.name.endswith(".zip"):
+        raise forms.ValidationError("Submission file must be a zip file.")
+
+
+def validate_size(data):
+    if data.size > MAX_UPLOAD_SIZE:
+        raise forms.ValidationError(
+            f"Submission file must be smaller than {MAX_UPLOAD_SIZE_STR}."
+        )
+
+
+class UploadFileForm(forms.Form):
+    required_css_class = "required"
+
+    name = forms.CharField(
+        max_length=RESULTENTRY_NAME_MAX_LENGTH,
+        required=True,
+        help_text="Submission or method name",
+        widget=forms.TextInput,
+    )
+    submission = forms.FileField(
+        label="Submission file",
+        required=True,
+        help_text="Your zipped submission file, see FAQ for more.",
+        widget=forms.ClearableFileInput,
+        validators=[validate_zip, validate_size],
+    )
