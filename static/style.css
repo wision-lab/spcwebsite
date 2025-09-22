@@ -675,3 +675,13 @@ form {
     align-items: center;
     width: fit-content;
 }
+
+/* Delete button  */
+button.btn-danger {
+    background-color: #dc3545;
+}
+
+button.btn-danger:hover {
+    background-color: #c82333 !important;
+    filter: none
+}

@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import ReconstructionEntry
 
+
 class ResultEntryAdmin(admin.ModelAdmin):
     list_display = [
         "name",
@@ -11,5 +12,6 @@ class ResultEntryAdmin(admin.ModelAdmin):
         "creator",
     ]
     ordering = ("pub_date",)
+
 
 admin.site.register(ReconstructionEntry, ResultEntryAdmin)

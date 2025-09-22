@@ -12,4 +12,5 @@ urlpatterns = [
     ),
     path("detail/<int:pk>", views.DetailView.as_view(), name="detail"),
     path("edit/<int:pk>", views.EditView.as_view(), name="edit"),
+    path("edit/<int:pk>/delete", views.DeleteEntryView.as_view(), name="delete"),
 ]

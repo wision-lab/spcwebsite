@@ -25,8 +25,11 @@
     {% endif %}
 </p>
 
-{% if user.is_authenticated and user.pk == entry.creator.pk and entry.process_status == "SUCCESS"%}
-<nav style="padding-top:0px"><a href="{% url 'eval:edit' entry.id %}" style="font-size:0.8rem">Edit</a></nav>
+{% if user.is_authenticated and user.pk == entry.creator.pk %}
+<nav style="padding-top:0px">
+    <a href="{% url 'eval:edit' entry.id %}" style="font-size:0.8rem">Edit</a>
+    <a href="{% url 'eval:delete' entry.id %}" style="font-size:0.8rem">Delete</a>
+</nav>
 {% endif %}
 
 <h4>Reconstruction</h4>

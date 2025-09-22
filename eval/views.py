@@ -5,12 +5,12 @@ from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import View
-from django.views.generic import DetailView, UpdateView
+from django.views.generic import DeleteView, DetailView, UpdateView
 from django.views.generic.edit import FormView
 
 from .constants import EVAL_FILES, MAX_UPLOAD_SIZE, MAX_UPLOAD_SIZE_STR
 from .forms import EditResultEntryForm, UploadFileForm
-from .models import EntryStatus, EntryVisibility, ReconstructionEntry
+from .models import EntryStatus, EntryVisibility, ReconstructionEntry, ResultEntry
 
 
 class ReconstructionEntriesView(View):
@@ -38,6 +38,15 @@ class ReconstructionEntriesView(View):
             "metric_fields": ReconstructionEntry.metric_fields,
         }
         return render(request, "reconstruction.html", context)
+
+
+class DeleteEntryView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = ReconstructionEntry
+    template_name = "confirm_delete.html"
+    success_url = reverse_lazy("core:user")
+
+    def test_func(self):
+        return self.request.user.pk == self.get_object().creator.pk
 
 
 class SubmitView(LoginRequiredMixin, UserPassesTestMixin, FormView):
