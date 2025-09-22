@@ -2,18 +2,19 @@ from zipfile import ZipFile
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import redirect
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import DetailView, UpdateView
 from django.views.generic.edit import FormView
 
 from .constants import EVAL_FILES, MAX_UPLOAD_SIZE, MAX_UPLOAD_SIZE_STR
 from .forms import UploadFileForm
-from .models import ReconstructionEntry
+from .models import EntryStatus, EntryVisibility, ReconstructionEntry
 
 
 class SubmitView(LoginRequiredMixin, UserPassesTestMixin, FormView):
     template_name = "submit.html"
-    success_url = "/accounts/user"
+    success_url = reverse_lazy("core:user")
     form_class = UploadFileForm
 
     def test_func(self):
@@ -31,7 +32,7 @@ class SubmitView(LoginRequiredMixin, UserPassesTestMixin, FormView):
             name=name,
             creator=creator,
             pub_date=timezone.now(),
-            process_status="WAIT_UPL",
+            process_status=EntryStatus.WAIT_UPL,
         )
 
         # Re-perform validation on server-side
@@ -67,7 +68,7 @@ class SubmitView(LoginRequiredMixin, UserPassesTestMixin, FormView):
                 return super().form_invalid(form)
 
         # Mark the entry for later processing
-        entry.process_status = "WAIT_PROC"
+        entry.process_status = EntryStatus.WAIT_PROC
         entry.save()
 
         return super().form_valid(form)
@@ -76,15 +77,17 @@ class SubmitView(LoginRequiredMixin, UserPassesTestMixin, FormView):
 class DetailView(UserPassesTestMixin, DetailView):
     model = ReconstructionEntry
     template_name = "detail.html"
+    context_object_name = "entry"
 
     def test_func(self):
         obj = self.get_object()
-        if obj.visibility in ["PUBL", "ANON"]:
+        if obj.visibility != EntryVisibility.PRIV:
             return True
         else:
-            if not self.request.user.is_authenticated:
-                return False
-            return self.request.user.pk == obj.creator.pk
+            return (
+                self.request.user.is_authenticated
+                and self.request.user.pk == obj.creator.pk
+            )
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context

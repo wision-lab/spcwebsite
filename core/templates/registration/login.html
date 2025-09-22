@@ -17,7 +17,7 @@
     </table>
     <input type="hidden" name="next" value="{{ next }}">
     <button type="submit" style="width: auto;">Login</button>
+    <p><a href="{% url 'core:password_reset' %}">Lost password?</a> | <a href="{% url 'core:signup' %}">Create Account</a></p>
   </form>
 
-  <p><a href="{% url 'core:password_reset' %}">Lost password?</a> | <a href="{% url 'core:signup' %}">Create Account</a></p>
 {% endblock %}

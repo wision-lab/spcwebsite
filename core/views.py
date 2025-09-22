@@ -1,15 +1,12 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.tokens import (
-    PasswordResetTokenGenerator,
-    default_token_generator,
-)
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
-from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
+from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views import View
@@ -42,7 +39,7 @@ class AccountActivationTokenGenerator(PasswordResetTokenGenerator):
 
 class SignupView(FormView):
     template_name = "registration/signup.html"
-    success_url = "/accounts/confirm"
+    success_url = reverse_lazy("core:confirm")
     form_class = UserCreationForm
 
     def form_valid(self, form):
@@ -53,10 +50,11 @@ class SignupView(FormView):
         user.save()
 
         send_confirmation_email(self.request, user)
+        return super().form_valid(form)
 
 
-class Resend(LoginRequiredMixin, View):
-    def post(self, request):
+class ResendView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
         send_confirmation_email(request)
         return redirect("/")
 
@@ -65,14 +63,14 @@ def activate(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = get_user_model().objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
-        user = None
-    if user is not None and AccountActivationTokenGenerator().check_token(user, token):
-        user.is_verified = True
-        user.save()
-        return render(request, "registration/confirm_successful.html")
-    else:
-        return render(request, "registration/confirm_error.html")
+
+        if AccountActivationTokenGenerator().check_token(user, token):
+            user.is_verified = True
+            user.save()
+            return render(request, "registration/confirm_successful.html")
+    except (TypeError, ValueError, OverflowError, request.user.DoesNotExist):
+        pass
+    return render(request, "registration/confirm_error.html")
 
 
 @login_required

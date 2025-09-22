@@ -13,7 +13,7 @@ from torchmetrics.image import (
 )
 
 from ...constants import EVAL_DIRECTORY, UPLOAD_DIRECTORY
-from ...models import ReconstructionEntry
+from ...models import EntryStatus, ReconstructionEntry
 
 PSNR = PeakSignalNoiseRatio(data_range=(0, 1))
 SSIM = StructuralSimilarityIndexMeasure(data_range=(0, 1))
@@ -56,7 +56,9 @@ class Command(BaseCommand):
         return metrics
 
     def handle(self, *args, **options):
-        submissions = ReconstructionEntry.objects.filter(process_status="WAIT_PROC")
+        submissions = ReconstructionEntry.objects.filter(
+            process_status=EntryStatus.WAIT_PROC
+        )
         submission_ids = set(submissions.values_list("id", flat=True))
         archives = UPLOAD_DIRECTORY.glob("*.zip")
 
@@ -70,15 +72,17 @@ class Command(BaseCommand):
         for submission in submissions:
             try:
                 self.evaluate_single(submission)
-                submission.process_status = "SUCCESS"
+                submission.process_status = EntryStatus.SUCCESS
                 submission.save()
             except Exception:
                 self.stdout.write(self.style.ERROR(traceback.format_exc()))
-                submission.process_status = "FAIL"
+                submission.process_status = EntryStatus.FAIL
                 submission.save()
 
         # Delete all successful uploads
-        for submission in ReconstructionEntry.objects.filter(process_status="SUCCESS"):
+        for submission in ReconstructionEntry.objects.filter(
+            process_status=EntryStatus.SUCCESS
+        ):
             if submission.upload_path.exists():
                 if submission.id not in submission_ids:
                     self.stdout.write(
@@ -91,10 +95,10 @@ class Command(BaseCommand):
         # Output stats only for those we've evaluated
         # Note: We need to re-fetch all submissions as they have potentially changed!
         successful = ReconstructionEntry.objects.filter(
-            id__in=submission_ids, process_status="SUCCESS"
+            id__in=submission_ids, process_status=EntryStatus.SUCCESS
         )
         failures = ReconstructionEntry.objects.filter(
-            id__in=submission_ids, process_status="FAIL"
+            id__in=submission_ids, process_status=EntryStatus.FAIL
         )
 
         if successful:

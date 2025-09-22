@@ -51,12 +51,17 @@
             <a href="{% url 'faq' %}">FAQ</a>
             {% endif %}
         </nav>
-        <div style="float:right; text-align: center;">
-            {% if user.is_authenticated %}
-            <a href="{% url 'core:user' %}">{{ user.get_username }}</a> | 
+        <div style="float:left; text-align: center;">
             {% if user.is_superuser %}
             <a href="{% url 'admin:index' %}">Admin Panel</a> | 
             {% endif %}
+            {% if user.is_authenticated %}
+            <a href="{% url 'core:password_change' %}">Change Password</a>
+            {% endif %}
+        </div>
+        <div style="float:right; text-align: center;">
+            {% if user.is_authenticated %}
+            <a href="{% url 'core:user' %}">{{ user.get_username }}</a> | 
             <form method="post" action="{% url 'core:logout'%}" class="inline">
                 {% csrf_token %}
                 <button type="submit" class="link-button">Logout</button>
@@ -68,9 +73,12 @@
         </div>
     </header>
 
-    {% block content %}
-    {% endblock %}
+    <div style="width: 80%; margin: auto;">
+        {% block content %}
+        {% endblock %}
+    </div>
 
+    <div style="flex-grow: 1;"></div>
     <footer>
         <!-- <p>Lukas Mehl, Jenny Schmalfuss, Azin Jahedi, Yaroslava Nalivayko, Andrés Bruhn:</br>"<a href="https://arxiv.org/abs/2303.01943" target="_blank" rel="noopener noreferrer">Spring: A High-Resolution High-Detail Dataset and Benchmark for Scene Flow, Optical Flow and Stereo</a>".</br>In IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2023.</p> -->
         <table class="logotable">

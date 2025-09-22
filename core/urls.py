@@ -2,7 +2,6 @@ from django.contrib.auth import views as auth_views
 from django.urls import include, path, reverse_lazy
 from django.views.generic import TemplateView
 
-
 from . import views
 
 app_name = "core"
@@ -15,10 +14,14 @@ urlpatterns = [
         name="confirm",
     ),
     path("activate/<slug:uidb64>/<slug:token>/", views.activate, name="activate"),
-    path("resend", views.Resend.as_view(), name="resend"),
+    path("resend", views.ResendView.as_view(), name="resend"),
     # Forward all other urls to django's default auth system
     # logout, password_reset, etc
     path("", include("django.contrib.auth.urls")),
 ]
 
+auth_views.PasswordResetConfirmView.success_url = reverse_lazy(
+    "core:password_reset_complete"
+)
 auth_views.PasswordResetView.success_url = reverse_lazy("core:password_reset_done")
+auth_views.PasswordChangeView.success_url = reverse_lazy("core:password_change_done")
