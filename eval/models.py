@@ -46,10 +46,29 @@ class ReconstructionEntry(ResultEntry):
     (UPLOAD_DIRECTORY / PREFIX).mkdir(exist_ok=True)
 
     # Evaluation fields
-    mean_psnr = models.FloatField("Mean PSNR ↑", default=-1)
-    mean_ssim = models.FloatField("Mean SSIM ↑", default=-1)
-    mean_lpips = models.FloatField("Mean LPIPS ↓", default=-1)
-    metric_fields = [mean_psnr, mean_ssim, mean_lpips]
+    psnr_mean = models.FloatField("Mean\nPSNR ↑", default=-1)
+    ssim_mean = models.FloatField("Mean\nSSIM ↑", default=-1)
+    lpips_mean = models.FloatField("Mean\nLPIPS ↓", default=-1)
+
+    psnr_5p = models.FloatField("5% Low\nPSNR ↑", default=-1)
+    ssim_5p = models.FloatField("5% Low\nSSIM ↑", default=-1)
+    lpips_5p = models.FloatField("5% Low\nLPIPS ↓", default=-1)
+
+    psnr_1p = models.FloatField("1% Low\nPSNR ↑", default=-1)
+    ssim_1p = models.FloatField("1% Low\nSSIM ↑", default=-1)
+    lpips_1p = models.FloatField("1% Low\nLPIPS ↓", default=-1)
+
+    metric_fields = [
+        psnr_mean,
+        psnr_5p,
+        psnr_1p,
+        ssim_mean,
+        ssim_5p,
+        ssim_1p,
+        lpips_mean,
+        lpips_5p,
+        lpips_1p,
+    ]
 
     @property
     def metrics(self):

@@ -14,7 +14,7 @@ from .models import EntryStatus, EntryVisibility, ReconstructionEntry
 
 
 class ReconstructionEntriesView(View):
-    VALID_KEYS = set(m.name for m in ReconstructionEntry.metric_fields)
+    VALID_KEYS = {m.name: m.verbose_name for m in ReconstructionEntry.metric_fields}
 
     def get(self, request):
         sortby = request.GET.get("sortby", "")
@@ -27,6 +27,10 @@ class ReconstructionEntriesView(View):
             .filter(process_status=EntryStatus.SUCCESS)
             .order_by(sortby)
         )
+
+        if "↑" in self.VALID_KEYS[sortby.removeprefix("-")]:
+            entries = entries.reverse()
+
         context = {
             "entries": entries,
             "sortby": sortby.removeprefix("-"),

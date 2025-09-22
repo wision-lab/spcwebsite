@@ -11,9 +11,10 @@
         <th style="width:100%;">Name</th>
         
         {% for metric in metric_fields %}
-        <th class="{% if forloop.counter == 1 %}leftbig{% endif %} clickable">
-            <a href="{% url 'eval:reconstruction' %}?sortby={% if direction %}-{% endif %}{{ metric.name }}">
-                {{ metric.verbose_name }} {% if sortby == metric.name %}{% if direction %}▲{% else %}▼{% endif %}{% endif %}
+        <th class="{% if forloop.counter0|divisibleby:3 %}leftbig{% endif %} clickable">
+            <a href="{% url 'eval:reconstruction' %}?sortby={% if direction and sortby == metric.name %}-{% endif %}{{ metric.name }}">
+                <p style="display: inline;">{{ metric.verbose_name|linebreaksbr }}</p>
+                <span style="display: inline;">{% if sortby == metric.name %}{% if not direction %}▲{% else %}▼{% endif %}{% endif %}</span>
             </a>
         </th>
         {% endfor %}
@@ -33,7 +34,7 @@
             </div>
         </td>
         {% for metric in entry.metrics %}
-        <td class="num {% if forloop.counter == 1 %}leftbig{% endif %}">{{ metric|na_if_missing:3 }}</td>
+        <td class="num {% if forloop.counter0|divisibleby:3 %}leftbig{% endif %}">{{ metric|na_if_missing:3 }}</td>
         {% endfor %}
     </tr>
     <tr>
