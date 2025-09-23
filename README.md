@@ -10,14 +10,14 @@ pip install -r requirements
 ## Environment variables
 
 Evaluation variables:
-`SPC_UPLOADDIR`: directory, where the uploaded submission files are stored.
-`SPC_EVALDIR`: location of the non-public ground truth files needed for evaluation.
+- `SPC_UPLOADDIR`: directory, where the uploaded submission files are stored.
+- `SPC_EVALDIR`: location of the non-public ground truth files needed for evaluation.
 
 Email & account creation variables:
-`SPC_EMAILUSER`: email from which to send confirmation/password-reset/etc emails
-`SPC_EMAILPASSWORD`: app password for above email address, needs programmatic access.
-`SPC_EMAILHOST`: host address for email, eg `smtp.gmail.com`.
-`SPC_FROMEMAIL`: typically just equal to the same value as `SPC_EMAILUSER`.
+- `SPC_EMAILUSER`: email from which to send confirmation/password-reset/etc emails
+- `SPC_EMAILPASSWORD`: app password for above email address, needs programmatic access.
+- `SPC_EMAILHOST`: host address for email, eg `smtp.gmail.com`.
+- `SPC_FROMEMAIL`: typically just equal to the same value as `SPC_EMAILUSER`.
 
 See [email settings](https://docs.djangoproject.com/en/5.2/topics/email/) for more. 
 
