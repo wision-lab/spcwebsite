@@ -1,0 +1,7 @@
+django
+django-simple-captcha
+numpy
+rich
+torch
+torchvision
+torchmetrics

@@ -1,13 +1,13 @@
-## Quick Setup
+# Quick Setup
 
-# Create environment
+## Create environment
 ```
 micromamba create -n website python==3.12
 micromamba activate website
 pip install -r requirements
 ```
 
-# Environment variables
+## Environment variables
 
 Evaluation variables:
 `SPC_UPLOADDIR`: directory, where the uploaded submission files are stored.
@@ -21,7 +21,7 @@ Email & account creation variables:
 
 See [email settings](https://docs.djangoproject.com/en/5.2/topics/email/) for more. 
 
-# Initialize database
+## Initialize database
 
 First we need to `makemigrations` to create the SQL commands which will instantiate the right tables for the user accounts (in the `core` app) and submissions (in the `eval` app), then we can then execute this transaction with `migrate`:
 ```
@@ -34,7 +34,7 @@ Now you should be able to create a superuser account like so:
 python manage.py createsuperuser
 ```
 
-# Start Server
+## Start Server
 
 Start website server: 
 ```
@@ -46,7 +46,7 @@ Optionally create `<num>` entries with random numbers:
 python manage.py create_random <num> --users=3
 ```
 
-# Running evaluation script
+## Running evaluation script
 
 You can run the eval script periodically like so:
 ```
