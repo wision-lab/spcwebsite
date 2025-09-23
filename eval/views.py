@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic import DeleteView, DetailView, UpdateView
 from django.views.generic.edit import FormView
+from django.shortcuts import get_object_or_404
 
 from .constants import EVAL_FILES, MAX_UPLOAD_SIZE, MAX_UPLOAD_SIZE_STR
 from .forms import EditResultEntryForm, UploadFileForm
@@ -25,6 +26,7 @@ class ReconstructionEntriesView(View):
         entries = (
             ReconstructionEntry.objects.exclude(visibility=EntryVisibility.PRIV)
             .filter(process_status=EntryStatus.SUCCESS)
+            .filter(is_active=True)
             .order_by(sortby)
         )
 
@@ -47,6 +49,18 @@ class DeleteEntryView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         return self.request.user.pk == self.get_object().creator.pk
+    
+    def get_object(self, queryset=None):
+        pk = self.kwargs.get(self.pk_url_kwarg)
+        return get_object_or_404(self.model, pk=pk, is_active=True)
+    
+    def form_valid(self, form):
+        # Don't actually delete it, just mark as inactive
+        entry = self.get_object()
+        entry.is_active = False 
+        entry.save()
+
+        return redirect(self.success_url)
 
 
 class SubmitView(LoginRequiredMixin, UserPassesTestMixin, FormView):
@@ -125,6 +139,10 @@ class DetailView(UserPassesTestMixin, DetailView):
                 self.request.user.is_authenticated
                 and self.request.user.pk == obj.creator.pk
             )
+        
+    def get_object(self, queryset=None):
+        pk = self.kwargs.get(self.pk_url_kwarg)
+        return get_object_or_404(self.model, pk=pk, is_active=True)
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
@@ -141,6 +159,10 @@ class EditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         obj = self.get_object()
         return self.request.user == obj.creator
+    
+    def get_object(self, queryset=None):
+        pk = self.kwargs.get(self.pk_url_kwarg)
+        return get_object_or_404(self.model, pk=pk, is_active=True)
 
     def get_success_url(self):
         return reverse_lazy("eval:detail", kwargs={"pk": self.object.id})

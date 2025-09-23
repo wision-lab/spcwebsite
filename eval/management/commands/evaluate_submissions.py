@@ -61,7 +61,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         submissions = ReconstructionEntry.objects.filter(
-            process_status=EntryStatus.WAIT_PROC
+            process_status=EntryStatus.WAIT_PROC, is_active=True
         )
         submission_ids = set(submissions.values_list("id", flat=True))
         archives = UPLOAD_DIRECTORY.glob("*.zip")
@@ -99,10 +99,10 @@ class Command(BaseCommand):
         # Output stats only for those we've evaluated
         # Note: We need to re-fetch all submissions as they have potentially changed!
         successful = ReconstructionEntry.objects.filter(
-            id__in=submission_ids, process_status=EntryStatus.SUCCESS
+            id__in=submission_ids, process_status=EntryStatus.SUCCESS, is_active=True
         )
         failures = ReconstructionEntry.objects.filter(
-            id__in=submission_ids, process_status=EntryStatus.FAIL
+            id__in=submission_ids, process_status=EntryStatus.FAIL, is_active=True
         )
 
         if successful:

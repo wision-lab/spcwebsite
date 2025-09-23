@@ -29,6 +29,7 @@ class ResultEntry(models.Model):
         max_length=9, choices=EntryStatus, blank=False, null=False
     )
     code_url = models.URLField("Link to code", blank=True, null=True)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         abstract = True

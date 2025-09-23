@@ -76,7 +76,7 @@ def activate(request, uidb64, token):
 @login_required
 def userindex(request):
     entries_list = ReconstructionEntry.objects.filter(
-        creator__exact=request.user.pk
-    ).order_by("pub_date")
+        creator__exact=request.user.pk, is_active=True
+    ).order_by("-pub_date")
     context = {"entries_list": entries_list}
     return render(request, "userindex.html", context)
