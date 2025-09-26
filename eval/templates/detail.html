@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% load static %}
 {% load na_filters %}
 
 <h3>{{ entry.name }}</h3>
@@ -17,13 +18,11 @@
 <p>{{ entry.citation }}</p>
 {% endif %}
 
+{% if entry.visibility != "ANON" and entry.code_url|length > 0 %}
 <p>
-    {% if entry.visibility != "ANON" and entry.code_url|length > 0 %}
     Code: <a href="{{ entry.code_url }}" target="_blank" rel="noopener noreferrer">{{ entry.code_url }}</a>
-    {% else %}
-    &nbsp;
-    {% endif %}
 </p>
+{% endif %}
 
 {% if user.is_authenticated and user.pk == entry.creator.pk %}
 <nav style="padding-top:0px">
@@ -33,20 +32,39 @@
 {% endif %}
 
 <h4>Reconstruction</h4>
-<table>
-    <tr>
-        {% for metric in entry.metric_fields %}
-        <th>{{ metric.verbose_name }}</th>
-        {% endfor %}
-    </tr>
-    <tr>
-        {% for metric in entry.metrics %}
-        <td>{{ metric|na_if_missing:3 }}</td>
-        {% endfor %}
-    </tr>
-    <td colspan="7" class="citation">
-        &nbsp;
-    </td>
-</table>
+<div style="overflow-x:auto;">
+    <table>
+        <tr>
+            {% for metric in entry.metric_fields %}
+            <th>{{ metric.verbose_name }}</th>
+            {% endfor %}
+        </tr>
+        <tr>
+            {% for metric in entry.metrics %}
+            <td>{{ metric|na_if_missing:3 }}</td>
+            {% endfor %}
+        </tr>
+    </table>
+</div>
+
+</br>
+
+<script defer src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/index.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/styles.css"/>
+
+<div class="auto-grid">
+    {% for path in image_paths %}
+        <img-comparison-slider>
+        <figure slot="first" class="before">
+            <img slot="first" src="{% static 'samples' %}/{{ prefix }}/{{ path }}" />
+            <figcaption>Ground Truth</figcaption>
+        </figure>
+        <figure slot="second" class="after">
+            <img slot="second" src="{% get_media_prefix %}{{ samples_dir }}/{{ path }}" />
+            <figcaption>Reconstruction</figcaption>
+        </figure>
+        </img-comparison-slider>
+    {% endfor %}
+</div>
 
 {% endblock %}

@@ -12,6 +12,7 @@ pip install -r requirements
 Evaluation variables:
 - `SPC_UPLOADDIR`: directory, where the uploaded submission files are stored.
 - `SPC_EVALDIR`: location of the non-public ground truth files needed for evaluation.
+- `SPC_IMGDIR`: directory in which qualitative evaluation frames from users are saved. 
 
 Email & account creation variables:
 - `SPC_EMAILUSER`: email from which to send confirmation/password-reset/etc emails

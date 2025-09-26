@@ -1,7 +1,9 @@
+import uuid
+
 from django.contrib.auth import get_user_model
 from django.db import models
 
-from .constants import RESULTENTRY_NAME_MAX_LENGTH, UPLOAD_DIRECTORY
+from .constants import MEDIA_DIRECTORY, RESULTENTRY_NAME_MAX_LENGTH, UPLOAD_DIRECTORY
 
 
 class EntryVisibility(models.TextChoices):
@@ -18,6 +20,7 @@ class EntryStatus(models.TextChoices):
 
 
 class ResultEntry(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     name = models.CharField(max_length=RESULTENTRY_NAME_MAX_LENGTH)
     creator = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     pub_date = models.DateTimeField("date published")
@@ -37,8 +40,14 @@ class ResultEntry(models.Model):
     @property
     def upload_path(self):
         return (
-            UPLOAD_DIRECTORY / self.PREFIX / f"upload_{self.creator.id}_{self.id}.zip"
+            UPLOAD_DIRECTORY
+            / self.PREFIX
+            / f"upload_{self.creator.id:06}_{self.uuid}.zip"
         )
+
+    @property
+    def sample_directory(self):
+        return MEDIA_DIRECTORY / self.PREFIX / f"{self.creator.id:06}" / f"{self.uuid}"
 
 
 class ReconstructionEntry(ResultEntry):

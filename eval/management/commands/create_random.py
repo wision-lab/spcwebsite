@@ -179,7 +179,7 @@ class Command(BaseCommand):
 
     def create_users(self, n=3):
         for i in range(n):
-            usermail = f"user{i+1}@test.test"
+            usermail = f"user{i + 1}@test.test"
 
             try:
                 yield get_user_model().objects.get(email=usermail)

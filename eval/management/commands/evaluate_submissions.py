@@ -12,7 +12,7 @@ from torchmetrics.image import (
     StructuralSimilarityIndexMeasure,
 )
 
-from ...constants import EVAL_DIRECTORY, UPLOAD_DIRECTORY
+from ...constants import EVAL_DIRECTORY, SAMPLE_FRAMES_DIRECTORY, UPLOAD_DIRECTORY
 from ...models import EntryStatus, ReconstructionEntry
 
 PSNR = PeakSignalNoiseRatio(data_range=(0, 1))
@@ -37,17 +37,23 @@ class Command(BaseCommand):
             files = list(filter(lambda name: name.endswith(".png"), zipf.namelist()))
 
             for p in track(files):
-                with zipf.open(p) as f:
-                    pred = self.load_img(f)
-                    target = self.load_img(EVAL_DIRECTORY / p)
+                if (SAMPLE_FRAMES_DIRECTORY / ReconstructionEntry.PREFIX / p).exists():
+                    # These frames will be shown to the user to allow for qualitative
+                    # comparisons with the test set. Since we will leak some of the test
+                    # set because of this, we DO NOT calculate test metrics on these samples.
+                    zipf.extract(p, submission.sample_directory)
+                else:
+                    with zipf.open(p) as f:
+                        pred = self.load_img(f)
+                        target = self.load_img(EVAL_DIRECTORY / p)
 
-                metrics.append(
-                    [
-                        PSNR(pred, target),
-                        SSIM(pred, target),
-                        LPIPS(pred, target),
-                    ]
-                )
+                    metrics.append(
+                        [
+                            PSNR(pred, target),
+                            SSIM(pred, target),
+                            LPIPS(pred, target),
+                        ]
+                    )
 
         metrics = np.array(metrics)
         submission.psnr_mean, submission.ssim_mean, submission.lpips_mean = (

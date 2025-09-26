@@ -9,7 +9,13 @@ from django.views import View
 from django.views.generic import DeleteView, DetailView, UpdateView
 from django.views.generic.edit import FormView
 
-from .constants import EVAL_FILES, MAX_UPLOAD_SIZE, MAX_UPLOAD_SIZE_STR
+from .constants import (
+    EVAL_FILES,
+    MAX_UPLOAD_SIZE,
+    MAX_UPLOAD_SIZE_STR,
+    MEDIA_DIRECTORY,
+    SAMPLE_FRAMES_DIRECTORY,
+)
 from .forms import EditResultEntryForm, UploadFileForm
 from .models import EntryStatus, EntryVisibility, ReconstructionEntry
 
@@ -83,7 +89,7 @@ class SubmitView(LoginRequiredMixin, UserPassesTestMixin, FormView):
         # Important: We cannot use objects.create here as it will
         # save an entry to the db even if the form validation errors
         # out afterwards. We do need to explicitly call `.save` after
-        # all the validation has succeeded though! 
+        # all the validation has succeeded though!
         entry = ReconstructionEntry(
             name=name,
             creator=creator,
@@ -130,7 +136,7 @@ class SubmitView(LoginRequiredMixin, UserPassesTestMixin, FormView):
                         "{}</br>{}</br>{}",
                         "Submission does not follow correct directory structure.",
                         f"Expected structure: <SCENE-NAME>/<FRAME-IDX>.png",
-                        f'Instead got frames such as "{next(iter(upload_files))}"'
+                        f'Instead got frames such as "{next(iter(upload_files))}"',
                     ),
                 )
                 return super().form_invalid(form)
@@ -164,7 +170,15 @@ class DetailView(UserPassesTestMixin, DetailView):
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
-        context["range"] = [f"{i:02d}" for i in range(10)]
+        frames = sorted(
+            p.relative_to(SAMPLE_FRAMES_DIRECTORY / self.model.PREFIX)
+            for p in (SAMPLE_FRAMES_DIRECTORY / self.model.PREFIX).glob("**/*.png")
+        )
+        context["samples_dir"] = self.get_object().sample_directory.relative_to(
+            MEDIA_DIRECTORY
+        )
+        context["prefix"] = self.model.PREFIX
+        context["image_paths"] = frames
         return context
 
 
