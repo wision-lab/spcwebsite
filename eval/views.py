@@ -1,17 +1,17 @@
 from zipfile import ZipFile
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.utils.html import format_html
 from django.views import View
 from django.views.generic import DeleteView, DetailView, UpdateView
 from django.views.generic.edit import FormView
-from django.shortcuts import get_object_or_404
 
 from .constants import EVAL_FILES, MAX_UPLOAD_SIZE, MAX_UPLOAD_SIZE_STR
 from .forms import EditResultEntryForm, UploadFileForm
-from .models import EntryStatus, EntryVisibility, ReconstructionEntry, ResultEntry
+from .models import EntryStatus, EntryVisibility, ReconstructionEntry
 
 
 class ReconstructionEntriesView(View):
@@ -49,15 +49,15 @@ class DeleteEntryView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         return self.request.user.pk == self.get_object().creator.pk
-    
+
     def get_object(self, queryset=None):
         pk = self.kwargs.get(self.pk_url_kwarg)
         return get_object_or_404(self.model, pk=pk, is_active=True)
-    
+
     def form_valid(self, form):
         # Don't actually delete it, just mark as inactive
         entry = self.get_object()
-        entry.is_active = False 
+        entry.is_active = False
         entry.save()
 
         return redirect(self.success_url)
@@ -79,7 +79,12 @@ class SubmitView(LoginRequiredMixin, UserPassesTestMixin, FormView):
         name = form.cleaned_data["name"]
         creator = self.request.user
         upload = self.request.FILES["submission"]
-        entry = ReconstructionEntry.objects.create(
+
+        # Important: We cannot use objects.create here as it will
+        # save an entry to the db even if the form validation errors
+        # out afterwards. We do need to explicitly call `.save` after
+        # all the validation has succeeded though! 
+        entry = ReconstructionEntry(
             name=name,
             creator=creator,
             pub_date=timezone.now(),
@@ -110,11 +115,23 @@ class SubmitView(LoginRequiredMixin, UserPassesTestMixin, FormView):
             upload_files = set(
                 filter(lambda name: name.endswith(".png"), zipf.namelist())
             )
-            if EVAL_FILES != upload_files:
+            if len(EVAL_FILES) != len(upload_files):
                 entry.upload_path.unlink(missing_ok=True)
                 form.add_error(
                     "submission",
                     f"Some test files appear to be missing! Please ensure that format is correct.",
+                )
+                return super().form_invalid(form)
+            elif EVAL_FILES != upload_files:
+                entry.upload_path.unlink(missing_ok=True)
+                form.add_error(
+                    "submission",
+                    format_html(
+                        "{}</br>{}</br>{}",
+                        "Submission does not follow correct directory structure.",
+                        f"Expected structure: <SCENE-NAME>/<FRAME-IDX>.png",
+                        f'Instead got frames such as "{next(iter(upload_files))}"'
+                    ),
                 )
                 return super().form_invalid(form)
 
@@ -139,7 +156,7 @@ class DetailView(UserPassesTestMixin, DetailView):
                 self.request.user.is_authenticated
                 and self.request.user.pk == obj.creator.pk
             )
-        
+
     def get_object(self, queryset=None):
         pk = self.kwargs.get(self.pk_url_kwarg)
         return get_object_or_404(self.model, pk=pk, is_active=True)
@@ -159,7 +176,7 @@ class EditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         obj = self.get_object()
         return self.request.user == obj.creator
-    
+
     def get_object(self, queryset=None):
         pk = self.kwargs.get(self.pk_url_kwarg)
         return get_object_or_404(self.model, pk=pk, is_active=True)
