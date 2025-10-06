@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import ast
 import os
 from pathlib import Path
 
@@ -20,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-DEBUG = bool(os.getenv("SPC_DEBUG", False))
+DEBUG = ast.literal_eval(os.getenv("SPC_DEBUG", "False"))
 
 if DEBUG:
     SECRET_KEY = "django-insecure-6%9mc$%o+uw(o-77+3))k*rzy(6&=+8f%+km_x1(m@f+umrbk9"
@@ -128,6 +129,7 @@ STATIC_URL = "static/"
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = os.getenv("SPC_IMGDIR", "")
