@@ -27,7 +27,7 @@ if DEBUG:
 else:
     SECRET_KEY = os.environ["SPC_SECRET_KEY"]
 
-ALLOWED_HOSTS = ["spcwebsite*.railway.app", '.localhost', '127.0.0.1', '[::1]']
+ALLOWED_HOSTS = [".railway.app", '.localhost', '127.0.0.1', '[::1]']
 
 
 # Application definition
