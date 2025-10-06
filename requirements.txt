@@ -7,3 +7,5 @@ rich
 torch
 torchvision
 torchmetrics
+gunicorn
+whitenoise
