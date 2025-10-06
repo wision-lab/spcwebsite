@@ -22,6 +22,10 @@ Email & account creation variables:
 
 See [email settings](https://docs.djangoproject.com/en/5.2/topics/email/) for more. 
 
+Deployment Variables:
+- `SPC_DEBUG`: Whether to run the server in debug mode, must be false when deployed. 
+- `SPC_SECRET_KEY`: djago secret key, must be set when deployed. You can generate a new one using `secrets.token_urlsafe`.
+
 ## Initialize database
 
 First we need to `makemigrations` to create the SQL commands which will instantiate the right tables for the user accounts (in the `core` app) and submissions (in the `eval` app), then we can then execute this transaction with `migrate`:

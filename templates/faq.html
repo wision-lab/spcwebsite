@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>Frequently Asked Questions</h3>
+
+<h4>What is a single photon camera?</h4>
+<p>
+    Single photon cameras are an emerging class of sensors that are capable of detecting and counting individual photons at ultra-high speeds, reaching up to 100 kHz. You can read more about their <a href="https://visionsim.readthedocs.io/en/latest/sections/sensors/spcs/passive_spc.html">image formation model here.</a> 
+</p>
+
+<h4>How to register?</h4>
+<p>
+    In order to submit to the benchmark you first need to register. Please note that in order to <a href="{% url 'download' %}">download</a> the dataset, no registration is needed. To register, first <a href="{% url 'core:signup' %}">create an account</a> and confirm your mail address by clicking on the link we will send to you.
+</p>
+
+<h4>What format is the dataset stored as?</h4>
+<!-- Explain bitpacking and how they can be unpacked/point to vsim -->
+
+<h4>How to submit my results to the benchmark?</h4>
+<!-- Explain submission format  -->
+
+<h4>Can I benchmark my method without participating in the ongoing competition?</h4>
+<p>
+    Of course! You can always submit your results for evaluation and not participate in the competition. However, to participate in the competition you must not only submit your results for evaluation here, but also follow submit additional information about your method. Competition guidelines can <a href="https://cvspc.cs.pdx.edu/#competition">be found here.</a>
+</p>
+
+
+{% endblock %}

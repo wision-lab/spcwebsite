@@ -35,7 +35,7 @@ urlpatterns = [
     ),
     path(
         "faq",
-        RedirectView.as_view(url="https://github.com/wision-lab/datasets/"),
+        TemplateView.as_view(template_name="faq.html"),
         name="faq",
     ),
     path("captcha/", include("captcha.urls")),
