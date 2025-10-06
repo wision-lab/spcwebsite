@@ -25,6 +25,7 @@ See [email settings](https://docs.djangoproject.com/en/5.2/topics/email/) for mo
 Deployment Variables:
 - `SPC_DEBUG`: Whether to run the server in debug mode, must be false when deployed. 
 - `SPC_SECRET_KEY`: djago secret key, must be set when deployed. You can generate a new one using `secrets.token_urlsafe`.
+- `SPC_DATABASEDIR`: Should point to a directory in a persistent volume, the evaluation envs should too. 
 
 ## Initialize database
 

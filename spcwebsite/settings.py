@@ -81,10 +81,11 @@ WSGI_APPLICATION = "spcwebsite.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+DATABASE_DIR = Path(os.getenv("SPC_DATABASEDIR", BASE_DIR))
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": DATABASE_DIR / "db.sqlite3",
         "OPTIONS": {
             "init_command": "PRAGMA journal_mode=wal;",
             "transaction_mode": "IMMEDIATE",
