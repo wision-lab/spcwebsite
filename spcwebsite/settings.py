@@ -156,7 +156,7 @@ LOGOUT_REDIRECT_URL = "/"
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 
-if not DEBUG and RESEND_API_KEY:
+if RESEND_API_KEY:
     EMAIL_BACKEND = "anymail.backends.resend.EmailBackend"
     ANYMAIL = {
         "RESEND_API_KEY": RESEND_API_KEY,
