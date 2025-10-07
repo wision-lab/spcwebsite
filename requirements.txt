@@ -1,11 +1,13 @@
 --extra-index-url https://download.pytorch.org/whl/cpu
 
-django
-django-simple-captcha
 numpy
 rich
 torch
 torchvision
 torchmetrics
+imageio
+
+django-simple-captcha
+django
 gunicorn
 whitenoise

@@ -2,11 +2,51 @@
 
 {% block content %}
 
-<form enctype="multipart/form-data" method="post">
+<form enctype="multipart/form-data" method="post" id="form">
     {% csrf_token %}
     <table class="noborder">
         {{ form.as_table }}
     </table>
+    <div style="display: inline-flex; width: 100%; gap: 5%;">
+        <progress id="progress-bar" value="0" max="100" style="width: inherit;"></progress>
+        <label for="progress-bar">0%</label>
+    </div>
     <input type="submit" value="Submit">
 </form>
+
+
+<script>
+    const form = document.getElementById('form');
+    const progress = document.getElementById('progress-bar');
+    progress.parentElement.style.display = 'none';
+
+    form.addEventListener('submit', function() {
+        // Avoid form from submitting the "normal" way
+        event.preventDefault()
+
+        // XHR POST request which enables client side progress callback
+        const req = new XMLHttpRequest();
+        var csrftoken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+        req.open('POST', "{% url 'eval:submit' %}");
+        req.setRequestHeader("X-CSRFToken", csrftoken);
+        
+        // Progress callback 
+        req.upload.addEventListener('progress', function(e) {
+            const percentComplete = (e.loaded / e.total)*100;
+            progress.setAttribute('value', percentComplete);
+            progress.nextElementSibling.innerText = Math.round(percentComplete)+"%";
+        });
+
+        // On success or fail we render out the whole response
+        req.onreadystatechange = function () {
+            progress.parentElement.style.display = 'none';
+            document.body.innerHTML = req.responseText;
+        };
+        
+        progress.parentElement.style.display = 'inline-flex';
+        var payload = new FormData(form);
+        req.send(payload);
+    });
+</script>
+
 {% endblock %}

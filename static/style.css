@@ -724,3 +724,14 @@ img-comparison-slider>figure>img {
     object-fit: contain;
     width: 100%;
 }
+
+
+/* For upload pbar */
+progress {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
