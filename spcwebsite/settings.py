@@ -28,7 +28,7 @@ if DEBUG:
 else:
     SECRET_KEY = os.environ["SPC_SECRET_KEY"]
 
-ALLOWED_HOSTS = [".railway.app", '.localhost', '127.0.0.1', '[::1]']
+ALLOWED_HOSTS = [".railway.app", ".localhost", "127.0.0.1", "[::1]"]
 
 CSRF_TRUSTED_ORIGINS = ["https://*.railway.app"]
 CSRF_COOKIE_SECURE = True
@@ -154,11 +154,19 @@ LOGOUT_REDIRECT_URL = "/"
 
 # Email Settings
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST_USER = os.getenv("SPC_EMAILUSER", "")
-EMAIL_HOST_PASSWORD = os.getenv("SPC_EMAILPASSWORD", "")
-EMAIL_HOST = os.getenv("SPC_EMAILHOST", "")
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+
+if not DEBUG and RESEND_API_KEY:
+    EMAIL_BACKEND = "anymail.backends.resend.EmailBackend"
+    ANYMAIL = {
+        "RESEND_API_KEY": RESEND_API_KEY,
+    }
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST_USER = os.getenv("SPC_EMAILUSER", "")
+    EMAIL_HOST_PASSWORD = os.getenv("SPC_EMAILPASSWORD", "")
+    EMAIL_HOST = os.getenv("SPC_EMAILHOST", "")
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
 
 DEFAULT_FROM_EMAIL = os.getenv("SPC_FROMEMAIL", "")
