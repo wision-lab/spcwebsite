@@ -7,7 +7,7 @@
     <table class="noborder">
         {{ form.as_table }}
     </table>
-    <div style="display: inline-flex; width: 100%; gap: 5%;">
+    <div style="display: none; width: 100%; gap: 5%; padding-bottom: 1em;">
         <progress id="progress-bar" value="0" max="100" style="width: inherit;"></progress>
         <label for="progress-bar">0%</label>
     </div>
@@ -18,11 +18,13 @@
 <script>
     const form = document.getElementById('form');
     const progress = document.getElementById('progress-bar');
-    progress.parentElement.style.display = 'none';
 
     form.addEventListener('submit', function() {
         // Avoid form from submitting the "normal" way
         event.preventDefault()
+        event.submitter.disabled = "disabled";
+        event.submitter.style.color = "#fff";
+        event.submitter.style.backgroundColor = "#6c757d";
 
         // XHR POST request which enables client side progress callback
         const req = new XMLHttpRequest();
@@ -39,7 +41,6 @@
 
         // On success or fail we render out the whole response
         req.onreadystatechange = function () {
-            progress.parentElement.style.display = 'none';
             document.body.innerHTML = req.responseText;
         };
         
