@@ -121,11 +121,26 @@ class SubmitView(LoginRequiredMixin, UserPassesTestMixin, FormView):
             upload_files = set(
                 filter(lambda name: name.endswith(".png"), zipf.namelist())
             )
-            if len(EVAL_FILES) != len(upload_files):
+            if len(upload_files) < len(EVAL_FILES):
                 entry.upload_path.unlink(missing_ok=True)
                 form.add_error(
                     "submission",
-                    f"Some test files appear to be missing! Please ensure that format is correct.",
+                    format_html(
+                        "{}</br>{}",
+                        f"Some test files appear to be missing! Please ensure that format is correct.",
+                        f'Example of missing file: "{next(iter(EVAL_FILES - upload_files))}"',
+                    ),
+                )
+                return super().form_invalid(form)
+            elif len(upload_files) > len(EVAL_FILES):
+                entry.upload_path.unlink(missing_ok=True)
+                form.add_error(
+                    "submission",
+                    format_html(
+                        "{}</br>{}",
+                        f"Unexpected additional files found:",
+                        f'Example of missing file: "{next(iter(upload_files - EVAL_FILES))}"',
+                    ),
                 )
                 return super().form_invalid(form)
             elif EVAL_FILES != upload_files:
