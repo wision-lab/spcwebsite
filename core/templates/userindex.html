@@ -4,44 +4,50 @@
 
 <h3>Submission</h3>
 {% if user.can_upload %}
-<div style="text-align:center; margin: 1.5rem 0;">
-  <a href="{% url 'eval:submit' %}" class="btn-primary btn-lg" style="
-       display: inline-block;
-       background-color: #007bff;
-       color: #fff;
-       font-size: 1.25rem;
-       font-weight: 600;
-       text-decoration: none;
-       padding: 0.75rem 1.5rem;
-       border-radius: 0.375rem;
-       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-       transition: background-color 0.2s, box-shadow 0.2s;
-     " onmouseover="this.style.backgroundColor='#0056b3'; this.style.boxShadow='0 6px 8px rgba(0,0,0,0.15)';"
-    onmouseout="this.style.backgroundColor='#007bff'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)';">
-    Create New Submission
-  </a>
-</div>
+  <div style="text-align:center; margin: 1.5rem 0;">
+    <a href="{% url 'eval:submit' %}" class="btn-primary btn-lg" style="
+        display: inline-block;
+        background-color: #007bff;
+        color: #fff;
+        font-size: 1.25rem;
+        font-weight: 600;
+        text-decoration: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.375rem;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: background-color 0.2s, box-shadow 0.2s;
+      " onmouseover="this.style.backgroundColor='#0056b3'; this.style.boxShadow='0 6px 8px rgba(0,0,0,0.15)';"
+      onmouseout="this.style.backgroundColor='#007bff'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)';">
+      Create New Submission
+    </a>
+  </div>
 {% else %}
-<div style="text-align:center; margin: 1.5rem 0;">
-  <a style="
-       display: inline-block;
-       background-color: #6c757d;
-       color: #fff;
-       font-size: 1.25rem;
-       font-weight: 600;
-       text-decoration: none;
-       padding: 0.75rem 1.5rem;
-       border-radius: 0.375rem;
-     "><strike>Create New Submission</strike></a>
-</div>
-{% if not user.is_verified %}
-<form method="post" action="{% url 'core:resend' %}">
-  <p>You need to verify your email before being able to submit!</p> 
-  {% csrf_token %}
-  <input type="submit" value="Resend confirmation email">
-  <input type="hidden" name="next" value="{{ next }}">
-</form>
-{% endif %}
+  <div style="text-align:center; margin: 1.5rem 0;">
+    <a style="
+        display: inline-block;
+        background-color: #6c757d;
+        color: #fff;
+        font-size: 1.25rem;
+        font-weight: 600;
+        text-decoration: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.375rem;
+      "><strike>Create New Submission</strike></a>
+  </div>
+  {% if not user.can_upload %}
+    {% if not user.is_verified %}
+    <form method="post" action="{% url 'core:resend' %}">
+      <p>You need to verify your email before being able to submit!</p> 
+      {% csrf_token %}
+      <input type="submit" value="Resend confirmation email">
+      <input type="hidden" name="next" value="{{ next }}">
+    </form>
+    {% else %}
+      <center>
+        <p style="color: red;">You've reached the maximum allowable daily uploads. Please try again later.</p> 
+      </center>
+    {% endif %}
+  {% endif %}
 {% endif %}
 
 <h4>Instructions</h4>

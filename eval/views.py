@@ -1,4 +1,4 @@
-from zipfile import ZipFile
+from zipfile import BadZipFile, ZipFile
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404, redirect, render
@@ -9,13 +9,7 @@ from django.views import View
 from django.views.generic import DeleteView, DetailView, UpdateView
 from django.views.generic.edit import FormView
 
-from .constants import (
-    EVAL_FILES,
-    MAX_UPLOAD_SIZE,
-    MAX_UPLOAD_SIZE_STR,
-    MEDIA_DIRECTORY,
-    SAMPLE_FRAMES_DIRECTORY,
-)
+from .constants import EVAL_FILES, MEDIA_DIRECTORY, SAMPLE_FRAMES_DIRECTORY
 from .forms import EditResultEntryForm, UploadFileForm
 from .models import EntryStatus, EntryVisibility, ReconstructionEntry
 
@@ -97,64 +91,55 @@ class SubmitView(LoginRequiredMixin, UserPassesTestMixin, FormView):
             process_status=EntryStatus.WAIT_UPL,
         )
 
-        # Re-perform validation on server-side
-        if not upload.name.endswith(".zip"):
-            form.add_error("submission", "Submission file must be a zip file.")
-            return super().form_invalid(form)
-        elif upload.content_type != "application/zip":
-            form.add_error("submission", f"Malformed ZIP file.")
-            return super().form_invalid(form)
-        elif upload.size > MAX_UPLOAD_SIZE:
-            form.add_error(
-                "submission",
-                f"Submission file must be smaller than {MAX_UPLOAD_SIZE_STR}.",
-            )
-            return super().form_invalid(form)
-
         # Write uploaded file to disk
         with open(entry.upload_path, "wb+") as f:
             for chunk in upload.chunks():
                 f.write(chunk)
 
         # Validate that submission contains all files
-        with ZipFile(entry.upload_path) as zipf:
-            upload_files = set(
-                filter(lambda name: name.endswith(".png"), zipf.namelist())
-            )
-            if len(upload_files) < len(EVAL_FILES):
-                entry.upload_path.unlink(missing_ok=True)
-                form.add_error(
-                    "submission",
-                    format_html(
-                        "{}</br>{}",
-                        f"Some test files appear to be missing! Please ensure that format is correct.",
-                        f'Example of missing file: "{next(iter(EVAL_FILES - upload_files))}"',
-                    ),
+        try:
+            with ZipFile(entry.upload_path) as zipf:
+                upload_files = set(
+                    filter(lambda name: name.endswith(".png"), zipf.namelist())
                 )
-                return super().form_invalid(form)
-            elif len(upload_files) > len(EVAL_FILES):
-                entry.upload_path.unlink(missing_ok=True)
-                form.add_error(
-                    "submission",
-                    format_html(
-                        "{}</br>{}",
-                        f"Unexpected additional files found:",
-                        f'Example of missing file: "{next(iter(upload_files - EVAL_FILES))}"',
-                    ),
-                )
-                return super().form_invalid(form)
-            elif EVAL_FILES != upload_files:
-                entry.upload_path.unlink(missing_ok=True)
-                form.add_error(
-                    "submission",
-                    format_html(
-                        "{}</br>{}</br>{}",
-                        "Submission does not follow correct directory structure.",
-                        f"Expected structure: <SCENE-NAME>/<FRAME-IDX>.png",
-                        f'Instead got frames such as "{next(iter(upload_files))}"',
-                    ),
-                )
-                return super().form_invalid(form)
+                if len(upload_files) < len(EVAL_FILES):
+                    entry.upload_path.unlink(missing_ok=True)
+                    form.add_error(
+                        "submission",
+                        format_html(
+                            "{}</br>{}",
+                            f"Some test files appear to be missing! Please ensure that format is correct.",
+                            f'Example of missing file: "{next(iter(EVAL_FILES - upload_files))}"',
+                        ),
+                    )
+                    return super().form_invalid(form)
+                elif len(upload_files) > len(EVAL_FILES):
+                    entry.upload_path.unlink(missing_ok=True)
+                    form.add_error(
+                        "submission",
+                        format_html(
+                            "{}</br>{}",
+                            f"Unexpected additional files found:",
+                            f'Example of missing file: "{next(iter(upload_files - EVAL_FILES))}"',
+                        ),
+                    )
+                    return super().form_invalid(form)
+                elif EVAL_FILES != upload_files:
+                    entry.upload_path.unlink(missing_ok=True)
+                    form.add_error(
+                        "submission",
+                        format_html(
+                            "{}</br>{}</br>{}",
+                            "Submission does not follow correct directory structure.",
+                            f"Expected structure: <SCENE-NAME>/<FRAME-IDX>.png",
+                            f'Instead got frames such as "{next(iter(upload_files))}"',
+                        ),
+                    )
+                    return super().form_invalid(form)
+        except BadZipFile:
+            entry.upload_path.unlink(missing_ok=True)
+            form.add_error("submission", f"Malformed ZIP file.")
+            return super().form_invalid(form)
 
         # Mark the entry for later processing
         entry.process_status = EntryStatus.WAIT_PROC

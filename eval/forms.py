@@ -7,6 +7,8 @@ from .models import ResultEntry
 def validate_zip(data):
     if not data.name.endswith(".zip"):
         raise forms.ValidationError("Submission file must be a zip file.")
+    if data.content_type != "application/zip":
+        raise forms.ValidationError("Incorrect content type found.")
 
 
 def validate_size(data):

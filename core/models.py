@@ -4,6 +4,9 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django.db import models
+from django.utils import timezone
+
+from eval.constants import MAX_UPLOADS_PER_DAY
 
 
 class UserManager(BaseUserManager):
@@ -54,7 +57,23 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email.split("@")[-1]
 
     def can_upload(self):
-        return self.is_verified and self.is_active
+        # A user can always upload if they are a superuser, else they must:
+        #   1) Be verified (email is checked)
+        #   2) Be active (maybe they were deactivated by an admin)
+        #   3) Not have submitted too many times in the last 24h
+        # Note: We consider all uploads for this, not just active (un-deleted) ones 
+        #   as otherwise users can DDoS the server by uploading and deleting repeatedly. 
+        date_from = timezone.now() - timezone.timedelta(days=1)
+        return self.is_superuser or (
+            self.is_verified
+            and self.is_active
+            and len(
+                self.reconstructionentry_set.filter(
+                    pub_date__gte=date_from
+                )
+            )
+            < MAX_UPLOADS_PER_DAY
+        )
 
     @property
     def is_staff(self):

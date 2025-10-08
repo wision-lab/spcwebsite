@@ -4,8 +4,9 @@ from pathlib import Path
 from django.conf import settings
 
 RESULTENTRY_NAME_MAX_LENGTH = 100
-MAX_UPLOAD_SIZE = 50 * 1024 * 1024
-MAX_UPLOAD_SIZE_STR = "50MB"
+MAX_UPLOAD_SIZE = 300 * 1024 * 1024
+MAX_UPLOAD_SIZE_STR = "300MB"
+MAX_UPLOADS_PER_DAY = 4
 
 EVAL_DIRECTORY = Path(os.environ["SPC_EVALDIR"])
 EVAL_FILES = set(
