@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.html import format_html
 from django.views import View
-from django.views.generic import DeleteView, DetailView, UpdateView
+from django.views.generic import DeleteView, DetailView, UpdateView, CreateView
 from django.views.generic.edit import FormView
 
 from .constants import EVAL_FILES, MEDIA_DIRECTORY, SAMPLE_FRAMES_DIRECTORY
@@ -76,20 +76,10 @@ class SubmitView(LoginRequiredMixin, UserPassesTestMixin, FormView):
         return redirect("core:user")
 
     def form_valid(self, form):
-        name = form.cleaned_data["name"]
-        creator = self.request.user
+        entry = form.save(commit=False)
+        entry.pub_date = timezone.now()
+        entry.creator = self.request.user
         upload = self.request.FILES["submission"]
-
-        # Important: We cannot use objects.create here as it will
-        # save an entry to the db even if the form validation errors
-        # out afterwards. We do need to explicitly call `.save` after
-        # all the validation has succeeded though!
-        entry = ReconstructionEntry(
-            name=name,
-            creator=creator,
-            pub_date=timezone.now(),
-            process_status=EntryStatus.WAIT_UPL,
-        )
 
         # Write uploaded file to disk
         with open(entry.upload_path, "wb+") as f:

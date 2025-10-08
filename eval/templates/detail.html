@@ -8,7 +8,7 @@
 {% if entry.process_status == "WAIT_UPL" or entry.process_status == "WAIT_PROC" %}
 <p>&nbsp;&#8634; <i>{{entry.get_process_status_display}}</i></p>
 {% endif %}
-{% if entry.process_status == "FAIL"%}
+{% if entry.process_status == "FAIL" %}
 <p>&nbsp;&#x2716; <i>{{entry.get_process_status_display}}</i></p>
 {% endif %}
 <p>{{entry.pub_date}} &nbsp;&mdash;&nbsp; {{entry.get_visibility_display}}</p>
@@ -31,6 +31,10 @@
 </nav>
 {% endif %}
 
+{% if entry.process_status == "SUCCESS" %}
+<script defer src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/index.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/styles.css"/>
+
 <h4>Reconstruction</h4>
 <div style="overflow-x:auto;">
     <table>
@@ -46,12 +50,7 @@
         </tr>
     </table>
 </div>
-
 </br>
-
-<script defer src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/index.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/styles.css"/>
-
 <div class="auto-grid">
     {% for path in image_paths %}
         <img-comparison-slider>
@@ -66,5 +65,6 @@
         </img-comparison-slider>
     {% endfor %}
 </div>
+{% endif %}
 
 {% endblock %}

@@ -1,7 +1,7 @@
 from django import forms
 
 from .constants import MAX_UPLOAD_SIZE, MAX_UPLOAD_SIZE_STR, RESULTENTRY_NAME_MAX_LENGTH
-from .models import ResultEntry
+from .models import ReconstructionEntry, ResultEntry
 
 
 def validate_zip(data):
@@ -18,15 +18,13 @@ def validate_size(data):
         )
 
 
-class UploadFileForm(forms.Form):
+class UploadFileForm(forms.ModelForm):
     required_css_class = "required"
 
-    name = forms.CharField(
-        max_length=RESULTENTRY_NAME_MAX_LENGTH,
-        required=True,
-        help_text="Submission or method name",
-        widget=forms.TextInput,
-    )
+    class Meta:
+        model = ReconstructionEntry
+        fields = ["name", "visibility", "citation", "code_url"]
+    
     submission = forms.FileField(
         label="Submission file",
         required=True,
