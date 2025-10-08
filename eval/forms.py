@@ -24,7 +24,7 @@ class UploadFileForm(forms.ModelForm):
     class Meta:
         model = ReconstructionEntry
         fields = ["name", "visibility", "citation", "code_url"]
-    
+
     submission = forms.FileField(
         label="Submission file",
         required=True,

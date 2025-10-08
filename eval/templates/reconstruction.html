@@ -4,11 +4,17 @@
 {% block content %}
 
 {% if entries %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<h4>Reconstruction Results</h4>
+{% if user.is_verified %}
+    <p style="margin-bottom:0;">Results marked with a 🚫 are private and are only be visible to you.</p>
+{% endif %}
 <div style="overflow-x:auto;">
 <table>
     <tr>
         <th style="width:0;"></th>
-        <th style="width:100%;">Name</th>
+        <th style="min-width: 30ch;">Name</th>
         
         {% for metric in metric_fields %}
         <th class="{% if forloop.counter0|divisibleby:3 %}leftbig{% endif %} clickable">
@@ -22,14 +28,17 @@
 
     {% for entry in entries %}
     <tr>
-        <td>{{ forloop.counter }}</td>
+        <td>
+            {{ forloop.counter }}
+            {% if entry.visibility == "PRIV" %}&nbsp;<span style="font-size: small;">🚫</span>{% endif %}
+        </td>
         <td>
             <div class="namebox">
                 <span>
                     <a href="{% url 'eval:detail' entry.id %}">{{ entry.name }}</a>
                 </span>
                 {% if entry.visibility != "ANON" and entry.code_url|length > 0 %}
-                    <a href="{{ entry.code_url }}" target="_blank" rel="noopener noreferrer" class="codebutton">code</a>
+                    &nbsp;<a href="{{ entry.code_url }}" target="_blank" rel="noopener noreferrer" class="codebutton">code</a>
                 {% endif %}
             </div>
         </td>
@@ -38,7 +47,8 @@
         {% endfor %}
     </tr>
     <tr>
-        <td class="citation">
+        <td class="citation"></td>
+        <td class="citation" colspan="{{ metric_fields|length|add:1 }}" style="max-width: 1vw; overflow-x: clip; text-overflow: ellipsis;">
             {% if entry.visibility == "ANON" %}
                 Anonymous.
             {% else %}

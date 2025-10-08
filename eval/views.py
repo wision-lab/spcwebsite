@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.html import format_html
 from django.views import View
-from django.views.generic import DeleteView, DetailView, UpdateView, CreateView
+from django.views.generic import DeleteView, DetailView, UpdateView
 from django.views.generic.edit import FormView
 
 from .constants import EVAL_FILES, MEDIA_DIRECTORY, SAMPLE_FRAMES_DIRECTORY
@@ -23,10 +23,20 @@ class ReconstructionEntriesView(View):
         if sortby.removeprefix("-") not in self.VALID_KEYS:
             sortby = ReconstructionEntry.metric_fields[0].name
 
+        if request.user.is_authenticated:
+            my_entries = (
+                ReconstructionEntry.objects.filter(creator__exact=request.user.pk)
+                .filter(process_status=EntryStatus.SUCCESS)
+                .filter(is_active=True)
+            )
+        else:
+            my_entries = ReconstructionEntry.objects.none()
+
         entries = (
             ReconstructionEntry.objects.exclude(visibility=EntryVisibility.PRIV)
             .filter(process_status=EntryStatus.SUCCESS)
             .filter(is_active=True)
+            .union(my_entries)
             .order_by(sortby)
         )
 
