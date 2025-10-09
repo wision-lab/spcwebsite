@@ -13,7 +13,7 @@
 <div style="overflow-x:auto;">
     <table>
         <tr>
-            <th style="width:0;"></th>
+            <th style="width:0;">#</th>
             <th style="min-width: 30ch;">Name</th>
             {% for metric in entry_1.metric_fields %}
             <th>{{ metric.verbose_name }}</th>
@@ -67,11 +67,11 @@
         <img-comparison-slider>
         <figure slot="first" class="before">
             <img slot="first" src="{% get_media_prefix %}{{ samples_dir_1 }}/{{ path }}" />
-            <figcaption>1</figcaption>
+            <figcaption>#1</figcaption>
         </figure>
         <figure slot="second" class="after">
             <img slot="second" src="{% get_media_prefix %}{{ samples_dir_2 }}/{{ path }}" />
-            <figcaption>2</figcaption>
+            <figcaption>#2</figcaption>
         </figure>
         </img-comparison-slider>
     {% endfor %}

@@ -48,12 +48,12 @@
 
 <h4>Reconstruction Results</h4>
 {% if user.is_verified %}
-    <p style="margin-bottom:0;">Results marked with a 🚫 are private and are only be visible to you.</p>
+    <p style="margin-bottom:0;">Results marked with 🚫 are private and are only be visible to you. Submissions waiting for evaluation will not be shown here.</p>
 {% endif %}
 <div style="overflow-x:auto;">
 <table>
     <tr>
-        <th style="width:0;"></th>
+        <th style="width:0;">#</th>
         <th style="min-width: 30ch;">
             <div class="namebox">
                 Name&nbsp;<a href="#" class="codebutton" style="padding: 0.5em; display: none;" id="compare-btn">Compare Results</a>
@@ -74,11 +74,11 @@
     <tr class="entry" id="{{ entry.id }}">
         <td>
             {{ forloop.counter }}
-            {% if entry.visibility == "PRIV" %}&nbsp;<span style="font-size: small;">🚫</span>{% endif %}
         </td>
         <td>
             <div class="namebox">
                 <span>
+                    {% if entry.visibility == "PRIV" %}<span style="font-size: small;">🚫</span>&nbsp;{% endif %}
                     <a href="{% url 'eval:detail' entry.id %}">{{ entry.name }}</a>
                 </span>
                 {% if entry.visibility != "ANON" and entry.code_url|length > 0 %}
@@ -105,9 +105,9 @@
         </td>
     </tr>
     {% endfor %}
-    
 </table>
 </div>
+<p><i>Tip: Select two rows to in order to compare them!</i></p>
 {% else %}
 <p>No data available.</p>
 {% endif %}
