@@ -27,10 +27,9 @@ urlpatterns = [
     path("accounts/", include("core.urls")),
     path("eval/", include("eval.urls")),
     path("admin/", admin.site.urls),
-    # Temp
     path(
         "download",
-        RedirectView.as_view(url="https://github.com/wision-lab/datasets/"),
+        TemplateView.as_view(template_name="download.html"),
         name="download",
     ),
     path(

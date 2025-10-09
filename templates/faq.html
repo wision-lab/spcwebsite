@@ -28,7 +28,7 @@
     <pre style="padding: 0;"><code class="language-python">import numpy as np 
 
 # Load with memory mapping to avoid loading everything into RAM 
-photoncube = np.load("datasets/test/studio-apartment/000000.npy", mmap_mode="r")
+photoncube = np.load("datasets/train/attic/000000.npy", mmap_mode="r")
 print(photoncube.shape)  # (1024, 800, 100, 3)
 
 # Take first 10 binary frames 

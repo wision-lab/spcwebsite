@@ -70,9 +70,9 @@ class Command(BaseCommand):
             process_status=EntryStatus.WAIT_PROC, is_active=True
         )
         submission_ids = set(submissions.values_list("id", flat=True))
-        archives = UPLOAD_DIRECTORY.glob("*.zip")
+        archives = set(UPLOAD_DIRECTORY.glob("**/*.zip"))
 
-        if set(sub.upload_path for sub in submissions) != set(archives):
+        if set(sub.upload_path for sub in submissions) != archives:
             self.stdout.write(
                 self.style.WARNING(
                     "Found mismatch between uploaded archives and database entries waiting for processing!"
