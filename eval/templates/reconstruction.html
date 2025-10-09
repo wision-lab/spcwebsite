@@ -1,10 +1,50 @@
 {% extends "base.html" %}
-{% load na_filters %}
+{% load custom_filters %}
 
 {% block content %}
 
 {% if entries %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tableRows = document.querySelectorAll('tbody tr.entry');
+        const compareBtn = document.getElementById('compare-btn');
+        var selectedRows = [];
+
+        compareBtn.addEventListener('click', function() {
+            event.preventDefault();
+            window.location.href = 'compare/' + selectedRows.join("/");
+        });
+
+        tableRows.forEach(row => {
+            row.addEventListener('click', function() {                
+                if (this.classList.contains('selected-row')) {
+                    // Turn off and remove from selectedRows if present
+                    this.classList.remove('selected-row');
+                    const index = selectedRows.indexOf(this.id);
+                    if (index > -1) {
+                        selectedRows.splice(index, 1);
+                    }
+                } else {
+                    // Turn on and shift out any extra rows 
+                    this.classList.add('selected-row');
+                    selectedRows.push(this.id)
+
+                    if (selectedRows.length > 2) {
+                        var to_remove = selectedRows.shift();
+                        document.getElementById(to_remove).classList.toggle('selected-row');
+                    }
+                }
+
+                if (selectedRows.length == 2) {
+                    compareBtn.style.display = 'flex';
+                } else {
+                    compareBtn.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
 
 <h4>Reconstruction Results</h4>
 {% if user.is_verified %}
@@ -14,7 +54,11 @@
 <table>
     <tr>
         <th style="width:0;"></th>
-        <th style="min-width: 30ch;">Name</th>
+        <th style="min-width: 30ch;">
+            <div class="namebox">
+                Name&nbsp;<a href="#" class="codebutton" style="padding: 0.5em; display: none;" id="compare-btn">Compare Results</a>
+            </div>
+        </th>
         
         {% for metric in metric_fields %}
         <th class="{% if forloop.counter0|divisibleby:3 %}leftbig{% endif %} clickable">
@@ -27,7 +71,7 @@
     </tr>
 
     {% for entry in entries %}
-    <tr>
+    <tr class="entry" id="{{ entry.id }}">
         <td>
             {{ forloop.counter }}
             {% if entry.visibility == "PRIV" %}&nbsp;<span style="font-size: small;">🚫</span>{% endif %}

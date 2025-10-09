@@ -5,9 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.html import format_html
-from django.views import View
-from django.views.generic import DeleteView, DetailView, UpdateView
-from django.views.generic.edit import FormView
+from django.views import View, generic
 
 from .constants import EVAL_FILES, MEDIA_DIRECTORY, SAMPLE_FRAMES_DIRECTORY
 from .forms import EditResultEntryForm, UploadFileForm
@@ -52,7 +50,7 @@ class ReconstructionEntriesView(View):
         return render(request, "reconstruction.html", context)
 
 
-class DeleteEntryView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class DeleteEntryView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
     model = ReconstructionEntry
     template_name = "confirm_delete.html"
     success_url = reverse_lazy("core:user")
@@ -65,15 +63,17 @@ class DeleteEntryView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return get_object_or_404(self.model, pk=pk, is_active=True)
 
     def form_valid(self, form):
-        # Don't actually delete it, just mark as inactive
+        # Don't actually delete the entry, just mark as inactive
+        # Do delete the submission file though
         entry = self.get_object()
+        entry.upload_path.unlink(missing_ok=True)
         entry.is_active = False
         entry.save()
 
         return redirect(self.success_url)
 
 
-class SubmitView(LoginRequiredMixin, UserPassesTestMixin, FormView):
+class SubmitView(LoginRequiredMixin, UserPassesTestMixin, generic.edit.FormView):
     template_name = "submit.html"
     success_url = reverse_lazy("core:user")
     form_class = UploadFileForm
@@ -148,7 +148,7 @@ class SubmitView(LoginRequiredMixin, UserPassesTestMixin, FormView):
         return super().form_valid(form)
 
 
-class DetailView(UserPassesTestMixin, DetailView):
+class DetailView(UserPassesTestMixin, generic.DetailView):
     model = ReconstructionEntry
     template_name = "detail.html"
     context_object_name = "entry"
@@ -182,7 +182,54 @@ class DetailView(UserPassesTestMixin, DetailView):
         return context
 
 
-class EditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class CompareView(UserPassesTestMixin, View):
+    model = ReconstructionEntry
+    template_name = "compare.html"
+
+    def test_func(self):
+        return all(
+            (obj.visibility != EntryVisibility.PRIV)
+            or (
+                self.request.user.is_authenticated
+                and self.request.user.pk == obj.creator.pk
+            )
+            for obj in self.get_objects()
+        )
+
+    def get_objects(self):
+        pk1 = self.kwargs.get("pk1")
+        pk2 = self.kwargs.get("pk2")
+        obj1 = get_object_or_404(
+            self.model, pk=pk1, is_active=True, process_status=EntryStatus.SUCCESS
+        )
+        obj2 = get_object_or_404(
+            self.model, pk=pk2, is_active=True, process_status=EntryStatus.SUCCESS
+        )
+        return obj1, obj2
+
+    def get(self, request, **kwargs):
+        obj1, obj2 = self.get_objects()
+        frames = sorted(
+            p.relative_to(SAMPLE_FRAMES_DIRECTORY / self.model.PREFIX)
+            for p in (SAMPLE_FRAMES_DIRECTORY / self.model.PREFIX).glob("**/*.png")
+        )
+        emphasis = [
+            m1 > m2 if "↑" in name.verbose_name else m1 <= m2
+            for m1, m2, name in zip(obj1.metrics, obj2.metrics, obj1.metric_fields)
+        ]
+        context = {
+            "entry_1": obj1,
+            "entry_2": obj2,
+            "emphasis": emphasis,
+            "samples_dir_1": obj1.sample_directory.relative_to(MEDIA_DIRECTORY),
+            "samples_dir_2": obj2.sample_directory.relative_to(MEDIA_DIRECTORY),
+            "prefix": self.model.PREFIX,
+            "image_paths": frames,
+        }
+        return render(request, self.template_name, context=context)
+
+
+class EditView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
     model = ReconstructionEntry
     form_class = EditResultEntryForm
     template_name = "resultentry_form.html"

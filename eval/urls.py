@@ -1,4 +1,4 @@
-from django.urls import include, path
+from django.urls import path
 
 from . import views
 
@@ -11,6 +11,7 @@ urlpatterns = [
         name="reconstruction",
     ),
     path("detail/<int:pk>", views.DetailView.as_view(), name="detail"),
+    path("compare/<int:pk1>/<int:pk2>", views.CompareView.as_view(), name="compare"),
     path("edit/<int:pk>", views.EditView.as_view(), name="edit"),
     path("edit/<int:pk>/delete", views.DeleteEntryView.as_view(), name="delete"),
 ]

@@ -2,7 +2,7 @@
 
 {% block content %}
 {% load static %}
-{% load na_filters %}
+{% load custom_filters %}
 
 <h3>{{ entry.name }}</h3>
 {% if entry.process_status == "WAIT_UPL" or entry.process_status == "WAIT_PROC" %}
@@ -12,9 +12,7 @@
 <p>&nbsp;&#x2716; <i>{{entry.get_process_status_display}}</i></p>
 {% endif %}
 <p>{{entry.pub_date}} &nbsp;&mdash;&nbsp; {{entry.get_visibility_display}}</p>
-{% if entry.visibility == "ANON" %}
-<p>Anonymous.</p>
-{% elif entry.citation|length > 0 %}
+{% if not entry.visibility == "ANON" and entry.citation|length > 0 %}
 <p>{{ entry.citation }}</p>
 {% endif %}
 

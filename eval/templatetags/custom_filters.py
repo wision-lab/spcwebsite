@@ -16,3 +16,8 @@ def na_if_missing(value, float_places=3):
     if value == -1:
         return "N/A"
     return f"{value:.{int(float_places)}f}"
+
+
+@register.filter(name="zip")
+def zip_lists(a, b):
+    return zip(a, b)

@@ -336,6 +336,7 @@ div.startbutton a:hover {
 div.namebox {
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 
@@ -742,4 +743,10 @@ span.inline-code {
     font-family: monospace;
     padding: 0 4px;
     white-space: nowrap;
+}
+
+/* Make rows comparable */
+.selected-row {
+    background-color: #ececec;
+    font-weight: bold;
 }
