@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/stackoverflow-light.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+
+<h3>Reconstruction Dataset</h3>
+
+<p>
+    The reconstruction dataset (~500GB) consists on photoncube/image pairs from 50 unique simulated scenes, plus another 5 scenes for the test set (for which ground truths are not made public). Each photoncube consists of 1024 bitplanes, and the associated ground truth reconstruction corresponds to the last bitplane. A sample of this dataset can be <a href="https://drive.google.com/file/d/1wV5KnbexqOXVS69SfawPBZu0AVk-Tu_v/view?usp=sharing">downloaded here (~3.5GB)</a>.  
+</p>
+</br>
+<p>    
+    The full dataset is hosted on a publicly accessible S3 bucket, and compressed into ~8.5GB chunks. To download it you'll need to use the <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html">aws-cli</a>, and extract each zip file into the same directory. 
+    
+    Once installed, you can list out the dataset's components using:
+    <pre style="padding: 0;"><code class="language-bash">$ aws s3 ls --summarize --human-readable --recursive s3://public-datasets/challenges/reconstruction --endpoint=https://web.s3.wisc.edu --no-sign-request</code></pre>
+</p>
+</br>
+<p>
+    To download all the dataset archives to a predefined <span class="inline-code">$DOWNLOAD_DIR</span> in one shot, you can use the following command:
+    <pre style="padding: 0;"><code class="language-bash">$ aws s3 sync s3://public-datasets/challenges/reconstruction $DOWNLOAD_DIR --endpoint=https://web.s3.wisc.edu --no-sign-request</code></pre>
+
+    You then need to extract all zips into their respective directories, which can be done with the following command in bash:
+    <pre style="padding: 0;"><code class="language-bash">$ for zip in $(find $DOWNLOAD_DIR -type f -name *.zip); do unzip $zip -d $(dirname $zip) && rm -f $zip; done</code></pre>
+</p>
+</br>
+<p>
+    For more single photon datasets, including real captures, <a href="https://github.com/wision-lab/datasets/">see here</a>.
+</p>
+
+{% endblock %}
