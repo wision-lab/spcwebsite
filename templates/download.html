@@ -13,7 +13,7 @@
 </p>
 </br>
 <p>    
-    The full dataset is hosted on a publicly accessible S3 bucket, and compressed into ~8.5GB chunks. To download it you'll need to use the <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html">aws-cli</a>, and extract each zip file into the same directory. 
+    The full dataset is hosted on a publicly accessible S3 bucket, and compressed into ~8.5GB chunks. To download it you'll need to use the <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html">aws-cli</a>, and an lzma-camapble unzipping utility such as the <a href="https://packages.debian.org/sid/p7zip-full">7zip cli</a> to extract each zip file into its respective directory. 
     
     Once installed, you can list out the dataset's components using:
     <pre style="padding: 0;"><code class="language-bash">$ aws s3 ls --summarize --human-readable --recursive s3://public-datasets/challenges/reconstruction --endpoint=https://web.s3.wisc.edu --no-sign-request</code></pre>
@@ -24,7 +24,7 @@
     <pre style="padding: 0;"><code class="language-bash">$ aws s3 sync s3://public-datasets/challenges/reconstruction $DOWNLOAD_DIR --endpoint=https://web.s3.wisc.edu --no-sign-request</code></pre>
 
     You then need to extract all zips into their respective directories, which can be done with the following command in bash:
-    <pre style="padding: 0;"><code class="language-bash">$ for zip in $(find $DOWNLOAD_DIR -type f -name *.zip); do unzip $zip -d $(dirname $zip) && rm -f $zip; done</code></pre>
+    <pre style="padding: 0;"><code class="language-bash">$ for zip in $(find $DOWNLOAD_DIR -type f -name *.zip); do 7z x $zip -o$(dirname $zip) && rm -f $zip; done</code></pre>
 </p>
 </br>
 <p>

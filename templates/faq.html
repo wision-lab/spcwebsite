@@ -79,7 +79,7 @@ def naivesum(
 
                 # Optionally invert the single photon camera's response 
                 # function and tonemap the image back to sRGB  
-                im = spc_avg_to_rgb(im) if invert_response else im
+                im = spc_avg_to_rgb(im, factor=0.5) if invert_response else im
                 im = linearrgb_to_srgb(im) if tonemap else im
 
                 # Convert to uint8 and save into zipfile

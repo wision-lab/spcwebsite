@@ -12,3 +12,5 @@ django-simple-captcha
 django-anymail[resend]
 gunicorn
 whitenoise
+
+litecli
