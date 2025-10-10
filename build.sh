@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Install extra dev utils
-curl https://getcroc.schollz.com | bash
+curl https://getcroc.schollz.com | bash -s -- -p /storage
 
 # Django build commands 
 python manage.py makemigrations core eval

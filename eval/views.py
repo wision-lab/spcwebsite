@@ -108,7 +108,7 @@ class SubmitView(LoginRequiredMixin, UserPassesTestMixin, generic.edit.FormView)
                         "submission",
                         format_html(
                             "{}</br>{}",
-                            f"Some test files appear to be missing! Please ensure that format is correct.",
+                            "Some test files appear to be missing! Please ensure that format is correct.",
                             f'Example of missing file: "{next(iter(EVAL_FILES - upload_files))}"',
                         ),
                     )
@@ -119,7 +119,7 @@ class SubmitView(LoginRequiredMixin, UserPassesTestMixin, generic.edit.FormView)
                         "submission",
                         format_html(
                             "{}</br>{}",
-                            f"Unexpected additional files found:",
+                            "Unexpected additional files found:",
                             f'Example of missing file: "{next(iter(upload_files - EVAL_FILES))}"',
                         ),
                     )
@@ -131,14 +131,14 @@ class SubmitView(LoginRequiredMixin, UserPassesTestMixin, generic.edit.FormView)
                         format_html(
                             "{}</br>{}</br>{}",
                             "Submission does not follow correct directory structure.",
-                            f"Expected structure: <SCENE-NAME>/<FRAME-IDX>.png",
+                            "Expected structure: <SCENE-NAME>/<FRAME-IDX>.png",
                             f'Instead got frames such as "{next(iter(upload_files))}"',
                         ),
                     )
                     return super().form_invalid(form)
-        except BadZipFile:
+        except (BadZipFile, RuntimeError):
             entry.upload_path.unlink(missing_ok=True)
-            form.add_error("submission", f"Malformed ZIP file.")
+            form.add_error("submission", "Malformed ZIP file.")
             return super().form_invalid(form)
 
         # Mark the entry for later processing

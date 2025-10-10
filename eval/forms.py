@@ -1,6 +1,6 @@
 from django import forms
 
-from .constants import MAX_UPLOAD_SIZE, MAX_UPLOAD_SIZE_STR, RESULTENTRY_NAME_MAX_LENGTH
+from .constants import MAX_UPLOAD_SIZE, MAX_UPLOAD_SIZE_STR
 from .models import ReconstructionEntry, ResultEntry
 
 

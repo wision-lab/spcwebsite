@@ -45,7 +45,10 @@ class Command(BaseCommand):
             for submission in track(config):
                 path = Path(conf_path).parent / submission.pop("path")
                 entry = ReconstructionEntry(
-                    creator=user, pub_date=timezone.now(), process_status=EntryStatus.WAIT_PROC, **submission
+                    creator=user,
+                    pub_date=timezone.now(),
+                    process_status=EntryStatus.WAIT_PROC,
+                    **submission,
                 )
                 shutil.copy(path, entry.upload_path)
                 entry.save()
