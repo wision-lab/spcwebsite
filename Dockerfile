@@ -41,8 +41,6 @@ RUN python manage.py migrate
 # Collect the static files
 RUN python manage.py collectstatic --noinput
 
-EXPOSE 443
-
 # Copy configs
 COPY .config/Caddyfile /etc/caddy/Caddyfile
 COPY .config/supervisord.conf /etc/supervisord.conf

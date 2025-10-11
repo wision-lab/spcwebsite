@@ -1,4 +1,4 @@
-localhost:{$PORT:443}
+:{$PORT}
 
 handle_path /static/* {
     root * /app/staticfiles
