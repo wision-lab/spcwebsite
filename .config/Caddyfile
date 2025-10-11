@@ -1,22 +1,13 @@
-localhost
+localhost 
 
 handle_path /static/* {
     root * /app/staticfiles
-    file_server {
-        precompressed gzip br
-    }
-    header Cache-Control "public, max-age=31536000, immutable"
+    file_server
 }
 
 handle_path /media/* {
     root * /storage/media
     file_server
-    header Cache-Control "public, max-age=86400"
 }
 
-handle {
-    reverse_proxy 127.0.0.1:8000 {
-        header_up Host {host}
-        header_up X-Real-IP {remote_host}
-    }
-}
+reverse_proxy 127.0.0.1:8000
