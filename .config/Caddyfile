@@ -11,7 +11,8 @@ handle_path /media/* {
 }
 
 log {
-    output file /storage/logs/caddy/website.log
+    output stdout
+    format console
 }
 
 reverse_proxy 127.0.0.1:8000
