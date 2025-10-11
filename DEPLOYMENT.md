@@ -22,3 +22,14 @@ gunicorn spcwebsite.wsgi:application --timeout 120
 sqlite3 db.sqlite3 ".backup backup.db"
 sqlite3 db.sqlite3 ".restore backup.db"
 ```
+
+# Docker
+
+Build docker image while passing all environment variables from a `docker.env` file:
+```
+docker build -t website-img $(cat docker.env | sed 's@^@--build-arg @g' | paste -s -d " ") . 
+```
+
+```
+docker run -p 8000:443 -v $SPC_IMGDIR:/storage/media/ --env-file docker.env website-img 
+```
