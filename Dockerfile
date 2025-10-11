@@ -1,6 +1,9 @@
 # Use a slim Debian image as our base
 FROM debian:bookworm-slim
 
+# Envvars
+ARG RAILWAY_ENVIRONMENT
+
 # Set the working directory inside the container
 WORKDIR /app
 
