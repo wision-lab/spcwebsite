@@ -706,6 +706,9 @@ img-comparison-slider>figure>img {
     width: 100%;
 }
 
+img-comparison-slider {
+    display: flex;
+}
 
 /* For upload pbar */
 progress {
