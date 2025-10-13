@@ -20,7 +20,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import TemplateView
-from django.views.static import serve
+
+from core.views import forward_auth_check
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="index.html"), name="index"),
@@ -38,6 +39,11 @@ urlpatterns = [
         name="faq",
     ),
     path("captcha/", include("captcha.urls")),
+    path(
+        "auth/check/<str:entry_type>/<int:user_pk>/<uuid:entry_uuid>/<path:path>",
+        forward_auth_check,
+        name="auth-check",
+    ),
 ]
 
 if settings.DEBUG:

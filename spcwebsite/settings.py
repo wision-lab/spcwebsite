@@ -28,9 +28,9 @@ if DEBUG:
 else:
     SECRET_KEY = os.environ["SPC_SECRET_KEY"]
 
-ALLOWED_HOSTS = [".railway.app", ".localhost", "127.0.0.1", "[::1]"]
+ALLOWED_HOSTS = ["singlephotonchallenge.com", ".railway.app", ".localhost", "127.0.0.1", "[::1]"]
 
-CSRF_TRUSTED_ORIGINS = ["https://*.railway.app"]
+CSRF_TRUSTED_ORIGINS = ["https://singlephotonchallenge.com", "https://*.railway.app"]
 CSRF_COOKIE_SECURE = True
 
 # Application definition

@@ -7,10 +7,15 @@ WORKDIR /app
 # Install system dependencies needed by our app
 RUN apt-get update && apt-get install -y \
     build-essential \
-    curl wget \
+    curl \ 
+    wget \
     supervisor \
-    caddy \
-    && rm -rf /var/lib/apt/lists/*
+    caddy
+
+# And a few nice to haves for debugging and cleanup
+RUN apt-get install -y sqlite3 ncdu tmux 
+RUN curl https://getcroc.schollz.com | bash 
+RUN rm -rf /var/lib/apt/lists/*
 
 # Install uv, the fast Python package manager
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
