@@ -3,6 +3,7 @@ from pathlib import Path
 from zipfile import BadZipFile, ZipFile
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -94,11 +95,16 @@ class SubmitView(LoginRequiredMixin, UserPassesTestMixin, generic.edit.FormView)
         upload = self.request.FILES["submission"]
         md5sum = hashlib.md5()
         
-        # Write uploaded file to disk
-        with open(entry.upload_path, "wb+") as f:
-            for chunk in upload.chunks():
-                md5sum.update(chunk)
-                f.write(chunk)
+        # Write uploaded file to disk, return server error (500) if failed
+        # Ensure no half written submission files exist
+        try:
+            with open(entry.upload_path, "wb+") as f:
+                for chunk in upload.chunks():
+                    md5sum.update(chunk)
+                    f.write(chunk)
+        except IOError:
+            entry.upload_path.unlink(missing_ok=True)
+            return HttpResponse(status=500)
 
         # Validate that submission contains all files
         try:
