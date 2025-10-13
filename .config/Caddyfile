@@ -3,7 +3,10 @@
 
 handle_path /static/* {
     root * /app/staticfiles
-    file_server
+    file_server {
+        precompressed gzip br
+    }
+    header Cache-Control "public, max-age=31536000, immutable"
 }
 
 handle_path /media/* {
@@ -16,6 +19,7 @@ handle_path /media/* {
 
     root * /storage/media
     file_server
+    header Cache-Control "public, max-age=86400"
 }
 
 reverse_proxy localhost:8000
