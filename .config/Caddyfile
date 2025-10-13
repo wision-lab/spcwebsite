@@ -14,7 +14,7 @@ handle_path /media/* {
     # to check for authorization (at endpoint /auth/check), if we receive 
     # a status==200 we proceed, else serve what django responds. 
     forward_auth localhost:8000 {
-        uri /auth/check/ 
+        uri /auth/check{uri}
     }
 
     root * /storage/media

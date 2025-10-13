@@ -28,20 +28,17 @@ RUN uv sync --locked --no-install-project --no-dev
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Add the rest of the project source code
-COPY . /app
-
 # Envvars needed during build
 ARG SPC_DEBUG 
 ARG SPC_UPLOADDIR
 ARG SPC_EVALDIR
 ARG SPC_IMGDIR
+ARG SPC_DATABASEDIR
 ARG RESEND_API_KEY
 ARG SPC_SECRET_KEY
 
-# Migrate the database
-RUN python manage.py makemigrations core eval
-RUN python manage.py migrate
+# Add the rest of the project source code
+COPY . /app
 
 # Collect the static files
 RUN python manage.py collectstatic --noinput

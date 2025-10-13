@@ -182,7 +182,6 @@ class DetailView(UserPassesTestMixin, generic.DetailView):
             )
             for subpath in subpaths
         ]
-        print(context["image_paths"])
         return context
 
 

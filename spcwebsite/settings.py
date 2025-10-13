@@ -86,7 +86,7 @@ WSGI_APPLICATION = "spcwebsite.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASE_DIR = Path(os.getenv("SPC_DATABASEDIR", BASE_DIR))
+DATABASE_DIR = Path(os.environ["SPC_DATABASEDIR"])
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -140,7 +140,7 @@ STATICFILES_DIRS = [
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "media/"
-MEDIA_ROOT = os.getenv("SPC_IMGDIR", "")
+MEDIA_ROOT = os.environ["SPC_IMGDIR"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
