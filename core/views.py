@@ -14,7 +14,7 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views import View
 from django.views.generic.edit import FormView
 
-from eval.models import EntryVisibility, ReconstructionEntry
+from eval.models import ReconstructionEntry
 
 from .forms import UserCreationForm
 
@@ -84,19 +84,15 @@ def userindex(request):
     return render(request, "userindex.html", context)
 
 
-def forward_auth_check(
-    request, entry_type=None, user_pk=None, entry_uuid=None, **kwargs
-):
+def forward_auth_check(request, entry_type=None, entry_uuid=None, **kwargs):
     entry_model = {"reconstruction": ReconstructionEntry}.get(entry_type)
 
     if entry_model is None:
         raise Http404(f"Entry type {entry_type} does not exist.")
 
-    obj = get_object_or_404(entry_model, uuid=entry_uuid, is_active=True)
+    entry = get_object_or_404(entry_model, uuid=entry_uuid, is_active=True)
 
-    if obj.visibility != EntryVisibility.PRIV or (
-        request.user.is_authenticated and user_pk == obj.creator.pk
-    ):
+    if entry.can_be_seen_by(request.user):
         # If debug, we can just serve the file directly
         # this should not be used in prod, nor in debug really
         # since the /auth/check endpoint won't be redirected to

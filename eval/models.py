@@ -1,6 +1,8 @@
 import uuid
 
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 from .constants import MEDIA_DIRECTORY, RESULTENTRY_NAME_MAX_LENGTH, UPLOAD_DIRECTORY
@@ -19,20 +21,40 @@ class EntryStatus(models.TextChoices):
     FAIL = "FAIL", "There was a problem with the submission."
 
 
+class ResultSample(models.Model):
+    object_id = models.PositiveBigIntegerField()
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    entry = GenericForeignKey("content_type", "object_id")
+    file = models.ImageField()
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["content_type", "object_id"]),
+        ]
+
+    def __str__(self):
+        return self.file.path
+
+
 class ResultEntry(models.Model):
+    # Managed / Auto generated fields
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    name = models.CharField(max_length=RESULTENTRY_NAME_MAX_LENGTH)
     creator = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     pub_date = models.DateTimeField("date published")
+    process_status = models.CharField(
+        max_length=9, choices=EntryStatus, blank=False, null=False
+    )
+    samples = GenericRelation(ResultSample)
+    md5sum = models.CharField(max_length=32)
+    is_active = models.BooleanField(default=True)
+
+    # User editable fields
+    name = models.CharField(max_length=RESULTENTRY_NAME_MAX_LENGTH)
     visibility = models.CharField(
         max_length=4, choices=EntryVisibility, blank=False, default=EntryVisibility.PRIV
     )
     citation = models.CharField(max_length=500, blank=True)
-    process_status = models.CharField(
-        max_length=9, choices=EntryStatus, blank=False, null=False
-    )
     code_url = models.URLField("Link to code", blank=True, null=True)
-    is_active = models.BooleanField(default=True)
 
     class Meta:
         abstract = True
@@ -49,6 +71,11 @@ class ResultEntry(models.Model):
     def sample_directory(self):
         return MEDIA_DIRECTORY / self.PREFIX / f"{self.creator.id:06}" / f"{self.uuid}"
 
+    def can_be_seen_by(self, user):
+        return (self.visibility != EntryVisibility.PRIV) or (
+            user.is_authenticated and user.pk == self.creator.pk
+        )
+
 
 class ReconstructionEntry(ResultEntry):
     # Upload directory prefix
@@ -57,15 +84,15 @@ class ReconstructionEntry(ResultEntry):
 
     # Evaluation fields
     psnr_mean = models.FloatField("Mean\nPSNR ↑", default=-1)
-    ssim_mean = models.FloatField("Mean\nSSIM ↑", default=-1)
+    ssim_mean = models.FloatField("Mean\nMS-SSIM ↑", default=-1)
     lpips_mean = models.FloatField("Mean\nLPIPS ↓", default=-1)
 
     psnr_5p = models.FloatField("5% Low\nPSNR ↑", default=-1)
-    ssim_5p = models.FloatField("5% Low\nSSIM ↑", default=-1)
+    ssim_5p = models.FloatField("5% Low\nMS-SSIM ↑", default=-1)
     lpips_5p = models.FloatField("5% Low\nLPIPS ↓", default=-1)
 
     psnr_1p = models.FloatField("1% Low\nPSNR ↑", default=-1)
-    ssim_1p = models.FloatField("1% Low\nSSIM ↑", default=-1)
+    ssim_1p = models.FloatField("1% Low\nMS-SSIM ↑", default=-1)
     lpips_1p = models.FloatField("1% Low\nLPIPS ↓", default=-1)
 
     metric_fields = [

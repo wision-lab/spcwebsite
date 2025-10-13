@@ -1,3 +1,5 @@
+import hashlib
+from pathlib import Path
 from zipfile import BadZipFile, ZipFile
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -90,10 +92,12 @@ class SubmitView(LoginRequiredMixin, UserPassesTestMixin, generic.edit.FormView)
         entry.pub_date = timezone.now()
         entry.creator = self.request.user
         upload = self.request.FILES["submission"]
-
+        md5sum = hashlib.md5()
+        
         # Write uploaded file to disk
         with open(entry.upload_path, "wb+") as f:
             for chunk in upload.chunks():
+                md5sum.update(chunk)
                 f.write(chunk)
 
         # Validate that submission contains all files
@@ -143,6 +147,7 @@ class SubmitView(LoginRequiredMixin, UserPassesTestMixin, generic.edit.FormView)
 
         # Mark the entry for later processing
         entry.process_status = EntryStatus.WAIT_PROC
+        entry.md5sum = md5sum.hexdigest() 
         entry.save()
 
         return super().form_valid(form)
@@ -154,31 +159,30 @@ class DetailView(UserPassesTestMixin, generic.DetailView):
     context_object_name = "entry"
 
     def test_func(self):
-        obj = self.get_object()
-        if obj.visibility != EntryVisibility.PRIV:
-            return True
-        else:
-            return (
-                self.request.user.is_authenticated
-                and self.request.user.pk == obj.creator.pk
-            )
+        return self.get_object().can_be_seen_by(self.request.user)
 
     def get_object(self, queryset=None):
         pk = self.kwargs.get(self.pk_url_kwarg)
-        return get_object_or_404(self.model, pk=pk, is_active=True)
+        return get_object_or_404(
+            self.model, pk=pk, is_active=True, process_status=EntryStatus.SUCCESS
+        )
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
+        entry = self.get_object()
         context = super().get_context_data(**kwargs)
-        frames = sorted(
-            p.relative_to(SAMPLE_FRAMES_DIRECTORY / self.model.PREFIX)
-            for p in (SAMPLE_FRAMES_DIRECTORY / self.model.PREFIX).glob("**/*.png")
+        subpaths = sorted(
+            Path(s.file.path).relative_to(entry.sample_directory.resolve())
+            for s in entry.samples.all()
         )
-        context["samples_dir"] = self.get_object().sample_directory.relative_to(
-            MEDIA_DIRECTORY
-        )
-        context["prefix"] = self.model.PREFIX
-        context["image_paths"] = frames
+        context["image_paths"] = [
+            (
+                SAMPLE_FRAMES_DIRECTORY / self.model.PREFIX / subpath,
+                entry.sample_directory.relative_to(MEDIA_DIRECTORY) / subpath,
+            )
+            for subpath in subpaths
+        ]
+        print(context["image_paths"])
         return context
 
 
@@ -187,14 +191,7 @@ class CompareView(UserPassesTestMixin, View):
     template_name = "compare.html"
 
     def test_func(self):
-        return all(
-            (obj.visibility != EntryVisibility.PRIV)
-            or (
-                self.request.user.is_authenticated
-                and self.request.user.pk == obj.creator.pk
-            )
-            for obj in self.get_objects()
-        )
+        return all(obj.can_be_seen_by(self.request.user) for obj in self.get_objects())
 
     def get_objects(self):
         pk1 = self.kwargs.get("pk1")
@@ -208,23 +205,27 @@ class CompareView(UserPassesTestMixin, View):
         return obj1, obj2
 
     def get(self, request, **kwargs):
-        obj1, obj2 = self.get_objects()
-        frames = sorted(
-            p.relative_to(SAMPLE_FRAMES_DIRECTORY / self.model.PREFIX)
-            for p in (SAMPLE_FRAMES_DIRECTORY / self.model.PREFIX).glob("**/*.png")
-        )
+        entry_1, entry_2 = self.get_objects()
         emphasis = [
             m1 > m2 if "↑" in name.verbose_name else m1 <= m2
-            for m1, m2, name in zip(obj1.metrics, obj2.metrics, obj1.metric_fields)
+            for m1, m2, name in zip(
+                entry_1.metrics, entry_2.metrics, entry_1.metric_fields
+            )
         ]
+        subpaths = set(
+            Path(s.file.path).relative_to(entry_1.sample_directory.resolve())
+            for s in entry_1.samples.all()
+        ).intersection(
+            Path(s.file.path).relative_to(entry_2.sample_directory.resolve())
+            for s in entry_2.samples.all()
+        )
         context = {
-            "entry_1": obj1,
-            "entry_2": obj2,
+            "entry_1": entry_1,
+            "entry_2": entry_2,
             "emphasis": emphasis,
-            "samples_dir_1": obj1.sample_directory.relative_to(MEDIA_DIRECTORY),
-            "samples_dir_2": obj2.sample_directory.relative_to(MEDIA_DIRECTORY),
-            "prefix": self.model.PREFIX,
-            "image_paths": frames,
+            "samples_dir_1": entry_1.sample_directory.relative_to(MEDIA_DIRECTORY),
+            "samples_dir_2": entry_2.sample_directory.relative_to(MEDIA_DIRECTORY),
+            "image_subpaths": sorted(list(subpaths)),
         }
         return render(request, self.template_name, context=context)
 

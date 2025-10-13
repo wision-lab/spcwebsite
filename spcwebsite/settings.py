@@ -28,7 +28,13 @@ if DEBUG:
 else:
     SECRET_KEY = os.environ["SPC_SECRET_KEY"]
 
-ALLOWED_HOSTS = ["singlephotonchallenge.com", ".railway.app", ".localhost", "127.0.0.1", "[::1]"]
+ALLOWED_HOSTS = [
+    "singlephotonchallenge.com",
+    ".railway.app",
+    ".localhost",
+    "127.0.0.1",
+    "[::1]",
+]
 
 CSRF_TRUSTED_ORIGINS = ["https://singlephotonchallenge.com", "https://*.railway.app"]
 CSRF_COOKIE_SECURE = True
@@ -131,7 +137,7 @@ STATIC_URL = "static/"
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = os.getenv("SPC_IMGDIR", "")

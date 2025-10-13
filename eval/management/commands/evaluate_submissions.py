@@ -4,19 +4,20 @@ from zipfile import ZipFile
 import imageio.v3 as iio
 import numpy as np
 import torch
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from rich.progress import track
 from torchmetrics.image import (
     LearnedPerceptualImagePatchSimilarity,
+    MultiScaleStructuralSimilarityIndexMeasure,
     PeakSignalNoiseRatio,
-    StructuralSimilarityIndexMeasure,
 )
 
 from ...constants import EVAL_DIRECTORY, SAMPLE_FRAMES_DIRECTORY, UPLOAD_DIRECTORY
-from ...models import EntryStatus, ReconstructionEntry
+from ...models import EntryStatus, ReconstructionEntry, ResultSample
 
 PSNR = PeakSignalNoiseRatio(data_range=(0, 1))
-SSIM = StructuralSimilarityIndexMeasure(data_range=(0, 1))
+MS_SSIM = MultiScaleStructuralSimilarityIndexMeasure(data_range=(0, 1))
 LPIPS = LearnedPerceptualImagePatchSimilarity()
 
 
@@ -37,11 +38,21 @@ class Command(BaseCommand):
             files = list(filter(lambda name: name.endswith(".png"), zipf.namelist()))
 
             for p in track(files):
-                if (SAMPLE_FRAMES_DIRECTORY / ReconstructionEntry.PREFIX / p).exists():
+                root = (
+                    settings.BASE_DIR / "static"
+                    if settings.DEBUG
+                    else settings.STATIC_ROOT
+                )
+                if (
+                    root / SAMPLE_FRAMES_DIRECTORY / ReconstructionEntry.PREFIX / p
+                ).exists():
                     # These frames will be shown to the user to allow for qualitative
                     # comparisons with the test set. Since we will leak some of the test
                     # set because of this, we DO NOT calculate test metrics on these samples.
                     zipf.extract(p, submission.sample_directory)
+                    ResultSample(
+                        file=str(submission.sample_directory / p), entry=submission
+                    ).save()
                 else:
                     with zipf.open(p) as f:
                         pred = self.load_img(f)
@@ -50,7 +61,7 @@ class Command(BaseCommand):
                     metrics.append(
                         [
                             PSNR(pred, target),
-                            SSIM(pred, target),
+                            MS_SSIM(pred, target),
                             LPIPS(pred, target),
                         ]
                     )
@@ -75,7 +86,9 @@ class Command(BaseCommand):
         if set(sub.upload_path for sub in submissions) != archives:
             self.stdout.write(
                 self.style.WARNING(
-                    "Found mismatch between uploaded archives and database entries waiting for processing!"
+                    "Found mismatch between uploaded archives and database entries waiting for processing!\n"
+                    f"Uploaded Archives: {archives}\n\n"
+                    f"Database Entries: {set(sub.upload_path for sub in submissions)}"
                 )
             )
 

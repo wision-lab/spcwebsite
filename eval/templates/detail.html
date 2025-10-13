@@ -50,14 +50,14 @@
 </div>
 </br>
 <div class="auto-grid">
-    {% for path in image_paths %}
+    {% for gt_path, recon_path in image_paths %}
         <img-comparison-slider>
         <figure slot="first" class="before">
-            <img slot="first" src="{% static 'samples' %}/{{ prefix }}/{{ path }}" />
+            <img slot="first" src="{% static gt_path %}" />
             <figcaption>Ground Truth</figcaption>
         </figure>
         <figure slot="second" class="after">
-            <img slot="second" src="{% get_media_prefix %}{{ samples_dir }}/{{ path }}" />
+            <img slot="second" src="{% get_media_prefix %}{{ recon_path }}" />
             <figcaption>Reconstruction</figcaption>
         </figure>
         </img-comparison-slider>
