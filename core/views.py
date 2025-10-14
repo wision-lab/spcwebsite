@@ -15,6 +15,7 @@ from django.views import View
 from django.views.generic.edit import FormView
 
 from eval.models import ReconstructionEntry
+from eval.constants import UPLOADS_ENABLED
 
 from .forms import UserCreationForm
 
@@ -80,7 +81,7 @@ def userindex(request):
     entries_list = ReconstructionEntry.objects.filter(
         creator__exact=request.user.pk, is_active=True
     ).order_by("-pub_date")
-    context = {"entries_list": entries_list}
+    context = {"entries_list": entries_list, "uploads_enabled": UPLOADS_ENABLED}
     return render(request, "userindex.html", context)
 
 

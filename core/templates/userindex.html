@@ -42,6 +42,10 @@
       <input type="submit" value="Resend confirmation email">
       <input type="hidden" name="next" value="{{ next }}">
     </form>
+    {% elif not uploads_enabled %}
+      <center>
+        <p style="color: red;">Submissions are currently disabled. Please try again later.</p> 
+      </center>    
     {% else %}
       <center>
         <p style="color: red;">You've reached the maximum allowable daily uploads. Please try again later.</p> 

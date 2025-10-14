@@ -1,3 +1,4 @@
+import ast
 import os
 from pathlib import Path
 
@@ -7,6 +8,7 @@ RESULTENTRY_NAME_MAX_LENGTH = 100
 MAX_UPLOAD_SIZE = 300 * 1024 * 1024
 MAX_UPLOAD_SIZE_STR = "300MB"
 MAX_UPLOADS_PER_DAY = 4
+UPLOADS_ENABLED = ast.literal_eval(os.getenv("SPC_UPLOADS_ENABLED", "False"))
 
 EVAL_DIRECTORY = Path(os.environ["SPC_EVALDIR"])
 EVAL_FILES = set(

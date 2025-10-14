@@ -6,7 +6,7 @@ from django.contrib.auth.models import (
 from django.db import models
 from django.utils import timezone
 
-from eval.constants import MAX_UPLOADS_PER_DAY
+from eval.constants import MAX_UPLOADS_PER_DAY, UPLOADS_ENABLED
 
 
 class UserManager(BaseUserManager):
@@ -69,6 +69,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             and self.is_active
             and len(self.reconstructionentry_set.filter(pub_date__gte=date_from))
             < MAX_UPLOADS_PER_DAY
+            and UPLOADS_ENABLED
         )
 
     @property

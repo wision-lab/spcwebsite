@@ -14,6 +14,7 @@ Evaluation variables:
 - `SPC_EVALDIR`: location of the non-public ground truth files needed for evaluation.
 - `SPC_IMGDIR`: directory in which qualitative evaluation frames from users are saved. 
 - `SPC_DATABASEDIR`: Should point to a directory in a persistent volume, the evaluation envs should too. 
+- `SPC_UPLOADS_ENABLED`: If false (or unset) users will not be able to upload anything.
 
 Email & account creation variables:
 - `SPC_EMAILUSER`: email from which to send confirmation/password-reset/etc emails
