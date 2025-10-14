@@ -3,16 +3,11 @@
 
 <head>
     {% block title %}
-    <title>The Single Photon Competition &amp; Benchmark</title>
+    <title>The Single Photon Challenge</title>
     {% endblock %}
     {% load static %}
     <link rel="stylesheet" href="{% static 'style.css' %}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'icons/apple-touch-icon.png' %}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'icons/favicon-32x32.png' %}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'icons/favicon-16x16.png' %}">
-    <link rel="manifest" href="{% static 'icons/site.webmanifest' %}">
-    <link rel="mask-icon" href="{% static 'icons/safari-pinned-tab.svg' %}" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'icon.png' %}">
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#212121" media="(prefers-color-scheme: dark)">
 </head>
@@ -22,9 +17,9 @@
         <div style="max-width:800px;margin-left: auto; margin-right: auto;margin-top:10px;margin-bottom:0">
             <a href="{% url 'index' %}">
                 <picture>
-                    <source srcset="{% static 'website-logo.svg' %}" media="(prefers-color-scheme: dark)">
+                    <source srcset="{% static 'website-logo.png' %}" media="(prefers-color-scheme: dark)">
                     <img width="100%" height="156px" max-width="600px" src="{% static 'website-logo.svg' %}"
-                        alt="Single Photon Competition and Benchmark Logo">
+                        alt="Single Photon Challenge">
                 </picture>
             </a>
             <p style="margin-top:0.5rem;margin-bottom:0.5rem;"><i>Sacha Jungerman<sup>1</sup>, Atul Ingle<sup>2</sup>, Sotiris
@@ -82,16 +77,22 @@
                             src="{% static 'wisionlab-logo.png' %}" alt="Logo of WISION Lab"></a></td>
             </tr>
         </table>
-        <table class="logotable" style="margin-top: -2.5rem; width: 40%; max-width: 700px;">
+        <table class="logotable" style="margin-top: -1.5rem; width: 40%; max-width: 700px;">
             <tr>
                 <td style="width:10%;text-align:center" class="noborder">
                     <a href="https://www.ubicept.com" target="_blank" rel="noopener noreferrer">
-                        <img style="width:100%;" src="{% static 'ubicept-logo.png' %}" alt="Ubicept">
+                        <picture>
+                            <source srcset="{% static 'ubicept_logo_dark.png' %}" media="(prefers-color-scheme: dark)">
+                            <img style="width:90%;" src="{% static 'ubicept_logo_light.png' %}" alt="Ubicept">
+                        </picture>
                     </a>
                 </td>
                 <td style="width:10%;text-align:center" class="noborder">
                     <a href="https://singularphotonics.com/" target="_blank" rel="noopener noreferrer">
-                        <img style="width:80%;" src="{% static 'Singular-Photonics-Logo.webp' %}" alt="Singular Photonics">
+                        <picture>
+                            <source srcset="{% static 'Singular-Photonics-Logo-dark.webp' %}" media="(prefers-color-scheme: dark)">
+                            <img style="width:90%;" src="{% static 'Singular-Photonics-Logo-light.webp' %}" alt="Singular Photonics">
+                        </picture>
                     </a>
                 </td>
             </tr>
