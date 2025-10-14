@@ -94,7 +94,7 @@ class SubmitView(LoginRequiredMixin, UserPassesTestMixin, generic.edit.FormView)
         entry.creator = self.request.user
         upload = self.request.FILES["submission"]
         md5sum = hashlib.md5()
-        
+
         # Write uploaded file to disk, return server error (500) if failed
         # Ensure no half written submission files exist
         try:
@@ -153,7 +153,7 @@ class SubmitView(LoginRequiredMixin, UserPassesTestMixin, generic.edit.FormView)
 
         # Mark the entry for later processing
         entry.process_status = EntryStatus.WAIT_PROC
-        entry.md5sum = md5sum.hexdigest() 
+        entry.md5sum = md5sum.hexdigest()
         entry.save()
 
         return super().form_valid(form)

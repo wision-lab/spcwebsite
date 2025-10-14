@@ -51,7 +51,12 @@ class Command(BaseCommand):
                     # set because of this, we DO NOT calculate test metrics on these samples.
                     zipf.extract(p, submission.sample_directory)
                     ResultSample(
-                        file=str(submission.sample_directory / p), entry=submission
+                        file=str(
+                            (submission.sample_directory / p).relative_to(
+                                settings.MEDIA_ROOT
+                            )
+                        ),
+                        entry=submission,
                     ).save()
                 else:
                     with zipf.open(p) as f:
