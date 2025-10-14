@@ -1,1 +1,1 @@
-0 * * * * root cd /app && export PATH="/app/.venv/bin:$PATH" && python manage.py evaluate_submissions >> /storage/cron.log 2>&1
+0 */2 * * * root cd /app && export PATH="/app/.venv/bin:$PATH" && flock -n /tmp/spceval.lock python manage.py evaluate_submissions >> /storage/cron.log 2>&1
