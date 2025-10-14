@@ -26,7 +26,8 @@ See [email settings](https://docs.djangoproject.com/en/5.2/topics/email/) for mo
 
 Deployment Variables:
 - `SPC_DEBUG`: Whether to run the server in debug mode, must be false when deployed. 
-- `SPC_SECRET_KEY`: djago secret key, must be set when deployed. You can generate a new one using `secrets.token_urlsafe`.
+- `SPC_SECRET_KEY`: Django secret key, must be set when deployed. You can generate a new one using `secrets.token_urlsafe`.
+- `SPC_NUM_THREADS`: Limit pytorch to this number of threads. Defaults to 1. Only used by eval script.
 
 ## Initialize database
 

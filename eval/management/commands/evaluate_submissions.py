@@ -1,3 +1,4 @@
+import os
 import traceback
 from zipfile import ZipFile
 
@@ -82,6 +83,9 @@ class Command(BaseCommand):
         return metrics
 
     def handle(self, *args, **options):
+        # Don't use too many threads or the server DDoS itself
+        torch.set_num_threads(int(os.getenv("SPC_NUM_THREADS", "1")))
+
         submissions = ReconstructionEntry.objects.filter(
             process_status=EntryStatus.WAIT_PROC, is_active=True
         )
