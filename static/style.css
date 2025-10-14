@@ -728,6 +728,12 @@ span.inline-code {
     white-space: nowrap;
 }
 
+@media (prefers-color-scheme:dark) {
+    span.inline-code {
+        background: #484848;
+    }
+}
+
 /* Make rows comparable */
 .selected-row {
     background-color: #ececec;
@@ -737,6 +743,5 @@ span.inline-code {
 @media (prefers-color-scheme:dark) {
     .selected-row {
         background-color: #484848;
-        font-weight: bold;
     }
 }
