@@ -31,13 +31,13 @@ class Command(BaseCommand):
         im = torch.tensor(im).permute(2, 0, 1)
         return im[None].float() / 255
 
-    def evaluate_single(self, submission):
+    def evaluate_single(self, submission, description="Working..."):
         metrics = []
 
         with ZipFile(submission.upload_path) as zipf:
             files = list(filter(lambda name: name.endswith(".png"), zipf.namelist()))
 
-            for p in track(files):
+            for p in track(files, description=description):
                 root = (
                     settings.BASE_DIR / "static"
                     if settings.DEBUG
@@ -97,9 +97,9 @@ class Command(BaseCommand):
                 )
             )
 
-        for submission in submissions:
+        for i, submission in enumerate(submissions):
             try:
-                self.evaluate_single(submission)
+                self.evaluate_single(submission, description=f"Evaluating ({i+1}/{len(submissions)})")
                 submission.process_status = EntryStatus.SUCCESS
                 submission.save()
             except Exception:
