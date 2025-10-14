@@ -10,11 +10,14 @@ RUN apt-get update && apt-get install -y \
     curl \ 
     wget \
     supervisor \
-    caddy
+    caddy \ 
+    cron
 
 # And a few nice to haves for debugging and cleanup
-RUN apt-get install -y sqlite3 ncdu tmux 
+RUN apt-get install -y sqlite3 ncdu tmux htop nano
 RUN curl https://getcroc.schollz.com | bash 
+RUN curl https://getmic.ro | bash
+RUN mv micro /usr/local/bin/
 RUN rm -rf /var/lib/apt/lists/*
 
 # Install uv, the fast Python package manager
@@ -37,6 +40,15 @@ ARG SPC_DATABASEDIR
 ARG RESEND_API_KEY
 ARG SPC_SECRET_KEY
 
+# Save them to an env file so the cronjob can source them
+RUN echo SPC_DEBUG=${SPC_DEBUG} >> /etc/environment 
+RUN echo SPC_UPLOADDIR=${SPC_UPLOADDIR} >> /etc/environment 
+RUN echo SPC_EVALDIR=${SPC_EVALDIR} >> /etc/environment 
+RUN echo SPC_IMGDIR=${SPC_IMGDIR} >> /etc/environment 
+RUN echo SPC_DATABASEDIR=${SPC_DATABASEDIR} >> /etc/environment 
+RUN echo RESEND_API_KEY=${RESEND_API_KEY} >> /etc/environment 
+RUN echo SPC_SECRET_KEY=${SPC_SECRET_KEY} >> /etc/environment 
+
 # Add the rest of the project source code
 COPY . /app
 
@@ -46,6 +58,11 @@ RUN python manage.py collectstatic --noinput
 # Copy configs
 COPY .config/Caddyfile /etc/caddy/Caddyfile
 COPY .config/supervisord.conf /etc/supervisord.conf
+
+# Configure cron jobs, and ensure crontab-file permissions
+COPY cron.d /etc/cron.d/
+RUN chmod 0644 /etc/cron.d/*
+RUN chown root:root /etc/cron.d/*
 
 # Run with supervisord
 CMD ["supervisord", "-c", "/etc/supervisord.conf"]
