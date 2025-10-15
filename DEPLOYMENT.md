@@ -6,13 +6,6 @@ First and foremost, see the [django deployment checklist](https://docs.djangopro
 
 All environment variables must be set, with `SPC_DEBUG=False` (or equivalently unset), and since most hosts will block SMTP traffic, we use a email service to send verification emails. The code uses [resend](https://resend.com/) to do this, so we'll need to set the `RESEND_API_KEY` envvar as well. We fall back to django's smtp functionality if the api key is not found (only for use in development). This means the following envvars are unused when in prod: `SPC_EMAILUSER`, `SPC_EMAILPASSWORD`, `SPC_EMAILHOST`. 
 
-# Useful Django Commands
-```
-python manage.py makemigrations core eval
-python manage.py migrate
-
-python manage.py createsuperuser 
-```
 
 # Docker Setup
 

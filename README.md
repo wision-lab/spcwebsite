@@ -10,17 +10,18 @@ pip install -r requirements
 ## Environment variables
 
 Evaluation variables:
-- `SPC_UPLOADDIR`: directory, where the uploaded submission files are stored.
-- `SPC_EVALDIR`: location of the non-public ground truth files needed for evaluation.
-- `SPC_IMGDIR`: directory in which qualitative evaluation frames from users are saved. 
+- `SPC_UPLOADDIR`: Directory, where the uploaded submission files are stored.
+- `SPC_EVALDIR`: Location of the non-public ground truth files needed for evaluation.
+- `SPC_IMGDIR`: Directory in which qualitative evaluation frames from users are saved. 
 - `SPC_DATABASEDIR`: Should point to a directory in a persistent volume, the evaluation envs should too. 
 - `SPC_UPLOADS_ENABLED`: If false (or unset) users will not be able to upload anything.
+- (optional) `TORCH_HOME`: You might want to set this to point to a mounted volume to increase cache hit rate.
 
 Email & account creation variables:
-- `SPC_EMAILUSER`: email from which to send confirmation/password-reset/etc emails
-- `SPC_EMAILPASSWORD`: app password for above email address, needs programmatic access.
-- `SPC_EMAILHOST`: host address for email, eg `smtp.gmail.com`.
-- `SPC_FROMEMAIL`: typically just equal to the same value as `SPC_EMAILUSER`.
+- `SPC_EMAILUSER`: Email from which to send confirmation/password-reset/etc emails
+- `SPC_EMAILPASSWORD`: App password for above email address, needs programmatic access.
+- `SPC_EMAILHOST`: Host address for email, eg `smtp.gmail.com`.
+- `SPC_FROMEMAIL`: Typically just equal to the same value as `SPC_EMAILUSER`.
 
 See [email settings](https://docs.djangoproject.com/en/5.2/topics/email/) for more. 
 
