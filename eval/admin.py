@@ -1,6 +1,11 @@
 from django.contrib import admin
+from django.contrib.contenttypes.admin import GenericTabularInline
 
-from .models import ReconstructionEntry
+from .models import ReconstructionEntry, ResultSample
+
+
+class ResultSamplesInline(GenericTabularInline):
+    model = ResultSample
 
 
 class ResultEntryAdmin(admin.ModelAdmin):
@@ -10,6 +15,9 @@ class ResultEntryAdmin(admin.ModelAdmin):
         "visibility",
         "process_status",
         "creator",
+    ]
+    inlines = [
+        ResultSamplesInline,
     ]
     ordering = ("pub_date",)
 
