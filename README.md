@@ -1,13 +1,16 @@
 # Quick Setup
 
-## Create environment
+## Environment
+
+### Dependencies
+
+First clone the repo, and inside it, initialize and activate a venv using [uv](https://docs.astral.sh/uv/):
 ```
-micromamba create -n website python==3.12
-micromamba activate website
-pip install -r requirements
+uv sync 
+source .venv/bin/activate
 ```
 
-## Environment variables
+### Environment variables
 
 Evaluation variables:
 - `SPC_UPLOADDIR`: Directory, where the uploaded submission files are stored.
@@ -55,9 +58,38 @@ Optionally create `<num>` entries with random numbers:
 python manage.py create_random <num> --users=3
 ```
 
+Or batch upload a few submissions like so:
+```
+python manage.py multi_submit naivesums.json 
+```
+
+You can find sample naivesum submissions [here](https://drive.google.com/file/d/1YuBYVSToHNnZs0f2PBI_wJXmkhvNXsv_/view?usp=sharing).
+
 ## Running evaluation script
 
 You can run the eval script periodically like so:
 ```
 python manage.py evaluate_submissions
 ```
+
+# Acknowledgements  
+
+This website is loosely inspired off of the [Spring Benchmark website](https://spring-benchmark.org/) with the following notable modifications:
+- Split user account logic and benchmark logic into separate apps (core vs eval)
+- User.is_verified refers to user's email address, and is_active is true by default
+- Logout action is now a POST request, as logout on GET was deprecated due to security concerns 
+- Make submit view a class based view, perform server and client side validation, streamline logic
+- Enable users to re-send verification email if logged in
+- Add page for password change, SPRING uses [django's admin page](https://spring-benchmark.org/accounts/password_change/) for this
+- Use enums for entry status and visibility, helps catch errors
+- Make ResultEntry abstract to enable future evaluation types and easy entry editing via a form 
+- Enable ascending and descending sort of entries on results page
+- Enable users to delete their entries
+- Enable user upload rate limit 
+- Add progress bar to submission upload
+- Use modelform for submission, allows for setting other fields directly
+- Show user's private results on reconstruction page when logged in
+- Allow for users to compare different submissions directly by selecting multiple rows in the results table 
+- Ensure user uploaded submissions that are non-public are properly auth'd, use caddy's forward_auth for this
+- Save user uploaded samples as a `ResultSample`, enables deleting of assets when user or submission is deleted
+- Ensure evaluation cron job doesn't run if already running via flock, enables more frequent evals 

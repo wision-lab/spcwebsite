@@ -5,7 +5,10 @@
 
 <div class="teaserimg" style="margin-top:1em;">
     <figure>
-        <img width="95%" src="{% static 'teaserimage.png' %}" alt="Teaser image">
+        <picture>
+            <source srcset="{% static 'teaserimage-dark.png' %}" media="(prefers-color-scheme: dark)">
+            <img width="95%" src="{% static 'teaserimage-light.png' %}" alt="Teaser image">
+        </picture>
         <figcaption>
             Single photon cameras are capable of detecting individual photons, making them extremely sensitive and high speed camera. However, each image they capture is extremely noisy and binary valued, being dominated by photon shot noise. Given a burst of such binary frames, how can we recover a clean, high fidelity image?   
         </figcaption>
