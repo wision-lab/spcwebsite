@@ -14,8 +14,8 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views import View
 from django.views.generic.edit import FormView
 
-from eval.models import ReconstructionEntry
 from eval.constants import UPLOADS_ENABLED
+from eval.models import ReconstructionEntry
 
 from .forms import UserCreationForm
 

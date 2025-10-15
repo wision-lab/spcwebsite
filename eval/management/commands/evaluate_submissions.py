@@ -51,14 +51,12 @@ class Command(BaseCommand):
                     # comparisons with the test set. Since we will leak some of the test
                     # set because of this, we DO NOT calculate test metrics on these samples.
                     zipf.extract(p, submission.sample_directory)
-                    ResultSample(
-                        file=str(
-                            (submission.sample_directory / p).relative_to(
-                                settings.MEDIA_ROOT
-                            )
-                        ),
-                        entry=submission,
-                    ).save()
+                    file = (submission.sample_directory / p).relative_to(settings.MEDIA_ROOT)
+                    try:
+                        sample = ResultSample.objects.get(file=str(file))
+                        assert sample.entry.pk == submission.pk
+                    except ResultSample.DoesNotExist:
+                        ResultSample(file=str(file), entry=submission).save()
                 else:
                     with zipf.open(p) as f:
                         pred = self.load_img(f)
@@ -83,7 +81,7 @@ class Command(BaseCommand):
         return metrics
 
     def handle(self, *args, **options):
-        # Don't use too many threads or the server DDoS itself
+        # Don't use too many threads or the server will DDoS itself
         torch.set_num_threads(int(os.getenv("SPC_NUM_THREADS", "1")))
 
         submissions = ReconstructionEntry.objects.filter(
@@ -96,14 +94,16 @@ class Command(BaseCommand):
             self.stdout.write(
                 self.style.WARNING(
                     "Found mismatch between uploaded archives and database entries waiting for processing!\n"
-                    f"Uploaded Archives: {archives}\n\n"
-                    f"Database Entries: {set(sub.upload_path for sub in submissions)}"
+                    f"Uploaded Archives: {[str(p.relative_to(UPLOAD_DIRECTORY)) for p in sorted(archives)]}\n\n"
+                    f"Database Entries: {sorted(str(sub.upload_path.relative_to(UPLOAD_DIRECTORY)) for sub in submissions)}"
                 )
             )
 
         for i, submission in enumerate(submissions):
             try:
-                self.evaluate_single(submission, description=f"Evaluating ({i+1}/{len(submissions)})")
+                self.evaluate_single(
+                    submission, description=f"Evaluating ({i + 1}/{len(submissions)})"
+                )
                 submission.process_status = EntryStatus.SUCCESS
                 submission.save()
             except Exception:

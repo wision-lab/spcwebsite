@@ -1,3 +1,4 @@
+import hashlib
 import json
 import shutil
 from contextlib import contextmanager
@@ -37,6 +38,14 @@ class Command(BaseCommand):
         user.is_active = False
         user.save()
 
+    @staticmethod
+    def md5sum(path):
+        with open(path, "rb") as f:
+            file_hash = hashlib.md5()
+            while chunk := f.read(8192):
+                file_hash.update(chunk)
+        return file_hash.hexdigest()
+
     def handle(self, *args, **options):
         with open(conf_path := options["config"], "r") as f:
             config = json.load(f)
@@ -48,6 +57,7 @@ class Command(BaseCommand):
                     creator=user,
                     pub_date=timezone.now(),
                     process_status=EntryStatus.WAIT_PROC,
+                    md5sum=self.md5sum(path),
                     **submission,
                 )
                 shutil.copy(path, entry.upload_path)

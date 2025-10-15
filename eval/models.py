@@ -25,7 +25,7 @@ class ResultSample(models.Model):
     object_id = models.PositiveBigIntegerField()
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     entry = GenericForeignKey("content_type", "object_id")
-    file = models.ImageField()
+    file = models.ImageField(unique=True)
 
     class Meta:
         indexes = [
