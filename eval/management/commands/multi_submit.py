@@ -52,7 +52,7 @@ class Command(BaseCommand):
 
         with self.get_user() as user:
             for submission in track(config):
-                if (visibility := submission.get("visibility")):
+                if visibility := submission.get("visibility"):
                     assert visibility in [value for value, _ in EntryVisibility.choices]
 
                 path = Path(conf_path).parent / submission.pop("path")

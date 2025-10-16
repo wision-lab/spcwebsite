@@ -39,7 +39,9 @@ class ResultSample(models.Model):
 class ResultEntry(models.Model):
     # Managed / Auto generated fields
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    creator = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    creator = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="entries"
+    )
     pub_date = models.DateTimeField("date published")
     process_status = models.CharField(
         max_length=9, choices=EntryStatus, blank=False, null=False
@@ -72,8 +74,10 @@ class ResultEntry(models.Model):
         return MEDIA_DIRECTORY / self.PREFIX / f"{self.creator.id:06}" / f"{self.uuid}"
 
     def can_be_seen_by(self, user):
-        return user.is_superuser or (self.visibility != EntryVisibility.PRIV) or (
-            user.is_authenticated and user.pk == self.creator.pk
+        return (
+            user.is_superuser
+            or (self.visibility != EntryVisibility.PRIV)
+            or (user.is_authenticated and user.pk == self.creator.pk)
         )
 
 

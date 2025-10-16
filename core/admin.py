@@ -3,6 +3,10 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.models import Group
+from django.urls import reverse
+from django.utils.html import format_html
+
+from eval.models import ReconstructionEntry
 
 from .forms import UserCreationForm
 from .models import User
@@ -43,9 +47,11 @@ class UserAdmin(BaseUserAdmin):
             "Information",
             {"fields": ("email", "password", "university", "website", "description")},
         ),
+        ("Result Entries", {"fields": ("entries",)}),
         ("Status", {"fields": ("is_verified", "is_active")}),
         ("Permissions", {"fields": ("is_superuser",)}),
     )
+    readonly_fields = ("entries",)
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
     add_fieldsets = (
@@ -60,6 +66,19 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ("email", "university")
     ordering = ("email",)
     filter_horizontal = ()
+
+    def entries(self, obj):
+        entries_list = []
+
+        for entry in obj.entries.all().order_by("-pub_date"):
+            change_url = reverse(
+                f"admin:{ReconstructionEntry._meta.db_table}_change", args=(entry.id,)
+            )
+            entries_list.append(
+                format_html('<a href="{}">{}</a>', change_url, entry.name)
+            )
+
+        return format_html(", ".join(entries_list))
 
 
 admin.site.register(User, UserAdmin)

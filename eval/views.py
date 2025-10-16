@@ -216,7 +216,7 @@ class CompareView(View):
                 return redirect("eval:compare", pk1=pk1, pk2=pk2)
             except ValueError:
                 # If there's not enough entries, redirect to leaderboard
-                return redirect('eval:reconstruction')
+                return redirect("eval:reconstruction")
 
         entry_1 = get_object_or_404(
             self.model, pk=pk1, is_active=True, process_status=EntryStatus.SUCCESS

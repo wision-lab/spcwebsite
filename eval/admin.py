@@ -6,6 +6,7 @@ from .models import ReconstructionEntry, ResultSample
 
 class ResultSamplesInline(GenericTabularInline):
     model = ResultSample
+    extra = 0
 
 
 class ResultEntryAdmin(admin.ModelAdmin):
