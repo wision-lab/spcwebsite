@@ -1,10 +1,10 @@
 {% autoescape off %}
 Hello,
-A new account was created on the single photon benchmark website.
+A new account was created on the Single Photon Challenge website.
 
 Please click on the link to confirm your registration:
-http://{{ domain }}{% url 'core:activate' uidb64=uid token=token %}
+{{ protocol }}://{{ domain }}{% url 'core:activate' uidb64=uid token=token %}
 
 Best regards,
-The single photon benchmark team
+The single photon challenge team
 {% endautoescape %}

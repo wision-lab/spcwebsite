@@ -11,21 +11,21 @@
 
 <h4>What is a single photon camera?</h4>
 <p>
-    Single photon cameras are an emerging class of sensors that are capable of detecting and counting individual photons at ultra-high speeds, reaching up to 100 kHz. You can read more about their <a href="https://visionsim.readthedocs.io/en/latest/sections/sensors/spcs/passive_spc.html">image formation model here.</a> 
+    Single photon cameras are an emerging class of sensors capable of detecting and counting individual photons at ultra-high speeds, reaching up to 100 kHz. You can read more about their <a href="https://visionsim.readthedocs.io/en/latest/sections/sensors/spcs/passive_spc.html">image formation model here.</a> 
 </p>
 
 
 
 <h4>How to register?</h4>
 <p>
-    In order to submit to the benchmark you first need to register. Please note that in order to <a href="{% url 'download' %}">download</a> the dataset, no registration is needed. To register, first <a href="{% url 'core:signup' %}">create an account</a> and confirm your mail address by clicking on the link we will send to you.
+    In order to submit to the benchmark, you first need to register. Please note that in order to <a href="{% url 'download' %}">download</a> the dataset, no registration is needed. To register, first <a href="{% url 'core:signup' %}">create an account</a> and confirm your email address by clicking on the link we will send to you.
 </p>
 
 
 
 <h4>What format is the dataset stored as?</h4>
 <p>
-    The training set is structured as pairs of ground truth images and their associated photoncubes, namely <span class="inline-code">&lt;SCENE-NAME&gt;/&lt;FRAME-IDX&gt;.png</span> and <span class="inline-code">&lt;SCENE-NAME&gt;/&lt;FRAME-IDX&gt;.npy</span>. The photoncubes are encoded as width-wise bitpacked numpy arrays, with unpacked dimensions of (1024, 800, 800, 3). To read these you can use numpy like so:
+    The training set is structured as pairs of ground truth images and their associated photoncubes, namely <span class="inline-code">&lt;SCENE-NAME&gt;/&lt;FRAME-IDX&gt;.png</span> and <span class="inline-code">&lt;SCENE-NAME&gt;/&lt;FRAME-IDX&gt;.npy</span>. The photoncubes are encoded as width-wise bitpacked numpy arrays, with unpacked dimensions of (1024, 800, 800, 3). To read these, you can use numpy like so:
     <pre style="padding: 0;"><code class="language-python">import numpy as np 
 
 # Load with memory mapping to avoid loading everything into RAM 
@@ -37,19 +37,19 @@ bitplanes = np.unpackbits(photoncube[:10], axis=2)
 print(bitplanes.shape)  # (10, 800, 800, 3)
 </code></pre> 
 
-    The test set is structured the exact same way, with the exception that ground truth reconstructions are not made public.   
+    The test set is structured the same way, with the exception that ground truth reconstructions are not made public.   
 </p>
 
 
 
 <h4>How to submit my results to the benchmark?</h4>
 <p>
-    To submit your results to the benchmark, you need to zip them up into a single submission file. Importantly, the structure of this zip file should <u><i>exactly match</i></u> that of the test set. That is, the folder structure inside the zip file should be <span class="inline-code">&lt;SCENE-NAME&gt;/&lt;FRAME-IDX&gt;.png</span> without any other directories. All test samples, and nothing but the test samples are expected and will be accepted.  
+    To submit your results to the benchmark, you need to zip them up into a single submission file. Importantly, the structure of this zip file should <u><i>exactly match</i></u> that of the test set. That is, the folder structure inside the zip file should be <span class="inline-code">&lt;SCENE-NAME&gt;/&lt;FRAME-IDX&gt;.png</span> without any other directories. All test samples, and nothing but the test samples, are expected and will be accepted.  
 </p>
 
 <h5>A naive implementation</h5>
 <p>
-    The simplest way to reconstruct an image from single photon (binary) frames, is to simply sum them up. We provide a simple implementation of this baseline here as a reference, feel free to run this locally to inspect the generated submission file, but please do not upload <span class="inline-code">naivesum</span> results, as these have already been evaluated <a href="{% url 'eval:reconstruction' %}">here</a>.   
+    The simplest way to reconstruct an image from single photon (binary) frames is to simply sum them up. We provide a simple implementation of this baseline here as a reference, feel free to run this locally to inspect the generated submission file, but please do not upload <span class="inline-code">naivesum</span> results, as these have already been evaluated <a href="{% url 'eval:reconstruction' %}">here</a>.   
 </p>
 <pre style="padding: 0;"><code class="language-python">from pathlib import Path
 from zipfile import ZipFile
@@ -94,7 +94,7 @@ def naivesum(
 
 <h4>Can I benchmark my method without participating in the ongoing competition?</h4>
 <p>
-    Of course! You can always submit your results for evaluation and not participate in the competition. However, to participate in the competition you must not only submit your results for evaluation here, but also submit additional information about your method. Competition guidelines can <a href="https://cvspc.cs.pdx.edu/#competition">be found here.</a>
+    Of course! You can always submit your results for evaluation and not participate in the competition. However, to participate in the competition, you must not only submit your results for evaluation here, but also submit additional information about your method. Competition guidelines can <a href="https://cvspc.cs.pdx.edu/#competition">be found here.</a>
 </p>
 
 
