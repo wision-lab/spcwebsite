@@ -10,7 +10,7 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 from rich.progress import track
 
-from ...models import EntryStatus, ReconstructionEntry
+from ...models import EntryStatus, EntryVisibility, ReconstructionEntry
 
 
 class Command(BaseCommand):
@@ -52,6 +52,9 @@ class Command(BaseCommand):
 
         with self.get_user() as user:
             for submission in track(config):
+                if (visibility := submission.get("visibility")):
+                    assert visibility in [value for value, _ in EntryVisibility.choices]
+
                 path = Path(conf_path).parent / submission.pop("path")
                 entry = ReconstructionEntry(
                     creator=user,

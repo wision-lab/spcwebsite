@@ -51,7 +51,9 @@ class Command(BaseCommand):
                     # comparisons with the test set. Since we will leak some of the test
                     # set because of this, we DO NOT calculate test metrics on these samples.
                     zipf.extract(p, submission.sample_directory)
-                    file = (submission.sample_directory / p).relative_to(settings.MEDIA_ROOT)
+                    file = (submission.sample_directory / p).relative_to(
+                        settings.MEDIA_ROOT
+                    )
                     try:
                         sample = ResultSample.objects.get(file=str(file))
                         assert sample.entry.pk == submission.pk
