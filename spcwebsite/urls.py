@@ -28,6 +28,7 @@ urlpatterns = [
     path("accounts/", include("core.urls")),
     path("eval/", include("eval.urls")),
     path("admin/", admin.site.urls),
+    path("admin/action-forms/", include("django_admin_action_forms.urls")),
     path(
         "download",
         TemplateView.as_view(template_name="download.html"),

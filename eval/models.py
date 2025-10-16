@@ -111,6 +111,9 @@ class ReconstructionEntry(ResultEntry):
         lpips_1p,
     ]
 
+    class Meta:
+        verbose_name_plural = "reconstruction entries"
+
     @property
     def metrics(self):
         return [getattr(self, m.name) for m in self.metric_fields]

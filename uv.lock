@@ -170,6 +170,18 @@ wheels = [
 ]
 
 [[package]]
+name = "django-admin-action-forms"
+version = "2.2.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b7/db/c8df2f3029a4a6132a89c3f4ee107335648e3b40d6719a2cf05c663d798a/django_admin_action_forms-2.2.0.tar.gz", hash = "sha256:8c8fbb809464ab53daf94fb6bd97ccf151989fc00321610157a3fcdd928de15b", size = 31492, upload-time = "2025-08-28T03:30:09.656Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a4/a2/e9638c51552139b9995e9b04bc3fc707277a30ea9fece23c8a1df34fe7a5/django_admin_action_forms-2.2.0-py3-none-any.whl", hash = "sha256:0b8be4f28d241c14c8cb0c9a498e5ce0665d8acf0896383d0b1fc22fb34c36d5", size = 34312, upload-time = "2025-08-28T03:30:08.477Z" },
+]
+
+[[package]]
 name = "django-anymail"
 version = "13.1"
 source = { registry = "https://pypi.org/simple" }
@@ -844,6 +856,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "django" },
+    { name = "django-admin-action-forms" },
     { name = "django-anymail", extra = ["resend"] },
     { name = "django-simple-captcha" },
     { name = "gunicorn" },
@@ -866,6 +879,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "django", specifier = ">=5.2.7" },
+    { name = "django-admin-action-forms", specifier = ">=2.2.0" },
     { name = "django-anymail", extras = ["resend"], specifier = ">=13.1" },
     { name = "django-simple-captcha", specifier = ">=0.6.2" },
     { name = "gunicorn", specifier = ">=23.0.0" },
