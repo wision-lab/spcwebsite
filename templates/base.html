@@ -22,11 +22,26 @@
                         alt="Single Photon Challenge">
                 </picture>
             </a>
-            <p style="margin-top:0.5rem;margin-bottom:0.5rem;"><i>Sacha Jungerman<sup>1</sup>, Atul Ingle<sup>2</sup>, Sotiris
-                    Nousias<sup>3</sup>, Mian Wei<sup>4</sup>, Mel White<sup>5</sup>, Mohit Gupta<sup>1</sup></i></p>
-            <p style="margin-top:0.5rem;margin-bottom:0.5rem;"><i><sup>1</sup>University of Wisconsin - Madison,
-                    <sup>2</sup>Portland State University, <sup>3</sup>Purdue University, 
-                    </br><sup>4</sup>Carnegie Mellon University, <sup>5</sup>US Naval Research Lab</i></p>
+            <p style="margin-top:0.5rem;margin-bottom:0.5rem;">
+                <i>
+                    Sacha Jungerman<sup><small>1</small></sup>, 
+                    Atul Ingle<sup><small>2</small></sup>, 
+                    Sotiris Nousias<sup><small>3</small></sup>, 
+                    Mian Wei<sup><small>4</small></sup>, 
+                    Mel White<sup><small>5</small></sup>, 
+                    Mohit Gupta<sup><small>1</small></sup>
+                </i>
+            </p>
+            <p style="margin-top:0.5rem;margin-bottom:0.5rem;">
+                <i>
+                    <sup><small>1</small></sup>University of Wisconsin - Madison,
+                    <sup><small>2</small></sup>Portland State University, 
+                    <sup><small>3</small></sup>Purdue University, 
+                    </br>
+                    <sup><small>4</small></sup>Carnegie Mellon University, 
+                    <sup><small>5</small></sup>US Naval Research Lab
+                </i>
+            </p>
         </div>
         <nav>
             <a href="{% url 'download' %}" {% if request.resolver_match.view_name == "download" %}class="current"{% endif %}>Download</a>

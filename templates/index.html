@@ -3,6 +3,11 @@
 {% block content %}
 {% load static %}
 
+<p>
+    Welcome to the Single Photon Challenge website! Here you'll find large synthetic <a href="{% url 'download' %}">single photon datasets</a> that consists of bursts of single photon camera images and their corresponding ground truth reconstructions. There is also a <a href="{% url 'eval:reconstruction' %}">public leaderboard</a> showcasing various user submitted reconstructions for this benchmark. You can <a href="{% url 'eval:compare' %}">directly compare</a> submissions as well!    
+</p>
+</br>
+
 <div class="teaserimg" style="margin-top:1em;">
     <figure>
         <picture>

@@ -4,7 +4,13 @@
 {% load static %}
 {% load custom_filters %}
 
-<h3><a href="{% url 'eval:detail' entry_1.id %}">{{ entry_1.name }}</a> vs. <a href="{% url 'eval:detail' entry_2.id %}">{{ entry_2.name }}</a></h3>
+<h3>
+    <a href="{% url 'eval:detail' entry_1.id %}">{{ entry_1.name }}</a> vs. <a href="{% url 'eval:detail' entry_2.id %}">{{ entry_2.name }}</a>&nbsp;&nbsp;
+    <small>
+        <a href="{% url 'eval:compare' entry_2.id entry_1.id %}" style="text-decoration:none">🔄</a>
+        <a href="{% url 'eval:compare' %}" style="text-decoration:none">🎲</a>
+    </small>
+</h3>
 
 <script defer src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/index.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/styles.css"/>

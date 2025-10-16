@@ -1,4 +1,5 @@
 import hashlib
+import random
 from pathlib import Path
 from zipfile import BadZipFile, ZipFile
 
@@ -191,26 +192,53 @@ class DetailView(UserPassesTestMixin, generic.DetailView):
         return context
 
 
-class CompareView(UserPassesTestMixin, View):
+class CompareView(View):
     model = ReconstructionEntry
     template_name = "compare.html"
 
-    def test_func(self):
-        return all(obj.can_be_seen_by(self.request.user) for obj in self.get_objects())
+    def dispatch(self, request, *args, pk1=None, pk2=None, **kwargs):
+        # Directly do UserPassesTestMixin check here instead of
+        # inheriting from mixin in order to pass the pks around
+        if pk1 is None and pk2 is None:
+            try:
+                # Select random pks and redirect
+                pk1, pk2 = random.sample(
+                    [
+                        entry.pk
+                        for entry in self.model.objects.filter(
+                            is_active=True,
+                            process_status=EntryStatus.SUCCESS,
+                            visibility=EntryVisibility.PUBL,
+                        )
+                    ],
+                    2,
+                )
+                return redirect("eval:compare", pk1=pk1, pk2=pk2)
+            except ValueError:
+                # If there's not enough entries, redirect to leaderboard
+                return redirect('eval:reconstruction')
 
-    def get_objects(self):
-        pk1 = self.kwargs.get("pk1")
-        pk2 = self.kwargs.get("pk2")
-        obj1 = get_object_or_404(
+        entry_1 = get_object_or_404(
             self.model, pk=pk1, is_active=True, process_status=EntryStatus.SUCCESS
         )
-        obj2 = get_object_or_404(
+        entry_2 = get_object_or_404(
             self.model, pk=pk2, is_active=True, process_status=EntryStatus.SUCCESS
         )
-        return obj1, obj2
 
-    def get(self, request, **kwargs):
-        entry_1, entry_2 = self.get_objects()
+        if not self.test_func([entry_1, entry_2]):
+            return self.handle_no_permission()
+        return super().dispatch(
+            request, *args, entry_1=entry_1, entry_2=entry_2, **kwargs
+        )
+
+    def test_func(self, objects):
+        return all(obj.can_be_seen_by(self.request.user) for obj in objects)
+
+    def get(self, request, entry_1=None, entry_2=None):
+        if entry_1 is None or entry_2 is None:
+            # This should never happen as we directly pass the entries from dispatch
+            return HttpResponse(status=500)
+
         emphasis = [
             m1 > m2 if "↑" in name.verbose_name else m1 <= m2
             for m1, m2, name in zip(

@@ -72,7 +72,7 @@ class ResultEntry(models.Model):
         return MEDIA_DIRECTORY / self.PREFIX / f"{self.creator.id:06}" / f"{self.uuid}"
 
     def can_be_seen_by(self, user):
-        return (self.visibility != EntryVisibility.PRIV) or (
+        return user.is_superuser or (self.visibility != EntryVisibility.PRIV) or (
             user.is_authenticated and user.pk == self.creator.pk
         )
 
