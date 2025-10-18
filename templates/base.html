@@ -45,6 +45,7 @@
         </div>
         <nav>
             <a href="{% url 'download' %}" {% if request.resolver_match.view_name == "download" %}class="current"{% endif %}>Download</a>
+            <a href="{% url 'competition' %}" {% if request.resolver_match.view_name == "competition" %}class="current"{% endif %}>Competition</a>
             <a href="{% url 'eval:reconstruction' %}" {% if request.resolver_match.view_name == "eval:reconstruction" %}class="current"{% endif %}>Reconstruction</a>
             <a href="{% url 'eval:submit' %}" {% if request.resolver_match.view_name == "eval:submit" %}class="current"{% endif %}>Submit</a>            
             <a href="https://visionsim.readthedocs.io/en/latest/">VisionSIM Toolkit</a>

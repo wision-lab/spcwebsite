@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3>Competition Guidelines</h3>
+
+<h4>Description</h4>
+<p>
+    For this image reconstruction challenge you will need to come up with a novel and creative ways to transform many single photon camera frames into a single high quality image! This setting is very similar to traditional burst imaging but taken to the extreme. Instead of a few burst images you have access to a thousand, but the catch is that each input frame is extremely noisy. Oh, and of course the scene is dynamic!  
+    </br>
+    For a very simple implementation please see the <a href="{% url 'faq' %}">FAQ</a>.
+</p>
+
+<h4>Timeline</h4>
+<p>
+    The single photon reconstruction competition is now open! The submission deadline is <b>April 1, 2026 (AOE)</b> and winners will be announced in summer 2026. 
+</p>
+
+<h4>Eligibility</h4>
+<p>
+    Anyone is welcome to participate, however, due to potential conflicts of interest, students and employees affiliated with the organizing committee's labs or the sponsoring companies are encouraged to participate but will not be considered for the final prizes.
+</p>
+
+<h4>Participation Requirements</h4>
+<p>
+    In order to participate in the competition, you must:
+    <ul>
+        <li>
+            Create an account and <a href="{% url 'eval:submit' %}">submit your reconstruction results</a> for evaluation. You may submit results for evaluation as many times as you'd like but keep in mind that:
+            <ol>
+                <li>You may only submit your results for evaluation up to 4 times per day,</li>
+                <li>And only one submission will count towards the competition.</li> 
+            </ol> 
+        </li>
+        <li>
+            Once evaluated (this can take a few hours), ensure you change the visibility of your final submission to "Anonymous" otherwise the judges will not be able to view your reconstruction results, and you will be automatically disqualified. Also make sure to save the submission file, as you will be required to re-upload it in the final step.
+        </li>
+        <li>
+            In a CVPR-formated 4 page document (references excluded) explaining your method, design decision, and any algorithmic considerations. This document will be sent to our judges, who will review it alongside your reconstruction results, so ensure it is properly anonymized!
+        </li>
+        <li>
+            Finally, to formally apply to the competition, upload all these materials <a href="https://forms.gle/UR5x5DwJAQunvpU78">by filling out this form</a>. 
+        </li>
+    </ul>
+</p>
+
+<h4>Judging and Prizes</h4>
+<p>
+    Submissions will be evaluated by a panel of judges who are experts in the field of single-photon computational imaging. Judges will wholistically consider both reconstruction metrics and qualitative quality, as well as the proposed methodology as described in the submission's whitepaper. Thanks to our sponsors, thousands of dollars of prizes will be awarded!   
+</p>
+
+{% endblock %}

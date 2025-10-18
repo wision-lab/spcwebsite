@@ -39,6 +39,11 @@ urlpatterns = [
         TemplateView.as_view(template_name="faq.html"),
         name="faq",
     ),
+    path(
+        "competition",
+        TemplateView.as_view(template_name="competition.html"),
+        name="competition",
+    ),
     path("captcha/", include("captcha.urls")),
     path(
         "auth/check/<str:entry_type>/<int:user_pk>/<uuid:entry_uuid>/<path:path>",
