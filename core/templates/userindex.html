@@ -61,12 +61,17 @@
 
 {% if entries_list %}
 {% for entry in entries_list %}
-<p style="margin-bottom:6px;"><b><a href="{% url 'eval:detail' entry.id %}">{{entry.name}}</a></b>
-  {% if entry.process_status == "WAIT_UPL" or entry.process_status == "WAIT_PROC" %}
-  &nbsp;&#8634; <i>{{entry.get_process_status_display}}</i>
-  {% endif %}
-  {% if entry.process_status == "FAIL"%}
-  &nbsp;&#x2716; <i>{{entry.get_process_status_display}}</i>
+<p style="margin-bottom:6px;">
+  {% if entry.process_status == "SUCCESS" %}
+  <b><a href="{% url 'eval:detail' entry.id %}">{{entry.name}}</a></b>
+  {% elif entry.process_status == "WAIT_UPL" or entry.process_status == "WAIT_PROC" %}
+  <b>{{entry.name}}</b>
+  </br>
+  &#8634; <i>{{entry.get_process_status_display}}</i>
+  {% elif entry.process_status == "FAIL"%}
+  <b>{{entry.name}}</b>
+  </br>
+  &#x2716; <i>{{entry.get_process_status_display}}</i>
   {% endif %}
   &nbsp;&nbsp;
   <br>

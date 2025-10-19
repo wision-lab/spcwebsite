@@ -67,7 +67,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.is_superuser or (
             self.is_verified
             and self.is_active
-            and len(self.reconstructionentry_set.filter(pub_date__gte=date_from))
+            and len(self.entries.filter(pub_date__gte=date_from))
             < MAX_UPLOADS_PER_DAY
             and UPLOADS_ENABLED
         )
