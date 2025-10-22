@@ -2,6 +2,7 @@ version: '3'
 
 services:
   website:
+    pull_policy: build
     build:
       context: .
       dockerfile: Dockerfile
