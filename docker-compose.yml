@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  website:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # All envvars are passed here, and saved into 
+        # /etc/environment during build making them globally
+        # available. Vars that point to paths are used to mount
+        # volumes and replaced with defaults inside the container
+        - SPC_DEBUG=${SPC_DEBUG} 
+        - SPC_DATABASEDIR=/storage/database
+        - SPC_UPLOADDIR=/storage/uploads
+        - SPC_EVALDIR=/storage/datasets
+        - SPC_IMGDIR=/storage/media
+        - TORCH_HOME=/storage/.cache/torch
+        - SPC_FROMEMAIL=${SPC_FROMEMAIL}
+        - RESEND_API_KEY=${RESEND_API_KEY}
+        - SPC_SECRET_KEY=${SPC_SECRET_KEY}
+        - SPC_NUM_THREADS=${SPC_NUM_THREADS}
+    image: website/latest
+    ports:
+      - 8000:80
+    volumes:
+      - ${SPC_DATABASEDIR}:/storage/database
+      - ${SPC_UPLOADDIR}/storage/uploads
+      - ${SPC_EVALDIR}:/storage/datasets
+      - ${SPC_IMGDIR}:/storage/media
+      - ${TORCH_HOME}:/storage/.cache/torch

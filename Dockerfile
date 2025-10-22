@@ -33,25 +33,27 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 # Envvars needed during build
 ARG SPC_DEBUG 
+ARG SPC_DATABASEDIR
 ARG SPC_UPLOADDIR
 ARG SPC_EVALDIR
 ARG SPC_IMGDIR
-ARG SPC_DATABASEDIR
+ARG TORCH_HOME
+ARG SPC_FROMEMAIL
 ARG RESEND_API_KEY
 ARG SPC_SECRET_KEY
 ARG SPC_NUM_THREADS
-ARG TORCH_HOME
 
 # Save them to an env file so the cronjob can source them
 RUN echo SPC_DEBUG=${SPC_DEBUG} >> /etc/environment 
+RUN echo SPC_DATABASEDIR=${SPC_DATABASEDIR} >> /etc/environment 
 RUN echo SPC_UPLOADDIR=${SPC_UPLOADDIR} >> /etc/environment 
 RUN echo SPC_EVALDIR=${SPC_EVALDIR} >> /etc/environment 
 RUN echo SPC_IMGDIR=${SPC_IMGDIR} >> /etc/environment 
-RUN echo SPC_DATABASEDIR=${SPC_DATABASEDIR} >> /etc/environment 
+RUN echo TORCH_HOME=${TORCH_HOME} >> /etc/environment 
+RUN echo SPC_FROMEMAIL=${SPC_FROMEMAIL} >> /etc/environment 
 RUN echo RESEND_API_KEY=${RESEND_API_KEY} >> /etc/environment 
 RUN echo SPC_SECRET_KEY=${SPC_SECRET_KEY} >> /etc/environment 
 RUN echo SPC_NUM_THREADS=${SPC_NUM_THREADS} >> /etc/environment 
-RUN echo TORCH_HOME=${TORCH_HOME} >> /etc/environment 
 
 # Add the rest of the project source code
 COPY . /app
