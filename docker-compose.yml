@@ -11,6 +11,7 @@ services:
         # available. Vars that point to paths are used to mount
         # volumes and replaced with defaults inside the container
         - SPC_DEBUG=${SPC_DEBUG} 
+        - SPC_UPLOADS_ENABLED=${SPC_UPLOADS_ENABLED}
         - SPC_DATABASEDIR=/storage/database
         - SPC_UPLOADDIR=/storage/uploads
         - SPC_EVALDIR=/storage/datasets

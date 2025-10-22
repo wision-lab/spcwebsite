@@ -33,6 +33,7 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 # Envvars needed during build
 ARG SPC_DEBUG 
+ARG SPC_UPLOADS_ENABLED
 ARG SPC_DATABASEDIR
 ARG SPC_UPLOADDIR
 ARG SPC_EVALDIR
@@ -45,6 +46,7 @@ ARG SPC_NUM_THREADS
 
 # Save them to an env file so the cronjob can source them
 RUN echo SPC_DEBUG=${SPC_DEBUG} >> /etc/environment 
+RUN echo SPC_UPLOADS_ENABLED=${SPC_UPLOADS_ENABLED} >> /etc/environment 
 RUN echo SPC_DATABASEDIR=${SPC_DATABASEDIR} >> /etc/environment 
 RUN echo SPC_UPLOADDIR=${SPC_UPLOADDIR} >> /etc/environment 
 RUN echo SPC_EVALDIR=${SPC_EVALDIR} >> /etc/environment 
