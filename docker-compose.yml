@@ -4,7 +4,6 @@ services:
   website:
     pull_policy: build
     build:
-      context: .
       dockerfile: Dockerfile
       args:
         # All envvars are passed here, and saved into 
