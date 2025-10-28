@@ -88,6 +88,7 @@ WSGI_APPLICATION = "spcwebsite.wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASE_DIR = Path(os.environ["SPC_DATABASEDIR"])
+DATABASE_DIR.mkdir(parents=True, exist_ok=True)
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",

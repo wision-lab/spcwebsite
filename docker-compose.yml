@@ -23,10 +23,8 @@ services:
     ports:
       - 8000:80
     volumes:
-      - ${SPC_DATABASEDIR}:/storage/database
-      - ${SPC_UPLOADDIR}/storage/uploads
-      - ${SPC_EVALDIR}:/storage/datasets
-      - ${SPC_IMGDIR}:/storage/media
-      - ${TORCH_HOME}:/storage/.cache/torch
+      - storage:/storage
     environment: *env
 
+volumes:
+  storage:
