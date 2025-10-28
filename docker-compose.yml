@@ -1,26 +1,24 @@
-version: '3'
+x-env: &env
+  # Vars that point to paths are used to mount volumes 
+  # and replaced with defaults inside the container
+  - SPC_DEBUG=${SPC_DEBUG} 
+  - SPC_UPLOADS_ENABLED=${SPC_UPLOADS_ENABLED}
+  - SPC_DATABASEDIR=/storage/database
+  - SPC_UPLOADDIR=/storage/uploads
+  - SPC_EVALDIR=/storage/datasets
+  - SPC_IMGDIR=/storage/media
+  - TORCH_HOME=/storage/.cache/torch
+  - SPC_FROMEMAIL=${SPC_FROMEMAIL}
+  - RESEND_API_KEY=${RESEND_API_KEY}
+  - SPC_SECRET_KEY=${SPC_SECRET_KEY}
+  - SPC_NUM_THREADS=${SPC_NUM_THREADS}
 
 services:
   website:
     pull_policy: build
     build:
       dockerfile: Dockerfile
-      args:
-        # All envvars are passed here, and saved into 
-        # /etc/environment during build making them globally
-        # available. Vars that point to paths are used to mount
-        # volumes and replaced with defaults inside the container
-        - SPC_DEBUG=${SPC_DEBUG} 
-        - SPC_UPLOADS_ENABLED=${SPC_UPLOADS_ENABLED}
-        - SPC_DATABASEDIR=/storage/database
-        - SPC_UPLOADDIR=/storage/uploads
-        - SPC_EVALDIR=/storage/datasets
-        - SPC_IMGDIR=/storage/media
-        - TORCH_HOME=/storage/.cache/torch
-        - SPC_FROMEMAIL=${SPC_FROMEMAIL}
-        - RESEND_API_KEY=${RESEND_API_KEY}
-        - SPC_SECRET_KEY=${SPC_SECRET_KEY}
-        - SPC_NUM_THREADS=${SPC_NUM_THREADS}
+      args: *env
     image: website/latest
     ports:
       - 8000:80
@@ -30,3 +28,5 @@ services:
       - ${SPC_EVALDIR}:/storage/datasets
       - ${SPC_IMGDIR}:/storage/media
       - ${TORCH_HOME}:/storage/.cache/torch
+    environment: *env
+
