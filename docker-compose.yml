@@ -1,9 +1,10 @@
 services:
   website:
+    # To build and debug locally, use the following and uncomment the `image` line below.
     # build:
     #   dockerfile: Dockerfile
     # pull_policy: build
-    image: debian:bookworm-slim
+    image: ghcr.io/wision-lab/spcwebsite:sha256-33f1dec264fceeac03f904444e9282fe2f6da300cf57d159b1d0aa7f786832d3
     ports:
       - 8000:80
     volumes:
