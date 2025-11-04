@@ -3,65 +3,64 @@ FROM debian:bookworm-slim
 
 # Set the working directory inside the container
 WORKDIR /app
-# ENV BRANCH=compose 
 
-# # Install system dependencies needed by our app
-# RUN apt-get update && apt-get install -y \
-#     build-essential \
-#     curl \ 
-#     wget \
-#     supervisor \
-#     caddy \ 
-#     cron
+# Envvars needed during build
+ENV SPC_DEBUG=True
+ENV SPC_DATABASEDIR="/storage/database/"
+ENV SPC_UPLOADDIR="/storage/uploads/"
+ENV SPC_EVALDIR="/storage/datasets/"
+ENV SPC_IMGDIR="/storage/media/"
+ENV TORCH_HOME="/storage/.cache/torch"
 
-# # And a few nice to haves for debugging and cleanup
-# RUN apt-get install -y sqlite3 ncdu tmux htop nano git
-# RUN curl https://getcroc.schollz.com | bash 
-# RUN curl https://getmic.ro | bash
-# RUN mv micro /usr/local/bin/
-# RUN rm -rf /var/lib/apt/lists/*
+# Save them to an env file so the cronjob can source them
+RUN echo SPC_DEBUG=${SPC_DEBUG} >> /etc/environment 
+RUN echo SPC_DATABASEDIR=${SPC_DATABASEDIR} >> /etc/environment 
+RUN echo SPC_UPLOADDIR=${SPC_UPLOADDIR} >> /etc/environment 
+RUN echo SPC_EVALDIR=${SPC_EVALDIR} >> /etc/environment 
+RUN echo SPC_IMGDIR=${SPC_IMGDIR} >> /etc/environment 
+RUN echo TORCH_HOME=${TORCH_HOME} >> /etc/environment 
 
-# # Install uv, the fast Python package manager
-# COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
-# ENV PATH="/root/.local/bin:${PATH}"
+# Install system dependencies needed by our app
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \ 
+    wget \
+    supervisor \
+    caddy \ 
+    cron
 
-# # Envvars needed during build
-# ENV SPC_DEBUG=True
-# ENV SPC_DATABASEDIR="/storage/database/"
-# ENV SPC_UPLOADDIR="/storage/uploads/"
-# ENV SPC_EVALDIR="/storage/datasets/"
-# ENV SPC_IMGDIR="/storage/media/"
-# ENV TORCH_HOME="/storage/.cache/torch"
+# And a few nice to haves for debugging and cleanup
+RUN apt-get install -y sqlite3 ncdu tmux htop nano git
+RUN curl https://getcroc.schollz.com | bash 
+RUN curl https://getmic.ro | bash
+RUN mv micro /usr/local/bin/
+RUN rm -rf /var/lib/apt/lists/*
 
-# # Save them to an env file so the cronjob can source them
-# RUN echo SPC_DEBUG=${SPC_DEBUG} >> /etc/environment 
-# RUN echo SPC_DATABASEDIR=${SPC_DATABASEDIR} >> /etc/environment 
-# RUN echo SPC_UPLOADDIR=${SPC_UPLOADDIR} >> /etc/environment 
-# RUN echo SPC_EVALDIR=${SPC_EVALDIR} >> /etc/environment 
-# RUN echo SPC_IMGDIR=${SPC_IMGDIR} >> /etc/environment 
-# RUN echo TORCH_HOME=${TORCH_HOME} >> /etc/environment 
+# Install uv, the fast Python package manager
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+ENV PATH="/root/.local/bin:${PATH}"
 
-# # Install the project's dependencies using the lockfile and settings
-# # Note: Here we use git clone instead of `COPY . /app` as portainer doesn't 
-# #   like local paths, see: https://docs.portainer.io/user/docker/images/build
-# RUN git clone https://github.com/wision-lab/spcwebsite.git /app
-# RUN git checkout ${BRANCH} 
-# RUN uv sync --locked --no-install-project --no-dev
+# Install the project's dependencies using the lockfile and settings
+COPY uv.lock pyproject.toml .python-version ./
+RUN uv sync --locked --no-install-project --no-devRUN uv sync --locked --no-install-project --no-dev
 
-# # Place executables in the environment at the front of the path
-# ENV PATH="/app/.venv/bin:$PATH"
+# Place executables in the environment at the front of the path
+ENV PATH="/app/.venv/bin:$PATH"
 
-# # Collect the static files
-# RUN python manage.py collectstatic --noinput
+# Add the rest of the project source code
+COPY . /app
 
-# # Copy configs
-# RUN cp .config/Caddyfile /etc/caddy/Caddyfile
-# RUN cp .config/supervisord.conf /etc/supervisord.conf
+# Collect the static files
+RUN python manage.py collectstatic --noinput
 
-# # Configure cron jobs, and ensure crontab-file permissions
-# RUN cp -r cron.d /etc/cron.d/
-# RUN chmod 0644 /etc/cron.d/*
-# RUN chown root:root /etc/cron.d/*
+# Copy configs
+RUN cp .config/Caddyfile /etc/caddy/Caddyfile
+RUN cp .config/supervisord.conf /etc/supervisord.conf
 
-# # Run with supervisord
-# CMD ["supervisord", "-c", "/etc/supervisord.conf"]
+# Configure cron jobs, and ensure crontab-file permissions
+RUN cp -r cron.d /etc/cron.d/
+RUN chmod 0644 /etc/cron.d/*
+RUN chown root:root /etc/cron.d/*
+
+# Run with supervisord
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]
