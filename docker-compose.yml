@@ -1,8 +1,9 @@
 services:
   website:
-    build:
-      dockerfile: Dockerfile
-    pull_policy: build
+    # build:
+    #   dockerfile: Dockerfile
+    # pull_policy: build
+    image: debian:bookworm-slim
     ports:
       - 8000:80
     volumes:
