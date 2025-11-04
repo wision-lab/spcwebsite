@@ -1,8 +1,8 @@
 services:
   website:
-    pull_policy: build
     build:
       dockerfile: Dockerfile
+    pull_policy: build
     image: website/latest
     ports:
       - 8000:80
