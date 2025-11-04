@@ -42,7 +42,7 @@ ENV PATH="/root/.local/bin:${PATH}"
 
 # Install the project's dependencies using the lockfile and settings
 COPY uv.lock pyproject.toml .python-version ./
-RUN uv sync --locked --no-install-project --no-devRUN uv sync --locked --no-install-project --no-dev
+RUN uv sync --locked --no-install-project --no-dev
 
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
