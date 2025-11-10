@@ -1,10 +1,12 @@
 services:
   website:
     # To build and debug locally, use the following and uncomment the `image` line below.
+    # and expose to a non-privileged port, eg: `8000:80`
     # build:
     #   dockerfile: Dockerfile
     # pull_policy: build
-    image: ghcr.io/wision-lab/spcwebsite:main
+    # Note: replace the ':sha256-' with '@sha256:'
+    image: ghcr.io/wision-lab/spcwebsite@sha256:e334fbec04f917cecbe26dad0a9a7b61d1e93becdaa1db24c092d19e74102173
     restart: unless-stopped
     ports:
       - 80:80
