@@ -5,6 +5,7 @@ services:
     #   dockerfile: Dockerfile
     # pull_policy: build
     image: ghcr.io/wision-lab/spcwebsite:main
+    restart: unless-stopped
     ports:
       - 80:80
       - 443:443

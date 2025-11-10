@@ -30,6 +30,7 @@ else:
 
 ALLOWED_HOSTS = [
     "singlephotonchallenge.com",
+    ".cs.wisc.edu",
     ".railway.app",
     ".localhost",
     "127.0.0.1",
