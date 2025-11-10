@@ -1,4 +1,4 @@
-wision-lab-docker.cs.wisc.edu
+singlephotonchallenge.com
 
 handle_path /static/* {
     root * /app/staticfiles
