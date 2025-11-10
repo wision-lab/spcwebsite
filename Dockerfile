@@ -58,7 +58,7 @@ RUN cp .config/Caddyfile /etc/caddy/Caddyfile
 RUN cp .config/supervisord.conf /etc/supervisord.conf
 
 # Configure cron jobs, and ensure crontab-file permissions
-RUN cp -r cron.d /etc/cron.d/
+RUN cp -r cron.d/* /etc/cron.d/
 RUN chmod 0644 /etc/cron.d/*
 RUN chown root:root /etc/cron.d/*
 
