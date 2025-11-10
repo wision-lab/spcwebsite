@@ -6,7 +6,8 @@ services:
     #   dockerfile: Dockerfile
     # pull_policy: build
     # Note: replace the ':sha256-' with '@sha256:'
-    image: ghcr.io/wision-lab/spcwebsite@sha256:e334fbec04f917cecbe26dad0a9a7b61d1e93becdaa1db24c092d19e74102173
+    # image: ghcr.io/wision-lab/spcwebsite@sha256:e334fbec04f917cecbe26dad0a9a7b61d1e93becdaa1db24c092d19e74102173
+    image: ghcr.io/wision-lab/spcwebsite:main
     restart: unless-stopped
     ports:
       - 80:80
