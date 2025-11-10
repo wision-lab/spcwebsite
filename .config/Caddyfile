@@ -1,5 +1,4 @@
-:80, 
-:443
+wision-lab-docker.cs.wisc.edu
 
 handle_path /static/* {
     root * /app/staticfiles
