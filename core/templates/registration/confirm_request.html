@@ -1,5 +1,5 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <p>Please confirm your mail address by clicking the link we just sent you to activate your account.</p>
+  <p>Please confirm your mail address by clicking the link we just sent you to activate your account. If you do not see it, please check your spam folder, or <a href="{% url 'core:login'%}">login</a> to resend.</p>
 {% endblock %}

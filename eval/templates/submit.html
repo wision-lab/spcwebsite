@@ -7,7 +7,7 @@
     <table class="noborder">
         {{ form.as_table }}
     </table>
-    <p><i>Note: You will be able to edit these attributes once submitted, except the submission file.</i></p>
+    <p id="info"><i>Note: You will be able to edit these attributes once submitted, except the submission file.</i></p>
     <div style="display: none; width: 100%; gap: 5%; padding-bottom: 1em;">
         <progress id="progress-bar" value="0" max="100" style="width: inherit;"></progress>
         <label for="progress-bar">0%</label>
@@ -19,6 +19,7 @@
 <script>
     const form = document.getElementById('form');
     const progress = document.getElementById('progress-bar');
+    const info = document.getElementById('info')
 
     form.addEventListener('submit', function() {
         // Avoid form from submitting the "normal" way
@@ -46,6 +47,7 @@
         };
         
         progress.parentElement.style.display = 'inline-flex';
+        info.innerHTML = "<i>For best results, please stay on on this page during the upload</i>";
         var payload = new FormData(form);
         req.send(payload);
     });

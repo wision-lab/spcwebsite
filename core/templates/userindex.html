@@ -37,7 +37,7 @@
   {% if not user.can_upload %}
     {% if not user.is_verified %}
     <form method="post" action="{% url 'core:resend' %}">
-      <p>You need to verify your email before being able to submit!</p> 
+      <p>You need to verify your email before being able to submit! Please also check your spam folder.</p> 
       {% csrf_token %}
       <input type="submit" value="Resend confirmation email">
       <input type="hidden" name="next" value="{{ next }}">
