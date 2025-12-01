@@ -7,7 +7,8 @@ from .models import ReconstructionEntry, ResultEntry
 def validate_zip(data):
     if not data.name.endswith(".zip"):
         raise forms.ValidationError("Submission file must be a zip file.")
-    if data.content_type != "application/zip":
+    if data.content_type not in ("application/zip", "application/x-zip-compressed"):
+        # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/MIME_types/Common_types
         raise forms.ValidationError("Incorrect content type found.")
 
 
