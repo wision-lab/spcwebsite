@@ -14,6 +14,8 @@ services:
       - 443:443
     volumes:
       - storage:/storage
+      - data:/data/caddy
+      - config:/config/caddy
     environment:
       # Vars that point to paths are used to mount volumes 
       # and replaced with defaults inside the container
@@ -23,6 +25,10 @@ services:
       - RESEND_API_KEY=${RESEND_API_KEY}
       - SPC_SECRET_KEY=${SPC_SECRET_KEY}
       - SPC_NUM_THREADS=${SPC_NUM_THREADS}
+      # Persist caddy data into a volume to avoid getting rate-limited when 
+      # creating certs. See: https://caddyserver.com/docs/conventions#file-locations
+      - XDG_CONFIG_HOME=/config 
+      - XDG_DATA_HOME=/data
 
   # backup:
   #   image: offen/docker-volume-backup:v2
@@ -44,3 +50,5 @@ services:
 
 volumes:
   storage:
+  data:
+  config:
