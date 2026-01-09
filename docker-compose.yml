@@ -42,7 +42,7 @@ services:
       BACKUP_FILENAME: spcbackup-%Y-%m-%dT%H-%M-%S.tar.gz
       BACKUP_PRUNING_PREFIX: spcbackup-
       BACKUP_RETENTION_DAYS: '7'
-      BACKUP_EXCLUDE_REGEXP: \.cache$
+      # BACKUP_EXCLUDE_REGEXP: .cache
     volumes:
       - storage:/:ro
       - /var/run/docker.sock:/var/run/docker.socket:ro
