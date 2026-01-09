@@ -39,10 +39,10 @@ services:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_ENDPOINT=${AWS_ENDPOINT}
-      - BACKUP_FILENAME=spcbackup-%Y-%m-%dT%H-%M-%S.tar.gz
       - BACKUP_PRUNING_PREFIX="spcbackup-"
-      - BACKUP_RETENTION_DAYS="7"
+      - BACKUP_FILENAME=spcbackup-%Y-%m-%dT%H-%M-%S.tar.gz
       - BACKUP_EXCLUDE_REGEXP="(\.log$|/backup/.cache/)" 
+      - BACKUP_RETENTION_DAYS=7
     volumes:
       - storage:/backup:ro
       - /var/run/docker.sock:/var/run/docker.socket:ro
