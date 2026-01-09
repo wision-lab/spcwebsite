@@ -30,23 +30,23 @@ services:
       - XDG_CONFIG_HOME=/config 
       - XDG_DATA_HOME=/data
 
-  # backup:
-  #   image: offen/docker-volume-backup:v2
-  #   environment:
-  #     AWS_S3_BUCKET_NAME: challenge-backups
-  #     AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-  #     AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-  #     AWS_ENDPOINT: ${AWS_ENDPOINT}
-  #     BACKUP_FILENAME: spcbackup-%Y-%m-%dT%H-%M-%S.tar.gz
-  #     BACKUP_PRUNING_PREFIX: spcbackup-
-  #     BACKUP_RETENTION_DAYS: '7'
-  #   labels:
-  #     - docker-volume-backup.archive-pre=cd /storage/database && sqlite3 db.sqlite3 ".backup backup.db"
-  #   volumes:
-  #     - storage:/backup/my-app-backup:ro
-  #     - /var/run/docker.sock:/var/run/docker.sock:ro
-  #     - /etc/timezone:/etc/timezone:ro
-  #     - /etc/localtime:/etc/localtime:ro
+  backup:
+    image: offen/docker-volume-backup:v2
+    environment:
+      AWS_S3_BUCKET_NAME: challenge-backups
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_ENDPOINT: ${AWS_ENDPOINT}
+      BACKUP_FILENAME: spcbackup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: spcbackup-
+      BACKUP_RETENTION_DAYS: '7'
+    labels:
+      - docker-volume-backup.archive-pre=cd /storage/database && sqlite3 db.sqlite3 ".backup backup.db"
+    volumes:
+      - storage:/backup/my-app-backup:ro
+      - /var/run/docker.socket:/var/run/docker.sock:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
 
 volumes:
   storage:
