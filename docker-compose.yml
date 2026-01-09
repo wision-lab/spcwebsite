@@ -44,7 +44,7 @@ services:
       BACKUP_RETENTION_DAYS: '7'
       BACKUP_EXCLUDE_REGEXP: \.cache$
     volumes:
-      - storage:/backups:ro
+      - storage:/backup:ro
       - /var/run/docker.sock:/var/run/docker.socket:ro
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
