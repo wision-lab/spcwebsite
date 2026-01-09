@@ -44,7 +44,7 @@ services:
       - docker-volume-backup.archive-pre=cd /storage/database && sqlite3 db.sqlite3 ".backup backup.db"
     volumes:
       - storage:/backup/my-app-backup:ro
-      - /var/run/docker.socket:/var/run/docker.sock:ro
+      - /var/run/docker.sock:/var/run/docker.socket:ro
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
 
