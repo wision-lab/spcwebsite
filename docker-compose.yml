@@ -17,7 +17,7 @@ services:
       - data:/data/caddy
       - config:/config/caddy
     labels:
-      - docker-volume-backup.archive-pre=/bin/sh -c 'echo "ok" > /storage/ok.txt'
+      - docker-volume-backup.archive-pre=/bin/bash -c 'echo "ok"'
       - docker-volume-backup.exec-label=database
     environment:
       # Vars that point to paths are used to mount volumes 
@@ -42,8 +42,9 @@ services:
       - AWS_ENDPOINT=${AWS_ENDPOINT}
       - BACKUP_PRUNING_PREFIX="spcbackup-"
       - BACKUP_FILENAME=spcbackup-%Y-%m-%dT%H-%M-%S.tar.gz
-      - BACKUP_EXCLUDE_REGEXP="\.cache" 
+      - BACKUP_EXCLUDE_REGEXP='.*\.cache\/.*' 
       - BACKUP_RETENTION_DAYS=7
+      - EXEC_FORWARD_OUTPUT="true"
       - EXEC_LABEL=database
     volumes:
       - storage:/backup:ro
