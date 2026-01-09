@@ -49,7 +49,7 @@ services:
       - EXEC_LABEL=database
     volumes:
       - storage:/backup:ro
-      - /var/run/docker.socket:/var/run/docker.sock:ro
+      - /run/user/${UID}/docker.sock:/var/run/docker.sock:ro
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
 
