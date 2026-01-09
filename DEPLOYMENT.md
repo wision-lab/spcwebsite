@@ -49,3 +49,10 @@ In `$SPC_DATABASEDIR`, you can simply:
 sqlite3 db.sqlite3 ".backup backup.db"
 sqlite3 db.sqlite3 ".restore backup.db"
 ```
+
+# Download a backup
+
+The server is backed up daily to an S3 bucket, provided you have the credentials, you can view the backups with [stu](https://github.com/lusingander/stu), and download one like so:
+```
+aws s3api get-object --bucket challenge-backups --key spcbackup-2026-01-09T10-57-35.tar.gz --endpoint=https://web.s3.wisc.edu spcbackup.tar.gz
+```
