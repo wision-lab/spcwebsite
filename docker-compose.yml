@@ -40,11 +40,11 @@ services:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_ENDPOINT=${AWS_ENDPOINT}
-      - BACKUP_PRUNING_PREFIX="spcbackup-"
+      - BACKUP_PRUNING_PREFIX=spcbackup-
       - BACKUP_FILENAME=spcbackup-%Y-%m-%dT%H-%M-%S.tar.gz
-      - BACKUP_EXCLUDE_REGEXP='.*\.cache\/.*' 
+      - BACKUP_EXCLUDE_REGEXP=.*\.cache\/.* 
       - BACKUP_RETENTION_DAYS=7
-      - EXEC_FORWARD_OUTPUT="true"
+      - EXEC_FORWARD_OUTPUT=true
       - EXEC_LABEL=database
     volumes:
       - storage:/backup:ro
