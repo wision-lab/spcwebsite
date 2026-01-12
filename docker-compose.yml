@@ -17,7 +17,7 @@ services:
       - data:/data/caddy
       - config:/config/caddy
     labels:
-      - docker-volume-backup.archive-pre=/bin/bash -c 'echo "ok"'
+      - docker-volume-backup.archive-pre=/bin/bash -c 'cd /storage/database; sqlite3 db.sqlite3 ".backup backup.db"'
       - docker-volume-backup.exec-label=database
     environment:
       # Vars that point to paths are used to mount volumes 
