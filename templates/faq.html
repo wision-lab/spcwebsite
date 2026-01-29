@@ -37,6 +37,8 @@ bitplanes = np.unpackbits(photoncube[:10], axis=2)
 print(bitplanes.shape)  # (10, 800, 800, 3)
 </code></pre> 
 
+    Importantly, ground truth reconstructions correspond to the <u><i>last frame</i></u> of each burst. In this case, <span class="inline-code">datasets/train/attic/000000.png</span> is the reconstruction of <span class="inline-code">np.unpackbits(photoncube[-1], axis=2)</span>. This ensures a causal context window, were each reconstruction only depends on previously captured single-photon data. 
+
     The test set is structured the same way, with the exception that ground truth reconstructions are not made public.   
 </p>
 

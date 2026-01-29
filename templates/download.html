@@ -38,6 +38,8 @@
 <pre
     style="padding: 0;"><code class="language-bash">$ aws s3 sync s3://public-datasets/challenges/reconstruction $DOWNLOAD_DIR --endpoint=https://web.s3.wisc.edu --no-sign-request</code></pre>
 
+    If you wish to only download the test set, you can do so by appending <span class="inline-code">--exclude="*" --include="test*.zip"</span> to the above command.
+
 You then need to extract all zips into their respective directories, which can be done with the following command in
 bash:
 <pre
