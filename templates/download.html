@@ -43,7 +43,7 @@
 You then need to extract all zips into their respective directories, which can be done with the following command in
 bash:
 <pre
-    style="padding: 0;"><code class="language-bash">$ for zip in $(find $DOWNLOAD_DIR -type f -name *.zip); do 7z x $zip -o$(dirname $zip) && rm -f $zip; done</code></pre>
+    style="padding: 0;"><code class="language-bash">$ for zip in $(find $DOWNLOAD_DIR -type f -name "*.zip"); do 7z x $zip -o$(dirname $zip) && rm -f $zip; done</code></pre>
 </p>
 </br>
 <p>
