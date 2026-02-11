@@ -22,11 +22,15 @@
 </p>
 {% endif %}
 
-{% if user.is_authenticated and user.pk == entry.creator.pk %}
+{% if user.is_authenticated %}
+{% if user.pk == entry.creator.pk %}
 <nav style="padding-top:0px">
     <a href="{% url 'eval:edit' entry.id %}" style="font-size:0.8rem">Edit</a>
     <a href="{% url 'eval:delete' entry.id %}" style="font-size:0.8rem">Delete</a>
 </nav>
+{% else %}
+<p>Note: This entry is private, you are seeing it because you are an admin 🥸.</p>
+{% endif %}
 {% endif %}
 
 {% if entry.process_status == "SUCCESS" %}

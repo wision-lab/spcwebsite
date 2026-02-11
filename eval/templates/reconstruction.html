@@ -47,9 +47,6 @@
 </script>
 
 <h4>Reconstruction Results</h4>
-{% if user.is_verified %}
-    <p style="margin-bottom:0;">Results marked with 🚫 are private and are only be visible to you. Submissions waiting for evaluation will not be shown here.</p>
-{% endif %}
 <div style="overflow-x:auto;">
 <table>
     <tr>
@@ -78,7 +75,7 @@
         <td>
             <div class="namebox">
                 <span>
-                    {% if entry.visibility == "PRIV" %}<span style="font-size: small;">🚫</span>&nbsp;{% endif %}
+                    {% if entry.visibility == "PRIV" %}<span style="font-size: small;">{% if entry.creator.id != user.id %}🥸{% else %}🚫{% endif %}</span>&nbsp;{% endif %}
                     <a href="{% url 'eval:detail' entry.id %}">{{ entry.name }}</a>
                 </span>
                 {% if entry.visibility != "ANON" and entry.code_url|length > 0 %}
@@ -107,7 +104,14 @@
     {% endfor %}
 </table>
 </div>
-<p>Entries marked with 💡 have been submitted by the SPC team as baselines.</p>
+<p>
+    Entries marked with 💡 have been submitted by the SPC team as baselines.</br>
+    {% if user.is_verified %}
+    Entries marked with 🚫 are your private results and are only be visible to you.</br>
+    {% if user.is_superuser %}Entries marked with 🥸 are private results <u><i>from other users</i></u> and are only be visible to admins.</br>{% endif %} 
+    {% endif %}
+</p>
+<p><u>Note:</u> Submissions waiting for evaluation will not be shown here.</p>
 <p><i>Tip: Select two rows to in order to compare them!</i></p>
 {% else %}
 <p>No data available.</p>

@@ -30,6 +30,7 @@
             <td>
                 <div class="namebox">
                     <span>
+                        {% if entry_1.visibility == "PRIV" %}<span style="font-size: small;">{% if entry_1.creator.id != user.id %}🥸{% else %}🚫{% endif %}</span>&nbsp;{% endif %}
                         <a href="{% url 'eval:detail' entry_1.id %}">{{ entry_1.name }}</a>
                     </span>
                     {% if entry.visibility != "ANON" and entry.code_url|length > 0 %}
@@ -50,6 +51,7 @@
             <td>
                 <div class="namebox">
                     <span>
+                        {% if entry_2.visibility == "PRIV" %}<span style="font-size: small;">{% if entry_2.creator.id != user.id %}🥸{% else %}🚫{% endif %}</span>&nbsp;{% endif %}
                         <a href="{% url 'eval:detail' entry_2.id %}">{{ entry_2.name }}</a>
                     </span>
                     {% if entry.visibility != "ANON" and entry.code_url|length > 0 %}

@@ -34,13 +34,22 @@ class ReconstructionEntriesView(View):
         else:
             my_entries = ReconstructionEntry.objects.none()
 
-        entries = (
-            ReconstructionEntry.objects.exclude(visibility=EntryVisibility.PRIV)
-            .filter(process_status=EntryStatus.SUCCESS)
-            .filter(is_active=True)
-            .union(my_entries)
-            .order_by(sortby)
-        )
+        if request.user.is_superuser:
+            entries = (
+                ReconstructionEntry.objects
+                .filter(process_status=EntryStatus.SUCCESS)
+                .filter(is_active=True)
+                .union(my_entries)
+                .order_by(sortby)
+            )
+        else:
+            entries = (
+                ReconstructionEntry.objects.exclude(visibility=EntryVisibility.PRIV)
+                .filter(process_status=EntryStatus.SUCCESS)
+                .filter(is_active=True)
+                .union(my_entries)
+                .order_by(sortby)
+            )
 
         if "↑" in self.VALID_KEYS[sortby.removeprefix("-")]:
             entries = entries.reverse()
