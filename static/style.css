@@ -710,6 +710,15 @@ img-comparison-slider {
     display: flex;
 }
 
+img-comparison-slider figcaption {
+    transition: opacity 0.3s;
+}
+
+img-comparison-slider.labels-hidden figcaption {
+    opacity: 0 !important;
+    transition: opacity 0.15s;
+}
+
 /* For upload pbar */
 progress {
     background-color: #f0f0f0;

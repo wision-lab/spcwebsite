@@ -5,7 +5,8 @@
 {% load custom_filters %}
 
 <h3>
-    <a href="{% url 'eval:detail' entry_1.id %}">{{ entry_1.name }}</a> vs. <a href="{% url 'eval:detail' entry_2.id %}">{{ entry_2.name }}</a>&nbsp;&nbsp;
+    <a href="{% url 'eval:detail' entry_1.id %}">{{ entry_1.name }}</a> vs. <a
+        href="{% url 'eval:detail' entry_2.id %}">{{ entry_2.name }}</a>&nbsp;&nbsp;
     <small>
         <a href="{% url 'eval:compare' entry_2.id entry_1.id %}" style="text-decoration:none">🔄</a>
         <a href="{% url 'eval:compare' %}" style="text-decoration:none">🎲</a>
@@ -13,7 +14,8 @@
 </h3>
 
 <script defer src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/index.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/styles.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/styles.css" />
+<script defer src="{% static 'img-slider.js' %}"></script>
 
 <h4>Reconstruction</h4>
 <div style="overflow-x:auto;">
@@ -30,19 +32,24 @@
             <td>
                 <div class="namebox">
                     <span>
-                        {% if entry_1.visibility == "PRIV" %}<span style="font-size: small;">{% if entry_1.creator.id != user.id %}🥸{% else %}🚫{% endif %}</span>&nbsp;{% endif %}
+                        {% if entry_1.visibility == "PRIV" %}
+                        <span style="font-size: small;">
+                            {% if entry_1.creator.id != user.id %}🥸{% else %}🚫{% endif %}
+                        </span>&nbsp;
+                        {% endif %}
                         <a href="{% url 'eval:detail' entry_1.id %}">{{ entry_1.name }}</a>
                     </span>
                     {% if entry.visibility != "ANON" and entry.code_url|length > 0 %}
-                        &nbsp;<a href="{{ entry_1.code_url }}" target="_blank" rel="noopener noreferrer" class="codebutton">code</a>
+                    &nbsp;<a href="{{ entry_1.code_url }}" target="_blank" rel="noopener noreferrer"
+                        class="codebutton">code</a>
                     {% endif %}
                 </div>
             </td>
             {% for metric, emph in entry_1.metrics|zip:emphasis %}
             {% if emph %}
-                <td><u>{{ metric|na_if_missing:3 }}</u></td>
+            <td><u>{{ metric|na_if_missing:3 }}</u></td>
             {% else %}
-                <td>{{ metric|na_if_missing:3 }}</td>
+            <td>{{ metric|na_if_missing:3 }}</td>
             {% endif %}
             {% endfor %}
         </tr>
@@ -51,19 +58,22 @@
             <td>
                 <div class="namebox">
                     <span>
-                        {% if entry_2.visibility == "PRIV" %}<span style="font-size: small;">{% if entry_2.creator.id != user.id %}🥸{% else %}🚫{% endif %}</span>&nbsp;{% endif %}
+                        {% if entry_2.visibility == "PRIV" %}
+                        <span style="font-size: small;">
+                            {% if entry_2.creator.id != user.id %}🥸{% else %}🚫{% endif %}</span>&nbsp;{% endif %}
                         <a href="{% url 'eval:detail' entry_2.id %}">{{ entry_2.name }}</a>
                     </span>
                     {% if entry.visibility != "ANON" and entry.code_url|length > 0 %}
-                        &nbsp;<a href="{{ entry_2.code_url }}" target="_blank" rel="noopener noreferrer" class="codebutton">code</a>
+                    &nbsp;<a href="{{ entry_2.code_url }}" target="_blank" rel="noopener noreferrer"
+                        class="codebutton">code</a>
                     {% endif %}
                 </div>
             </td>
             {% for metric, emph in entry_2.metrics|zip:emphasis %}
             {% if not emph %}
-                <td><u>{{ metric|na_if_missing:3 }}</u></td>
+            <td><u>{{ metric|na_if_missing:3 }}</u></td>
             {% else %}
-                <td>{{ metric|na_if_missing:3 }}</td>
+            <td>{{ metric|na_if_missing:3 }}</td>
             {% endif %}
             {% endfor %}
         </tr>
@@ -72,7 +82,7 @@
 </br>
 <div class="auto-grid">
     {% for path in image_subpaths %}
-        <img-comparison-slider>
+    <img-comparison-slider>
         <figure slot="first" class="before">
             <img slot="first" src="{% get_media_prefix %}{{ samples_dir_1 }}/{{ path }}" />
             <figcaption>#1</figcaption>
@@ -81,7 +91,7 @@
             <img slot="second" src="{% get_media_prefix %}{{ samples_dir_2 }}/{{ path }}" />
             <figcaption>#2</figcaption>
         </figure>
-        </img-comparison-slider>
+    </img-comparison-slider>
     {% endfor %}
 </div>
 
