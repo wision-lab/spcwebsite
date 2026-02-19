@@ -31,13 +31,12 @@ else:
 ALLOWED_HOSTS = [
     "singlephotonchallenge.com",
     ".cs.wisc.edu",
-    ".railway.app",
     ".localhost",
     "127.0.0.1",
     "[::1]",
 ]
 
-CSRF_TRUSTED_ORIGINS = ["https://singlephotonchallenge.com", "https://*.railway.app"]
+CSRF_TRUSTED_ORIGINS = ["https://singlephotonchallenge.com"]
 CSRF_COOKIE_SECURE = True
 
 # Application definition
