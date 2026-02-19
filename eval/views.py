@@ -36,8 +36,7 @@ class ReconstructionEntriesView(View):
 
         if request.user.is_superuser:
             entries = (
-                ReconstructionEntry.objects
-                .filter(process_status=EntryStatus.SUCCESS)
+                ReconstructionEntry.objects.filter(process_status=EntryStatus.SUCCESS)
                 .filter(is_active=True)
                 .union(my_entries)
                 .order_by(sortby)
@@ -214,10 +213,11 @@ class CompareView(View):
                 pk1, pk2 = random.sample(
                     [
                         entry.pk
-                        for entry in self.model.objects.filter(
+                        for entry in self.model.objects.exclude(
+                            visibility=EntryVisibility.PRIV
+                        ).filter(
                             is_active=True,
                             process_status=EntryStatus.SUCCESS,
-                            visibility=EntryVisibility.PUBL,
                         )
                     ],
                     2,
