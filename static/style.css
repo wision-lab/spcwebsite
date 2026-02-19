@@ -707,16 +707,90 @@ img-comparison-slider>figure>img {
 }
 
 img-comparison-slider {
-    display: flex;
+    display: block;
 }
 
-img-comparison-slider figcaption {
+.slider-wrapper figcaption,
+img-comparison-slider.labels-hidden figcaption {
     transition: opacity 0.3s;
 }
 
+.slider-wrapper.labels-hidden figcaption,
 img-comparison-slider.labels-hidden figcaption {
     opacity: 0 !important;
     transition: opacity 0.15s;
+}
+
+/* Wrapper that holds the slider + fullscreen button */
+.slider-wrapper {
+    position: relative;
+}
+
+/* Fullscreen toggle button */
+.slider-fullscreen-btn {
+    position: absolute;
+    top: 4px;
+    right: 12px;
+    z-index: 10;
+    background: #fff;
+    border: 1px solid #c0c0c0;
+    border-radius: 8px;
+    padding: 5px 6px;
+    cursor: pointer;
+    line-height: 0;
+    opacity: 0.8;
+    color: #2e3452;
+    transition: opacity 0.3s, background 0.15s;
+}
+
+.slider-fullscreen-btn:hover {
+    opacity: 1;
+    background: #f0f4ff;
+    filter: none;
+}
+
+/* Hide button together with labels while dragging */
+.slider-wrapper.labels-hidden .slider-fullscreen-btn {
+    opacity: 0 !important;
+    pointer-events: none;
+    transition: opacity 0.15s;
+}
+
+/* Hide the zoom-in button while this slider's overlay is open */
+.slider-wrapper.slider-zoomed .slider-fullscreen-btn {
+    opacity: 0 !important;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+
+/* Enlarged slider overlay */
+#slider-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.88);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#slider-overlay[hidden] {
+    display: none;
+}
+
+/* Close button fixed to the top-right corner of the overlay */
+.slider-overlay-close {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #fff;
+}
+
+.slider-overlay-close:hover {
+    background: rgba(255, 255, 255, 0.28) !important;
+    filter: none !important;
 }
 
 /* For upload pbar */
