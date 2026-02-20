@@ -87,7 +87,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Keyboard navigation
     document.addEventListener('keydown', function (e) {
-        if (overlay.hidden) return;
+        if (overlay.hidden) {
+            if ((e.key === 'f' || e.key === 'F') && sliders.length > 0) {
+                e.preventDefault();
+                // Zoom in on the focused slider, or the first one if none/other is focused
+                const active = document.activeElement;
+                if (active && active.nodeName === 'IMG-COMPARISON-SLIDER' && active.id !== 'slider-overlay-slider') {
+                    openOverlay(active);
+                } else {
+                    openOverlay(sliders[0]);
+                }
+            }
+            return;
+        }
 
         if (e.key === 'Escape') {
             closeOverlay();

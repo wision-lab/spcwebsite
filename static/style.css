@@ -708,6 +708,7 @@ img-comparison-slider>figure>img {
 
 img-comparison-slider {
     display: block;
+    outline: none;
 }
 
 .slider-wrapper figcaption,
