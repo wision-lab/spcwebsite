@@ -39,6 +39,18 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('mouseup', () => overlaySlider.classList.remove('labels-hidden'));
     window.addEventListener('touchend', () => overlaySlider.classList.remove('labels-hidden'));
 
+    // Hide labels when using arrow keys to move the slider in zoomed view
+    overlaySlider.addEventListener('keydown', (e) => {
+        if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
+            overlaySlider.classList.add('labels-hidden');
+        }
+    });
+    overlaySlider.addEventListener('keyup', (e) => {
+        if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
+            overlaySlider.classList.remove('labels-hidden');
+        }
+    });
+
     let currentSliderIndex = -1;
     let sliders = [];
 
@@ -118,5 +130,14 @@ document.addEventListener('DOMContentLoaded', function () {
         slider.addEventListener('touchstart', hide, { passive: true });
         window.addEventListener('mouseup', show);
         window.addEventListener('touchend', show);
+
+        // Hide labels when moving with keyboard
+        slider.tabIndex = 0;
+        slider.addEventListener('keydown', (e) => {
+            if (['ArrowLeft', 'ArrowRight'].includes(e.key)) hide();
+        });
+        slider.addEventListener('keyup', (e) => {
+            if (['ArrowLeft', 'ArrowRight'].includes(e.key)) show();
+        });
     });
 });
