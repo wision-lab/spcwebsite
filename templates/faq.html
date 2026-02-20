@@ -37,7 +37,7 @@ bitplanes = np.unpackbits(photoncube[:10], axis=2)
 print(bitplanes.shape)  # (10, 800, 800, 3)
 </code></pre> 
 
-    Importantly, ground truth reconstructions correspond to the <u><i>last frame</i></u> of each burst. In this case, <span class="inline-code">datasets/train/attic/000000.png</span> is the reconstruction of <span class="inline-code">np.unpackbits(photoncube[-1], axis=2)</span>. This ensures a causal context window, were each reconstruction only depends on previously captured single-photon data. 
+    Importantly, ground truth reconstructions correspond to the <u><i>last frame</i></u> of each burst. In this case, <span class="inline-code">datasets/train/attic/000000.png</span> is the reconstruction of <span class="inline-code">np.unpackbits(photoncube[-1], axis=2)</span>. This ensures a causal context window, where each reconstruction only depends on previously captured single-photon data. 
 
     The test set is structured the same way, with the exception that ground truth reconstructions are not made public.   
 </p>
@@ -51,7 +51,7 @@ print(bitplanes.shape)  # (10, 800, 800, 3)
 
 <h5>A naive implementation</h5>
 <p>
-    The simplest way to reconstruct an image from single photon (binary) frames is to simply sum them up. We provide a simple implementation of this baseline here as a reference, feel free to run this locally to inspect the generated submission file, but please do not upload <span class="inline-code">naivesum</span> results, as these have already been evaluated <a href="{% url 'eval:reconstruction' %}">here</a>.   
+    The simplest way to reconstruct an image from single-photon (binary) frames is to simply sum them up. We provide a simple implementation of this baseline here as a reference, feel free to run this locally to inspect the generated submission file, but please do not upload <span class="inline-code">naivesum</span> results, as these have already been evaluated <a href="{% url 'eval:reconstruction' %}">here</a>.   
 </p>
 <pre style="padding: 0;"><code class="language-python">from pathlib import Path
 from zipfile import ZipFile
@@ -94,6 +94,12 @@ def naivesum(
 </p>
 
 
+<h4>Which metrics are used for evaluation?</h4>
+<p>
+    To evaluate reconstruction quality, we use <a href="https://lightning.ai/docs/torchmetrics/stable/image/peak_signal_noise_ratio.html">Peak Signal-to-Noise Ratio (PSNR)</a>, <a href="https://lightning.ai/docs/torchmetrics/stable/image/multi_scale_structural_similarity.html">Multi-Scale Structural Similarity Index Measure (MS-SSIM)</a>, and <a href="https://lightning.ai/docs/torchmetrics/stable/image/learned_perceptual_image_patch_similarity.html">Learned Perceptual Image Patch Similarity (LPIPS)</a>. For each metric, we compute the mean as well as the 5% and 1% quantiles to capture both average-case and worst-case performance. Note that for LPIPS, a lower score indicates better performance.
+</p>
+
+
 <h4>Can I benchmark my method without participating in the ongoing competition?</h4>
 <p>
     Of course! You can always submit your results for evaluation and not participate in the competition. However, to participate in the competition, you must not only submit your results for evaluation here, but also submit additional information about your method. Competition guidelines can <a href="{% url 'competition' %}">be found here.</a>
@@ -102,7 +108,7 @@ def naivesum(
 
 <h4>Further Questions?</h4>
 <p>
-    If you find a website related bug, please feel free to open a <a href="https://github.com/wision-lab/spcwebsite">github issue here</a>. For other inquiries, please <a href="https://wisionlab.com/people/sacha-jungerman/">contact us here</a>.
+    If you find a website-related bug, please feel free to open a <a href="https://github.com/wision-lab/spcwebsite">Github issue here</a>. For other inquiries, please <a href="https://wisionlab.com/people/sacha-jungerman/">contact us here</a>.
 </p>
 
 {% endblock %}

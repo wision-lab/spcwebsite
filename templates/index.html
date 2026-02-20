@@ -4,7 +4,7 @@
 {% load static %}
 
 <p>
-    Welcome to the Single Photon Challenge website! Here you'll find large synthetic <a href="{% url 'download' %}">single photon datasets</a> that consists of bursts of single photon camera images and their corresponding ground truth reconstructions. There is also a <a href="{% url 'eval:reconstruction' %}">public leaderboard</a> showcasing various user submitted reconstructions for this benchmark. You can <a href="{% url 'eval:compare' %}">directly compare</a> submissions as well!    
+    Welcome to the Single Photon Challenge website! Here you'll find large synthetic <a href="{% url 'download' %}">single photon datasets</a> that consist of bursts of single photon camera images and their corresponding ground truth reconstructions. There is also a <a href="{% url 'eval:reconstruction' %}">public leaderboard</a> showcasing various user-submitted reconstructions for this benchmark. You can <a href="{% url 'eval:compare' %}">directly compare</a> submissions as well!    
 </p>
 </br>
 
@@ -15,19 +15,19 @@
             <img width="95%" src="{% static 'teaserimage-light.png' %}" alt="Teaser image">
         </picture>
         <figcaption>
-            Single photon cameras are capable of detecting individual photons, making them extremely sensitive, high speed cameras. However, each image they capture is extremely noisy and binary valued, being dominated by photon shot noise. Given a burst of such binary frames, how can we recover a clean, high fidelity image?   
+            Single-photon cameras are capable of detecting individual photons, making them extremely sensitive, high-speed cameras. However, each image they capture is extremely noisy and binary valued, being dominated by photon shot noise. Given a burst of such binary frames, how can we recover a clean, high-fidelity image?   
         </figcaption>
     </figure>
 </div>
 
 <h3>Ongoing Competition 📢</h3>
 <p>
-    <b>Reconstruction Competition:</b> Consider participating in the ongoing reconstruction competition for your chance to win thousands of dollars of prizes! Up to date competition guidelines can <a href="{% url 'competition' %}">be found here.</a></li>
+    <b>Reconstruction Competition:</b> Consider participating in the ongoing reconstruction competition for your chance to win thousands of dollars in prizes! Up to date competition guidelines can <a href="{% url 'competition' %}">be found here.</a></li>
 </p>
 
 <h3>News</h3>
 <ul>
-    <li>December 1, 2025: Fixed an issue which prevented some users from uploading their submissions from Windows machines. We thank early testers for letting us know about this issue.</li>
+    <li>December 1, 2025: Fixed an issue that prevented some users from uploading their submissions from Windows machines. We thank early testers for letting us know about this issue.</li>
     <li>October 10, 2025: The dataset is now available <a href="{% url 'download' %}">here</a>! Check out the <a href="{% url 'faq' %}">FAQ</a> for instructions on how to submit.</li>
     <li>October 8, 2025: Hello world &ndash; this website is now live! The dataset is coming soon.</li>
 </ul>
