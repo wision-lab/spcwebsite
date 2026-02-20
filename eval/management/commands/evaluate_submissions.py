@@ -76,10 +76,10 @@ class Command(BaseCommand):
         submission.psnr_mean, submission.ssim_mean, submission.lpips_mean = (
             metrics.mean(axis=0)
         )
-        submission.psnr_5p, submission.ssim_5p, _ = np.percentile(metrics, 0.05, axis=0)
-        submission.psnr_1p, submission.ssim_1p, _ = np.percentile(metrics, 0.01, axis=0)
-        _, _, submission.lpips_5p = np.percentile(metrics, 0.95, axis=0)
-        _, _, submission.lpips_1p = np.percentile(metrics, 0.99, axis=0)
+        submission.psnr_5p, submission.ssim_5p, _ = np.quantile(metrics, 0.05, axis=0)
+        submission.psnr_1p, submission.ssim_1p, _ = np.quantile(metrics, 0.01, axis=0)
+        _, _, submission.lpips_5p = np.quantile(metrics, 0.95, axis=0)
+        _, _, submission.lpips_1p = np.quantile(metrics, 0.99, axis=0)
         return metrics
 
     def handle(self, *args, **options):
