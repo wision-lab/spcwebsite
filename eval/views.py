@@ -21,41 +21,46 @@ class ReconstructionEntriesView(View):
 
     def get(self, request):
         sortby = request.GET.get("sortby", "")
+        sortby_col = sortby.removeprefix("-")
 
-        if sortby.removeprefix("-") not in self.VALID_KEYS:
+        if sortby_col not in self.VALID_KEYS:
             sortby = ReconstructionEntry.metric_fields[0].name
+            sortby_col = sortby.removeprefix("-")
 
         if request.user.is_authenticated:
+            # Include all entries of user, if they are successful and active (not deleted)
             my_entries = (
                 ReconstructionEntry.objects.filter(creator__exact=request.user.pk)
                 .filter(process_status=EntryStatus.SUCCESS)
                 .filter(is_active=True)
             )
+            # Remove any entries that might be missing a metric
+            my_entries = my_entries.exclude(**{sortby_col: -1.0})
         else:
             my_entries = ReconstructionEntry.objects.none()
 
-        if request.user.is_superuser:
-            entries = (
-                ReconstructionEntry.objects.filter(process_status=EntryStatus.SUCCESS)
-                .filter(is_active=True)
-                .union(my_entries)
-                .order_by(sortby)
+        if not request.user.is_superuser:
+            entries = ReconstructionEntry.objects.exclude(
+                visibility=EntryVisibility.PRIV
             )
         else:
-            entries = (
-                ReconstructionEntry.objects.exclude(visibility=EntryVisibility.PRIV)
-                .filter(process_status=EntryStatus.SUCCESS)
-                .filter(is_active=True)
-                .union(my_entries)
-                .order_by(sortby)
-            )
+            entries = ReconstructionEntry.objects
 
-        if "↑" in self.VALID_KEYS[sortby.removeprefix("-")]:
+        # Remove any entries that might be missing a metric
+        entries = entries.exclude(**{sortby_col: -1.0})
+
+        # Filter out un-successful entries and deleted ones, merge with user entries
+        entries = entries.filter(process_status=EntryStatus.SUCCESS).filter(
+            is_active=True
+        )
+        entries = entries.union(my_entries).order_by(sortby)
+
+        if "↑" in self.VALID_KEYS[sortby_col]:
             entries = entries.reverse()
 
         context = {
             "entries": entries,
-            "sortby": sortby.removeprefix("-"),
+            "sortby": sortby_col,
             "direction": "-" not in sortby,
             "metric_fields": ReconstructionEntry.metric_fields,
         }
