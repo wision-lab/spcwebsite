@@ -696,8 +696,9 @@ button.btn-danger:hover {
 .auto-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    margin: auto;
+    margin: 0 auto;
     gap: 2%;
+    padding-bottom: 2.5rem;
 }
 
 img-comparison-slider>figure>img {
@@ -709,6 +710,15 @@ img-comparison-slider>figure>img {
 img-comparison-slider {
     display: block;
     outline: none;
+}
+
+.shortcuts-footer {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin: 1.5rem;
+    text-align: center;
+    width: 100%;
+    clear: both;
 }
 
 .slider-wrapper figcaption,
