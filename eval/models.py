@@ -87,17 +87,17 @@ class ReconstructionEntry(ResultEntry):
     (UPLOAD_DIRECTORY / PREFIX).mkdir(exist_ok=True)
 
     # Evaluation fields
-    psnr_mean = models.FloatField("Mean\nPSNR ↑", default=-1)
-    ssim_mean = models.FloatField("Mean\nMS-SSIM ↑", default=-1)
-    lpips_mean = models.FloatField("Mean\nLPIPS ↓", default=-1)
+    psnr_mean = models.FloatField("Mean\nPSNR ↑", default=-1, null=True)
+    ssim_mean = models.FloatField("Mean\nMS-SSIM ↑", default=-1, null=True)
+    lpips_mean = models.FloatField("Mean\nLPIPS ↓", default=-1, null=True)
 
-    psnr_5p = models.FloatField("5% Low\nPSNR ↑", default=-1)
-    ssim_5p = models.FloatField("5% Low\nMS-SSIM ↑", default=-1)
-    lpips_5p = models.FloatField("5% Low\nLPIPS ↓", default=-1)
+    psnr_5p = models.FloatField("5% Low\nPSNR ↑", default=-1, null=True)
+    ssim_5p = models.FloatField("5% Low\nMS-SSIM ↑", default=-1, null=True)
+    lpips_5p = models.FloatField("5% Low\nLPIPS ↓", default=-1, null=True)
 
-    psnr_1p = models.FloatField("1% Low\nPSNR ↑", default=-1)
-    ssim_1p = models.FloatField("1% Low\nMS-SSIM ↑", default=-1)
-    lpips_1p = models.FloatField("1% Low\nLPIPS ↓", default=-1)
+    psnr_1p = models.FloatField("1% Low\nPSNR ↑", default=-1, null=True)
+    ssim_1p = models.FloatField("1% Low\nMS-SSIM ↑", default=-1, null=True)
+    lpips_1p = models.FloatField("1% Low\nLPIPS ↓", default=-1, null=True)
 
     metric_fields = [
         psnr_mean,
