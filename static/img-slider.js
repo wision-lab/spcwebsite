@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const overlaySlider = document.createElement('img-comparison-slider');
     overlaySlider.id = 'slider-overlay-slider';
+    overlaySlider.tabIndex = -1; // Make it focusable
 
     const closeBtn = document.createElement('button');
     closeBtn.className = 'slider-fullscreen-btn slider-overlay-close';
@@ -38,7 +39,12 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('mouseup', () => overlaySlider.classList.remove('labels-hidden'));
     window.addEventListener('touchend', () => overlaySlider.classList.remove('labels-hidden'));
 
+    let currentSliderIndex = -1;
+    let sliders = [];
+
     function openOverlay(slider) {
+        currentSliderIndex = sliders.indexOf(slider);
+
         // Clone the slider's light-DOM children (the <figure> slots) into the overlay slider
         overlaySlider.innerHTML = '';
         Array.from(slider.children).forEach(function (child) {
@@ -48,6 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
         overlaySlider.parentElement.classList.add('slider-zoomed');
         document.body.style.overflow = 'hidden';
         overlay.hidden = false;
+        overlaySlider.focus();
     }
 
     function closeOverlay() {
@@ -55,6 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.style.overflow = '';
         overlaySlider.innerHTML = '';
         overlaySlider.parentElement.classList.remove('slider-zoomed');
+        currentSliderIndex = -1;
     }
 
     // Close on backdrop click
@@ -65,13 +73,27 @@ document.addEventListener('DOMContentLoaded', function () {
     // Close on magnify button click
     closeBtn.addEventListener('click', closeOverlay);
 
-    // Close on Escape
+    // Keyboard navigation
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && !overlay.hidden) closeOverlay();
+        if (overlay.hidden) return;
+
+        if (e.key === 'Escape') {
+            closeOverlay();
+        } else if (e.key === 'ArrowUp' && sliders.length > 0) {
+            e.preventDefault();
+            const nextIndex = (currentSliderIndex - 1 + sliders.length) % sliders.length;
+            openOverlay(sliders[nextIndex]);
+        } else if (e.key === 'ArrowDown' && sliders.length > 0) {
+            e.preventDefault();
+            const nextIndex = (currentSliderIndex + 1) % sliders.length;
+            openOverlay(sliders[nextIndex]);
+        }
     });
 
     // --- Per-slider setup ---
-    document.querySelectorAll('img-comparison-slider').forEach(function (slider) {
+    sliders = Array.from(document.querySelectorAll('img-comparison-slider')).filter(s => s.id !== 'slider-overlay-slider');
+
+    sliders.forEach(function (slider) {
         // Wrap slider so the magnify button can be positioned over it
         const wrapper = document.createElement('div');
         wrapper.className = 'slider-wrapper';
