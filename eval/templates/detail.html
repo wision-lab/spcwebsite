@@ -56,7 +56,7 @@
 </br>
 <div class="auto-grid">
     {% for gt_path, recon_path in image_paths %}
-    <img-comparison-slider>
+    <img-comparison-slider data-gt="{% static gt_path %}" data-reco="{% get_media_prefix %}{{ recon_path }}">
         <figure slot="first" class="before">
             <img slot="first" src="{% static gt_path %}" />
             <figcaption>Ground Truth</figcaption>
@@ -73,6 +73,7 @@
 <div class="shortcuts-footer">
     <b>Keyboard Shortcuts:</b>
     &nbsp;&nbsp; <b>[F]</b> to enlarge preview
+    &nbsp;&nbsp; &bull; &nbsp;&nbsp; <b>[S]</b> to swap side
     &nbsp;&nbsp; &bull; &nbsp;&nbsp; <b>[↑]</b>/<b>[↓]</b> to cycle through images
     &nbsp;&nbsp; &bull; &nbsp;&nbsp; <b>[←]</b>/<b>[→]</b> to move the slider
     &nbsp;&nbsp; &bull; &nbsp;&nbsp; <b>[Esc]</b> to close

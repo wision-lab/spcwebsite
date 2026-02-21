@@ -57,6 +57,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let currentSliderIndex = -1;
     let sliders = [];
+    let isSwapped = false;
+
+    function applySwap(slider, swapped) {
+        if (!slider || !slider.dataset.reco || !slider.dataset.gt) return;
+        const img1 = slider.querySelector('img[slot="first"]');
+        const img2 = slider.querySelector('img[slot="second"]');
+        const cap1 = slider.querySelector('figure[slot="first"] figcaption');
+        const cap2 = slider.querySelector('figure[slot="second"] figcaption');
+
+        if (!img1 || !img2) return;
+
+        if (swapped) {
+            img1.src = slider.dataset.reco;
+            img2.src = slider.dataset.gt;
+            if (cap1) cap1.textContent = 'Reconstruction';
+            if (cap2) cap2.textContent = 'Ground Truth';
+        } else {
+            img1.src = slider.dataset.gt;
+            img2.src = slider.dataset.reco;
+            if (cap1) cap1.textContent = 'Ground Truth';
+            if (cap2) cap2.textContent = 'Reconstruction';
+        }
+    }
 
     function openOverlay(slider) {
         currentSliderIndex = sliders.indexOf(slider);
@@ -64,9 +87,18 @@ document.addEventListener('DOMContentLoaded', function () {
         // Clone the slider's light-DOM children (the <figure> slots) into the overlay slider
         overlaySlider.innerHTML = '';
         overlaySlider.dataset.gt = slider.dataset.gt; // Copy ground truth path
+
+        // Copy reco path for detail view, only if it exists, otherwise swap will be enabled
+        if (slider.dataset.reco) {
+            overlaySlider.dataset.reco = slider.dataset.reco;
+        }
+
         Array.from(slider.children).forEach(function (child) {
             overlaySlider.appendChild(child.cloneNode(true));
         });
+
+        // Apply current swap state if applicable
+        applySwap(overlaySlider, isSwapped);
 
         // Set shortcuts description by copying from the footer if it exists
         const footer = document.querySelector('.shortcuts-footer');
@@ -121,6 +153,12 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('keydown', function (e) {
         const key = e.key.toLowerCase();
 
+        if (key === 's') {
+            isSwapped = !isSwapped;
+            sliders.forEach(s => applySwap(s, isSwapped));
+            if (!overlay.hidden) applySwap(overlaySlider, isSwapped);
+        }
+
         if (overlay.hidden) {
             if (key === 'f' && sliders.length > 0) {
                 e.preventDefault();
@@ -148,12 +186,14 @@ document.addEventListener('DOMContentLoaded', function () {
             openOverlay(sliders[nextIndex]);
             if (heldKeys.has('1')) toggleGT(overlaySlider, 'first', true);
             if (heldKeys.has('2')) toggleGT(overlaySlider, 'second', true);
+            applySwap(overlaySlider, isSwapped);
         } else if (e.key === 'ArrowDown' && sliders.length > 0) {
             e.preventDefault();
             const nextIndex = (currentSliderIndex + 1) % sliders.length;
             openOverlay(sliders[nextIndex]);
             if (heldKeys.has('1')) toggleGT(overlaySlider, 'first', true);
             if (heldKeys.has('2')) toggleGT(overlaySlider, 'second', true);
+            applySwap(overlaySlider, isSwapped);
         } else if (key === '1' || key === '2') {
             heldKeys.add(key);
             const slot = key === '1' ? 'first' : 'second';
