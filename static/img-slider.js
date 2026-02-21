@@ -29,8 +29,12 @@ document.addEventListener('DOMContentLoaded', function () {
     closeBtn.title = 'Close';
     closeBtn.setAttribute('aria-label', 'Close enlarged view');
 
-    overlay.appendChild(overlaySlider);
+    const overlayShortcuts = document.createElement('div');
+    overlayShortcuts.className = 'overlay-shortcuts';
+
     overlay.appendChild(closeBtn);
+    overlay.appendChild(overlaySlider);
+    overlay.appendChild(overlayShortcuts);
     document.body.appendChild(overlay);
 
     // Hide labels on overlay slider too
@@ -59,9 +63,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Clone the slider's light-DOM children (the <figure> slots) into the overlay slider
         overlaySlider.innerHTML = '';
+        overlaySlider.dataset.gt = slider.dataset.gt; // Copy ground truth path
         Array.from(slider.children).forEach(function (child) {
             overlaySlider.appendChild(child.cloneNode(true));
         });
+
+        // Set shortcuts description by copying from the footer if it exists
+        const footer = document.querySelector('.shortcuts-footer');
+        if (footer) {
+            overlayShortcuts.innerHTML = footer.innerHTML;
+        }
 
         overlaySlider.parentElement.classList.add('slider-zoomed');
         document.body.style.overflow = 'hidden';
@@ -85,10 +96,33 @@ document.addEventListener('DOMContentLoaded', function () {
     // Close on magnify button click
     closeBtn.addEventListener('click', closeOverlay);
 
+    function toggleGT(slider, slot, isDown) {
+        if (!slider) return;
+        const img = slider.querySelector(`img[slot="${slot}"]`);
+        const caption = slider.querySelector(`figure[slot="${slot}"] figcaption`);
+        if (!img || !slider.dataset.gt || !img.dataset.original) return;
+
+        const targetSrc = isDown ? slider.dataset.gt : img.dataset.original;
+        if (img.getAttribute('src') !== targetSrc) {
+            img.src = targetSrc;
+
+            if (caption) {
+                if (!caption.dataset.original) {
+                    caption.dataset.original = caption.textContent;
+                }
+                caption.textContent = isDown ? 'Ground Truth' : caption.dataset.original;
+            }
+        }
+    }
+
+    const heldKeys = new Set();
+
     // Keyboard navigation
     document.addEventListener('keydown', function (e) {
+        const key = e.key.toLowerCase();
+
         if (overlay.hidden) {
-            if ((e.key === 'f' || e.key === 'F') && sliders.length > 0) {
+            if (key === 'f' && sliders.length > 0) {
                 e.preventDefault();
                 // Zoom in on the focused slider, or the first one if none/other is focused
                 const active = document.activeElement;
@@ -97,20 +131,45 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else {
                     openOverlay(sliders[0]);
                 }
+            } else if (key === '1' || key === '2') {
+                heldKeys.add(key);
+                const slot = key === '1' ? 'first' : 'second';
+                sliders.forEach(s => toggleGT(s, slot, true));
             }
             return;
         }
 
         if (e.key === 'Escape') {
+            heldKeys.clear();
             closeOverlay();
         } else if (e.key === 'ArrowUp' && sliders.length > 0) {
             e.preventDefault();
             const nextIndex = (currentSliderIndex - 1 + sliders.length) % sliders.length;
             openOverlay(sliders[nextIndex]);
+            if (heldKeys.has('1')) toggleGT(overlaySlider, 'first', true);
+            if (heldKeys.has('2')) toggleGT(overlaySlider, 'second', true);
         } else if (e.key === 'ArrowDown' && sliders.length > 0) {
             e.preventDefault();
             const nextIndex = (currentSliderIndex + 1) % sliders.length;
             openOverlay(sliders[nextIndex]);
+            if (heldKeys.has('1')) toggleGT(overlaySlider, 'first', true);
+            if (heldKeys.has('2')) toggleGT(overlaySlider, 'second', true);
+        } else if (key === '1' || key === '2') {
+            heldKeys.add(key);
+            const slot = key === '1' ? 'first' : 'second';
+            toggleGT(overlaySlider, slot, true);
+        }
+    });
+
+    document.addEventListener('keyup', function (e) {
+        const key = e.key.toLowerCase();
+        if (key === '1' || key === '2') {
+            heldKeys.delete(key);
+            const slot = key === '1' ? 'first' : 'second';
+            if (!overlay.hidden) {
+                toggleGT(overlaySlider, slot, false);
+            }
+            sliders.forEach(s => toggleGT(s, slot, false));
         }
     });
 

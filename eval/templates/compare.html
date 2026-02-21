@@ -82,26 +82,30 @@
 </br>
 <div class="auto-grid">
     {% for path in image_subpaths %}
-    <img-comparison-slider>
+    <img-comparison-slider data-gt="{% get_static_prefix %}{{ gt_dir }}/{{ path }}">
         <figure slot="first" class="before">
-            <img slot="first" src="{% get_media_prefix %}{{ samples_dir_1 }}/{{ path }}" />
+            <img slot="first" src="{% get_media_prefix %}{{ samples_dir_1 }}/{{ path }}"
+                data-original="{% get_media_prefix %}{{ samples_dir_1 }}/{{ path }}" />
             <figcaption>#1</figcaption>
         </figure>
         <figure slot="second" class="after">
-            <img slot="second" src="{% get_media_prefix %}{{ samples_dir_2 }}/{{ path }}" />
+            <img slot="second" src="{% get_media_prefix %}{{ samples_dir_2 }}/{{ path }}"
+                data-original="{% get_media_prefix %}{{ samples_dir_2 }}/{{ path }}" />
             <figcaption>#2</figcaption>
         </figure>
     </img-comparison-slider>
     {% endfor %}
 </div>
 
-<p class="shortcuts-footer">
+<div class="shortcuts-footer">
     <b>Keyboard Shortcuts:</b>
-    &nbsp;&nbsp; [F] to enlarge preview
-    &nbsp;&nbsp; &bull; &nbsp;&nbsp; [↑]/[↓] to cycle through images
-    &nbsp;&nbsp; &bull; &nbsp;&nbsp; [←]/[→] to move the slider
-    &nbsp;&nbsp; &bull; &nbsp;&nbsp; [Esc] to close
-</p>
+    &nbsp;&nbsp; <b>[F]</b> to enlarge preview
+    &nbsp;&nbsp; &bull; &nbsp;&nbsp; <b>[↑]</b>/<b>[↓]</b> to cycle through images
+    &nbsp;&nbsp; &bull; &nbsp;&nbsp; <b>[←]</b>/<b>[→]</b> to move the slider
+    &nbsp;&nbsp; &bull; &nbsp;&nbsp; <b>[Esc]</b> to close
+    <p>Press and hold <b>[1]</b> or <b>[2]</b> to temporarily replace the corresponding image with the ground truth for
+        easier comparison.</p>
+</div>
 
 
 {% endblock %}

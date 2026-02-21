@@ -272,6 +272,7 @@ class CompareView(View):
             "emphasis": emphasis,
             "samples_dir_1": entry_1.sample_directory.relative_to(MEDIA_DIRECTORY),
             "samples_dir_2": entry_2.sample_directory.relative_to(MEDIA_DIRECTORY),
+            "gt_dir": SAMPLE_FRAMES_DIRECTORY / self.model.PREFIX,
             "image_subpaths": sorted(list(subpaths)),
         }
         return render(request, self.template_name, context=context)
