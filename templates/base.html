@@ -16,7 +16,8 @@
     <meta property="og:url" content="https://singlephotonchallenge.com/" />
     <meta property="og:image" content="https://singlephotonchallenge.com/static/website-logo.png" />
     <meta property="og:logo" content="https://singlephotonchallenge.com/static/website-logo.png" />
-    <meta property="og:description" content="Announcing the Single-Photon Challenge -- a first-of-its-kind competition for a fundamental problem in modern imaging: Reconstructing high-quality images from noisy, single-photon data." />
+    <meta property="og:description"
+        content="Announcing the Single-Photon Challenge -- a first-of-its-kind competition for a fundamental problem in modern imaging: Reconstructing high-quality images from noisy, single-photon data." />
 </head>
 
 <body>
@@ -31,21 +32,21 @@
             </a>
             <p style="margin-top:0.5rem;margin-bottom:0.5rem;">
                 <i>
-                    Sacha Jungerman<sup><small>1</small></sup>, 
-                    Atul Ingle<sup><small>2</small></sup>, 
-                    Sotiris Nousias<sup><small>3</small></sup>, 
-                    Mian Wei<sup><small>4</small></sup>, 
-                    Mel White<sup><small>5</small></sup>, 
+                    Sacha Jungerman<sup><small>1</small></sup>,
+                    Atul Ingle<sup><small>2</small></sup>,
+                    Sotiris Nousias<sup><small>3</small></sup>,
+                    Mian Wei<sup><small>4</small></sup>,
+                    Mel White<sup><small>5</small></sup>,
                     Mohit Gupta<sup><small>1</small></sup>
                 </i>
             </p>
             <p style="margin-top:0.5rem;margin-bottom:0.5rem;">
                 <i>
                     <sup><small>1</small></sup>University of Wisconsin - Madison,
-                    <sup><small>2</small></sup>Portland State University, 
-                    <sup><small>3</small></sup>Purdue University, 
+                    <sup><small>2</small></sup>Portland State University,
+                    <sup><small>3</small></sup>Purdue University,
                     </br>
-                    <sup><small>4</small></sup>Carnegie Mellon University, 
+                    <sup><small>4</small></sup>Carnegie Mellon University,
                     <sup><small>5</small></sup>US Naval Research Lab
                 </i>
             </p>
@@ -58,25 +59,27 @@
             <a href="https://visionsim.readthedocs.io/en/latest/">VisionSIM Toolkit</a>
             <a href="{% url 'faq' %}" {% if request.resolver_match.view_name == "faq" %}class="current"{% endif %}>FAQ</a>
         </nav>
-        <div style="float:left; text-align: center;">
-            {% if user.is_superuser %}
-            <a href="{% url 'admin:index' %}">Admin Panel</a> | 
-            {% endif %}
-            {% if user.is_authenticated %}
-            <a href="{% url 'core:password_change' %}">Change Password</a>
-            {% endif %}
-        </div>
-        <div style="float:right; text-align: center;">
-            {% if user.is_authenticated %}
-            <a href="{% url 'core:user' %}">{{ user.get_username }}</a> | 
-            <form method="post" action="{% url 'core:logout'%}" class="inline">
-                {% csrf_token %}
-                <button type="submit" class="link-button">Logout</button>
-            </form>
-            {% else %}
-            Not logged in | <a href="{% url 'core:login'%}">Login</a> | <a href="{% url 'core:signup'%}">Create
-                Account</a>
-            {% endif %}
+        <div style="padding: 0 1rem; overflow: hidden;">
+            <div style="float:left; text-align: center;">
+                {% if user.is_superuser %}
+                <a href="{% url 'admin:index' %}">Admin Panel</a> |
+                {% endif %}
+                {% if user.is_authenticated %}
+                <a href="{% url 'core:password_change' %}">Change Password</a>
+                {% endif %}
+            </div>
+            <div style="float:right; text-align: center;">
+                {% if user.is_authenticated %}
+                <a href="{% url 'core:user' %}">{{ user.get_username }}</a> |
+                <form method="post" action="{% url 'core:logout'%}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="link-button">Logout</button>
+                </form>
+                {% else %}
+                Not logged in | <a href="{% url 'core:login'%}">Login</a> | <a href="{% url 'core:signup'%}">Create
+                    Account</a>
+                {% endif %}
+            </div>
         </div>
     </header>
 
@@ -113,8 +116,10 @@
                 <td style="width:10%;text-align:center" class="noborder">
                     <a href="https://singularphotonics.com/" target="_blank" rel="noopener noreferrer">
                         <picture>
-                            <source srcset="{% static 'Singular-Photonics-Logo-dark.webp' %}" media="(prefers-color-scheme: dark)">
-                            <img style="width:90%;" src="{% static 'Singular-Photonics-Logo-light.webp' %}" alt="Singular Photonics">
+                            <source srcset="{% static 'Singular-Photonics-Logo-dark.webp' %}"
+                                media="(prefers-color-scheme: dark)">
+                            <img style="width:90%;" src="{% static 'Singular-Photonics-Logo-light.webp' %}"
+                                alt="Singular Photonics">
                         </picture>
                     </a>
                 </td>
