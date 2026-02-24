@@ -58,6 +58,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentSliderIndex = -1;
     let sliders = [];
     let isSwapped = false;
+    let touchStartX = 0;
+    let touchStartY = 0;
 
     function applySwap(slider, swapped) {
         if (!slider || !slider.dataset.reco || !slider.dataset.gt) return;
@@ -100,6 +102,10 @@ document.addEventListener('DOMContentLoaded', function () {
         // Apply current swap state if applicable
         applySwap(overlaySlider, isSwapped);
 
+        // Apply ground truth if keys are held
+        if (heldKeys.has('1')) toggleGT(overlaySlider, 'first', true);
+        if (heldKeys.has('2')) toggleGT(overlaySlider, 'second', true);
+
         // Set shortcuts description by copying from the footer if it exists
         const footer = document.querySelector('.shortcuts-footer');
         if (footer) {
@@ -127,6 +133,39 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Close on magnify button click
     closeBtn.addEventListener('click', closeOverlay);
+
+    // Swipe navigation
+    overlay.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    overlay.addEventListener('touchend', (e) => {
+        if (overlay.hidden) return;
+
+        const touchEndX = e.changedTouches[0].screenX;
+        const touchEndY = e.changedTouches[0].screenY;
+
+        const deltaX = touchEndX - touchStartX;
+        const deltaY = touchEndY - touchStartY;
+
+        const minDistance = 40; // minimum pixels
+        const maxAngle = 30;    // max degrees from vertical
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        const angle = Math.abs(Math.atan2(deltaX, Math.abs(deltaY))) * 180 / Math.PI;
+
+        if (distance > minDistance && angle < maxAngle) {
+            if (deltaY > 0) {
+                // Swipe Down -> Previous
+                const nextIndex = (currentSliderIndex - 1 + sliders.length) % sliders.length;
+                openOverlay(sliders[nextIndex]);
+            } else {
+                // Swipe Up -> Next
+                const nextIndex = (currentSliderIndex + 1) % sliders.length;
+                openOverlay(sliders[nextIndex]);
+            }
+        }
+    }, { passive: true });
 
     function toggleGT(slider, slot, isDown) {
         if (!slider) return;
@@ -184,16 +223,10 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             const nextIndex = (currentSliderIndex - 1 + sliders.length) % sliders.length;
             openOverlay(sliders[nextIndex]);
-            if (heldKeys.has('1')) toggleGT(overlaySlider, 'first', true);
-            if (heldKeys.has('2')) toggleGT(overlaySlider, 'second', true);
-            applySwap(overlaySlider, isSwapped);
         } else if (e.key === 'ArrowDown' && sliders.length > 0) {
             e.preventDefault();
             const nextIndex = (currentSliderIndex + 1) % sliders.length;
             openOverlay(sliders[nextIndex]);
-            if (heldKeys.has('1')) toggleGT(overlaySlider, 'first', true);
-            if (heldKeys.has('2')) toggleGT(overlaySlider, 'second', true);
-            applySwap(overlaySlider, isSwapped);
         } else if (key === '1' || key === '2') {
             heldKeys.add(key);
             const slot = key === '1' ? 'first' : 'second';
