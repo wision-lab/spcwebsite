@@ -1,4 +1,11 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<script defer src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/index.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/styles.css" />
+<script defer src="{% static 'img-slider.js' %}"></script>
+{% endblock %}
 
 {% block content %}
 {% load static %}
@@ -12,10 +19,6 @@
         <a href="{% url 'eval:compare' %}" style="text-decoration:none">🎲</a>
     </small>
 </h3>
-
-<script defer src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/index.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/styles.css" />
-<script defer src="{% static 'img-slider.js' %}"></script>
 
 <h4>Reconstruction</h4>
 <div style="overflow-x:auto;">

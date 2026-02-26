@@ -1,4 +1,13 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block extra_head %}
+{% if entry.process_status == "SUCCESS" %}
+<script defer src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/index.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/styles.css" />
+<script defer src="{% static 'img-slider.js' %}"></script>
+{% endif %}
+{% endblock %}
 
 {% block content %}
 {% load static %}
@@ -24,7 +33,7 @@
 
 {% if user.is_authenticated %}
 {% if user.pk == entry.creator.pk %}
-<nav style="padding-top:0px">
+<nav style="padding-top:0px; justify-content: left;">
     <a href="{% url 'eval:edit' entry.id %}" style="font-size:0.8rem">Edit</a>
     <a href="{% url 'eval:delete' entry.id %}" style="font-size:0.8rem">Delete</a>
 </nav>
@@ -34,10 +43,6 @@
 {% endif %}
 
 {% if entry.process_status == "SUCCESS" %}
-<script defer src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/index.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/styles.css" />
-<script defer src="{% static 'img-slider.js' %}"></script>
-
 <h4>Reconstruction</h4>
 <div style="overflow-x:auto;">
     <table>
