@@ -20,7 +20,7 @@
 {% if entry.process_status == "FAIL" %}
 <p>&nbsp;&#x2716; <i>{{entry.get_process_status_display}}</i></p>
 {% endif %}
-<p>{{entry.pub_date}} &nbsp;&mdash;&nbsp; {{entry.get_visibility_display}}</p>
+<p>Submitted: {{entry.pub_date}} &nbsp;&mdash;&nbsp; {{entry.get_visibility_display}}</p>
 {% if not entry.visibility == "ANON" and entry.citation|length > 0 %}
 <p>{{ entry.citation }}</p>
 {% endif %}
@@ -43,7 +43,6 @@
 {% endif %}
 
 {% if entry.process_status == "SUCCESS" %}
-<h4>Reconstruction</h4>
 <div style="overflow-x:auto;">
     <table>
         <tr>
