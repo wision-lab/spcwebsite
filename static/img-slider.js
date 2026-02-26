@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const iconZoomIn = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    const iconZoomIn = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="11" cy="11" r="8"/>
         <line x1="21" y1="21" x2="16.65" y2="16.65"/>
         <line x1="11" y1="8" x2="11" y2="14"/>
         <line x1="8" y1="11" x2="14" y2="11"/>
     </svg>`;
 
-    const iconClose = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    const iconClose = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <line x1="18" y1="6" x2="6" y2="18"/>
         <line x1="6" y1="6" x2="18" y2="18"/>
     </svg>`;
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const overlaySlider = document.createElement('img-comparison-slider');
     overlaySlider.id = 'slider-overlay-slider';
-    overlaySlider.tabIndex = -1; // Make it focusable
+    overlaySlider.tabIndex = 0; // Make it focusable
 
     const closeBtn = document.createElement('button');
     closeBtn.className = 'slider-fullscreen-btn slider-overlay-close';
@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let isSwapped = false;
     let touchStartX = 0;
     let touchStartY = 0;
+    let touchStartTime = 0;
 
     function applySwap(slider, swapped) {
         if (!slider || !slider.dataset.reco || !slider.dataset.gt) return;
@@ -106,21 +107,41 @@ document.addEventListener('DOMContentLoaded', function () {
         if (heldKeys.has('1')) toggleGT(overlaySlider, 'first', true);
         if (heldKeys.has('2')) toggleGT(overlaySlider, 'second', true);
 
-        // Set shortcuts description by copying from the footer if it exists
-        const footer = document.querySelector('.shortcuts-footer');
-        if (footer) {
-            overlayShortcuts.innerHTML = footer.innerHTML;
+        // Set shortcuts description: show swipe hints on touch devices
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        if (isTouchDevice) {
+            overlayShortcuts.innerHTML = '<p><b>Swipe Up / Down</b> to cycle through images. &nbsp;&bull;&nbsp; <b>Tap backdrop</b> to close.</p>';
+        } else {
+            const footer = document.querySelector('.shortcuts-footer');
+            if (footer) {
+                overlayShortcuts.innerHTML = footer.innerHTML;
+            }
         }
 
         overlaySlider.parentElement.classList.add('slider-zoomed');
         document.body.style.overflow = 'hidden';
         overlay.hidden = false;
-        overlaySlider.focus();
+
+        // Set initial value to match source slider if possible
+        if (slider.value !== undefined) {
+            overlaySlider.value = slider.value;
+        } else {
+            overlaySlider.value = 50;
+        }
+
+        // Delay focus slightly to ensure element is visible and transition has started
+        // Also use requestAnimationFrame for better browser compatibility
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                overlaySlider.focus();
+            }, 50);
+        });
     }
 
     function closeOverlay() {
         overlay.hidden = true;
         document.body.style.overflow = '';
+        overlayShortcuts.innerHTML = '';
         overlaySlider.innerHTML = '';
         overlaySlider.parentElement.classList.remove('slider-zoomed');
         currentSliderIndex = -1;
@@ -138,6 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
     overlay.addEventListener('touchstart', (e) => {
         touchStartX = e.changedTouches[0].screenX;
         touchStartY = e.changedTouches[0].screenY;
+        touchStartTime = Date.now();
     }, { passive: true });
 
     overlay.addEventListener('touchend', (e) => {
@@ -148,13 +170,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const deltaX = touchEndX - touchStartX;
         const deltaY = touchEndY - touchStartY;
+        const duration = Date.now() - touchStartTime;
 
         const minDistance = 40; // minimum pixels
         const maxAngle = 30;    // max degrees from vertical
+        const minVelocity = 0.5; // px/ms
+
         const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        const velocity = distance / duration;
         const angle = Math.abs(Math.atan2(deltaX, Math.abs(deltaY))) * 180 / Math.PI;
 
-        if (distance > minDistance && angle < maxAngle) {
+        if (distance > minDistance && angle < maxAngle && velocity > minVelocity) {
             if (deltaY > 0) {
                 // Swipe Down -> Previous
                 const nextIndex = (currentSliderIndex - 1 + sliders.length) % sliders.length;

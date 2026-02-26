@@ -213,7 +213,7 @@ input[type=submit] {
     font-family: var(--sans-font);
     font-weight: 500;
     font-size: 0.95rem;
-    color: #fff !important;
+    color: #fff;
     padding: 0.75rem 1.25rem;
     margin: 0.5rem 0;
     transition: all 0.2s ease;
@@ -893,6 +893,7 @@ img-comparison-slider>figure>img {
 img-comparison-slider {
     display: inherit;
     outline: none;
+    border-radius: 8px;
 }
 
 .shortcuts-footer {
@@ -933,7 +934,7 @@ img-comparison-slider.labels-hidden figcaption {
     cursor: pointer;
     line-height: 0;
     opacity: 0.8;
-    color: #2e3452 !important;
+    color: #2e3452;
     transition: opacity 0.3s, background 0.15s;
 }
 
@@ -962,46 +963,68 @@ img-comparison-slider.labels-hidden figcaption {
     position: fixed;
     inset: 0;
     z-index: 1000;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
-    flex-direction: row;
-    flex-wrap: wrap;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 #slider-overlay-slider {
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 95%;
+    max-height: 80vh;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 #slider-overlay[hidden] {
-    display: none;
+    display: flex !important;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 /* Close button fixed to the top-right corner of the overlay */
 .slider-overlay-close {
     position: fixed;
-    top: 16px;
-    right: 16px;
+    top: 24px;
+    right: 24px;
     background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     color: #fff;
+    border-radius: 50%;
+    padding: 10px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 1010;
 }
 
 .slider-overlay-close:hover {
     background: rgba(255, 255, 255, 0.28) !important;
-    filter: none !important;
+    transform: scale(1.1);
 }
 
 /* Shortcuts help in the overlay */
 .overlay-shortcuts {
-    color: rgba(255, 255, 255, 0.7);
-    padding: 20px;
-    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 12px 24px;
+    font-size: 0.9rem;
     text-align: center;
     pointer-events: none;
-    width: 90%;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    max-width: 90%;
 }
 
 .overlay-shortcuts b {
@@ -1010,6 +1033,30 @@ img-comparison-slider.labels-hidden figcaption {
 
 .overlay-shortcuts p {
     margin: 0;
+}
+
+@media only screen and (max-width: 768px) {
+    #slider-overlay {
+        padding: 20px;
+    }
+
+    #slider-overlay-slider {
+        max-height: 70vh;
+        width: 100%;
+    }
+
+    .slider-overlay-close {
+        top: 16px;
+        right: 16px;
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .overlay-shortcuts {
+        font-size: 0.8rem;
+        padding: 10px 20px;
+    }
 }
 
 /* For upload pbar */
