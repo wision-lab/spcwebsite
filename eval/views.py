@@ -240,7 +240,8 @@ class CompareView(View):
         )
 
         if not self.test_func([entry_1, entry_2]):
-            return self.handle_no_permission()
+            # If user cannot see the entries, send them back to the leaderboard
+            return redirect("eval:reconstruction")
         return super().dispatch(
             request, *args, entry_1=entry_1, entry_2=entry_2, **kwargs
         )
