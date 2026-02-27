@@ -1114,3 +1114,40 @@ span.inline-code {
         font-size: 0.85rem;
     }
 }
+
+.pagination {
+    margin: 2rem 0;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination nav {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    background: var(--accent-bg);
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+}
+
+.pagination a {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.pagination a:hover {
+    background: var(--accent-soft);
+    text-decoration: none;
+}
+
+.pagination .current {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    padding: 0 0.5rem;
+    font-weight: 600;
+}

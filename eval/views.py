@@ -3,6 +3,7 @@ import random
 from pathlib import Path
 from zipfile import BadZipFile, ZipFile
 
+from django.core.paginator import Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -58,8 +59,12 @@ class ReconstructionEntriesView(View):
         if "↑" in self.VALID_KEYS[sortby_col]:
             entries = entries.reverse()
 
+        paginator = Paginator(entries, 50)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+
         context = {
-            "entries": entries,
+            "page_obj": page_obj,
             "sortby": sortby_col,
             "direction": "-" not in sortby,
             "metric_fields": ReconstructionEntry.metric_fields,
