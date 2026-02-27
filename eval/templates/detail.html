@@ -37,7 +37,7 @@
     <a href="{% url 'eval:edit' entry.id %}" style="font-size:0.8rem">Edit</a>
     <a href="{% url 'eval:delete' entry.id %}" style="font-size:0.8rem">Delete</a>
 </nav>
-{% else %}
+{% elif user.is_superuser and entry.visibility == "PRIV" %}
 <p>Note: This entry is private, you are seeing it because you are an admin 🥸.</p>
 {% endif %}
 {% endif %}
