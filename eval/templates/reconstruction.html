@@ -9,6 +9,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         const tableRows = document.querySelectorAll('tbody tr.entry');
         const compareBtn = document.getElementById('compare-btn');
+        const toggle = document.getElementById('collapse-toggle');
         var selectedRows = [];
 
         compareBtn.addEventListener('click', function() {
@@ -43,10 +44,32 @@
                 }
             });
         });
+
+        toggle.addEventListener('change', function() {
+            const url = new URL(window.location.href);
+            if (this.checked) {
+                url.searchParams.set('collapse', '1');
+            } else {
+                url.searchParams.delete('collapse');
+            }
+            // Reset to page 1 when toggling
+            url.searchParams.delete('page');
+            window.location.href = url.toString();
+        });
     });
 </script>
 
-<h4>Reconstruction Results</h4>
+<div class="reconstruction-header">
+    <h4>Reconstruction Results</h4>
+    <label class="toggle-container" title="Show only the best entry for each participant (for the selected metric)">
+        <span>Collapse Users</span>
+        <div class="toggle-switch">
+            <input type="checkbox" id="collapse-toggle" {% if collapse %}checked{% endif %}>
+            <span class="toggle-slider"></span>
+        </div>
+    </label>
+</div>
+
 <div style="overflow-x:auto;">
 <table style="margin: 0;">
     <tr>
@@ -59,7 +82,7 @@
         
         {% for metric in metric_fields %}
         <th class="{% if forloop.counter0|divisibleby:3 %}leftbig{% endif %} clickable">
-            <a href="{% url 'eval:reconstruction' %}?sortby={% if direction and sortby == metric.name %}-{% endif %}{{ metric.name }}">
+            <a href="{% url 'eval:reconstruction' %}?sortby={% if direction and sortby == metric.name %}-{% endif %}{{ metric.name }}{% if collapse %}&collapse=1{% endif %}">
                 <p style="display: inline;">{{ metric.verbose_name|linebreaksbr }}</p>
                 <span style="display: inline;">{% if sortby == metric.name %}{% if not direction %}▲{% else %}▼{% endif %}{% endif %}</span>
             </a>
@@ -74,10 +97,10 @@
         </td>
         <td>
             <div class="namebox">
-                <span>
-                    {% if entry.visibility == "PRIV" %}<span style="font-size: small;">{% if entry.creator.id != user.id %}🥸{% else %}🚫{% endif %}</span>&nbsp;{% endif %}
-                    <a href="{% url 'eval:detail' entry.id %}">{{ entry.name }}</a>
-                </span>
+                <a href="{% url 'eval:detail' entry.id %}">
+                    {% if entry.visibility == "PRIV" %}<span style="font-size: small;">{% if entry.creator.id != user.id %}🥸{% else %}🚫{% endif %}</span>&nbsp;&nbsp;{% endif %}{{ entry.name }}
+                </a>
+                {% if entry.collapsed_count > 1 %}<span class="collapsed-badge" title="Only the best out of {{ entry.collapsed_count }} submissions by this user is shown.">Best of {{ entry.collapsed_count }}</span>{% endif %}
                 {% if entry.visibility != "ANON" and entry.code_url|length > 0 %}
                     &nbsp;<a href="{{ entry.code_url }}" target="_blank" rel="noopener noreferrer" class="codebutton">code</a>
                 {% endif %}
@@ -107,8 +130,8 @@
 <div class="pagination">
     <nav>
         {% if page_obj.has_previous %}
-            <a href="?page=1{% if sortby %}&sortby={% if not direction %}-{% endif %}{{ sortby }}{% endif %}">&laquo; First</a>
-            <a href="?page={{ page_obj.previous_page_number }}{% if sortby %}&sortby={% if not direction %}-{% endif %}{{ sortby }}{% endif %}">Previous</a>
+            <a href="?page=1{% if sortby %}&sortby={% if not direction %}-{% endif %}{{ sortby }}{% endif %}{% if collapse %}&collapse=1{% endif %}">&laquo; First</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if sortby %}&sortby={% if not direction %}-{% endif %}{{ sortby }}{% endif %}{% if collapse %}&collapse=1{% endif %}">Previous</a>
         {% endif %}
 
         <span class="current">
@@ -116,8 +139,8 @@
         </span>
 
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}{% if sortby %}&sortby={% if not direction %}-{% endif %}{{ sortby }}{% endif %}">Next</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}{% if sortby %}&sortby={% if not direction %}-{% endif %}{{ sortby }}{% endif %}">Last &raquo;</a>
+            <a href="?page={{ page_obj.next_page_number }}{% if sortby %}&sortby={% if not direction %}-{% endif %}{{ sortby }}{% endif %}{% if collapse %}&collapse=1{% endif %}">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}{% if sortby %}&sortby={% if not direction %}-{% endif %}{{ sortby }}{% endif %}{% if collapse %}&collapse=1{% endif %}">Last &raquo;</a>
         {% endif %}
     </nav>
 </div>

@@ -15,6 +15,8 @@ from django.views import View, generic
 from .constants import EVAL_FILES, MEDIA_DIRECTORY, SAMPLE_FRAMES_DIRECTORY
 from .forms import EditResultEntryForm, UploadFileForm
 from .models import EntryStatus, EntryVisibility, ReconstructionEntry
+from django.db import models
+from django.db.models import Q, OuterRef, Subquery, Count, Case, When, F, Value
 
 
 class ReconstructionEntriesView(View):
@@ -22,42 +24,74 @@ class ReconstructionEntriesView(View):
 
     def get(self, request):
         sortby = request.GET.get("sortby", "")
+        collapse_users = request.GET.get("collapse", "0") == "1"
         sortby_col = sortby.removeprefix("-")
+        direction = not sortby.startswith("-")
 
         if sortby_col not in self.VALID_KEYS:
             sortby = ReconstructionEntry.metric_fields[0].name
             sortby_col = sortby.removeprefix("-")
 
+        # Flip direction if metric if higher-is-better
+        if "↑" in self.VALID_KEYS[sortby_col]:
+            sortby = f"-{sortby}" if direction else sortby.removeprefix("-")
+
+        # Base query: SUCCESS and active entries
+        entries = ReconstructionEntry.objects.filter(
+            process_status=EntryStatus.SUCCESS, is_active=True
+        ).exclude(**{sortby_col: -1.0})
+
+        # Base visibility filter
+        visible_q = Q(visibility__in=[EntryVisibility.PUBL, EntryVisibility.ANON])
         if request.user.is_authenticated:
-            # Include all entries of user, if they are successful and active (not deleted)
-            my_entries = (
-                ReconstructionEntry.objects.filter(creator__exact=request.user.pk)
-                .filter(process_status=EntryStatus.SUCCESS)
-                .filter(is_active=True)
-            )
-            # Remove any entries that might be missing a metric
-            my_entries = my_entries.exclude(**{sortby_col: -1.0})
-        else:
-            my_entries = ReconstructionEntry.objects.none()
+            visible_q |= Q(creator=request.user)
 
         if not request.user.is_superuser:
-            entries = ReconstructionEntry.objects.exclude(
-                visibility=EntryVisibility.PRIV
+            entries = entries.filter(visible_q)
+
+        # Order by selected metric, respect higher-is-better or not
+        entries = entries.order_by(sortby)
+
+        if collapse_users:
+            if request.user.is_superuser:
+                # Superusers see everything grouped by user
+                group_field = "creator_id"
+            else:
+                # Anonymous entries are treated as their own group (not collapsed), unless they are the user's own
+                # entry, in which case they are collapsed with the user's other entries (including private entries)
+                entries = entries.annotate(
+                    grouping_key=Case(
+                        When(
+                            Q(visibility=EntryVisibility.ANON)
+                            & ~Q(creator_id=request.user),
+                            then=F("id"),
+                        ),
+                        default=F("creator_id"),
+                    )
+                )
+                group_field = "grouping_key"
+
+            # Annotate with the count of entries in this participant's group
+            # We reuse the existing 'entries' queryset (which has visibility/status filters) for the subquery
+            count_subquery = (
+                entries.filter(**{group_field: OuterRef(group_field)})
+                .values(group_field)
+                .order_by()
+                .annotate(c=Count("id"))
+                .values("c")
+            )
+
+            # Identify the best entry per group
+            best_id_subquery = entries.filter(
+                **{group_field: OuterRef(group_field)}
+            ).values("id")[:1]
+
+            # To show the "best of N" indicator, we count how many entries exist for this user in the visible set
+            entries = entries.annotate(collapsed_count=Subquery(count_subquery)).filter(
+                id=Subquery(best_id_subquery)
             )
         else:
-            entries = ReconstructionEntry.objects
-
-        # Remove any entries that might be missing a metric
-        entries = entries.exclude(**{sortby_col: -1.0})
-
-        # Filter out un-successful entries and deleted ones, merge with user entries
-        entries = entries.filter(process_status=EntryStatus.SUCCESS).filter(
-            is_active=True
-        )
-        entries = entries.union(my_entries).order_by(sortby)
-
-        if "↑" in self.VALID_KEYS[sortby_col]:
-            entries = entries.reverse()
+            entries = entries.annotate(collapsed_count=Value(1))
 
         paginator = Paginator(entries, 50)
         page_number = request.GET.get("page")
@@ -66,7 +100,8 @@ class ReconstructionEntriesView(View):
         context = {
             "page_obj": page_obj,
             "sortby": sortby_col,
-            "direction": "-" not in sortby,
+            "direction": direction,
+            "collapse": collapse_users,
             "metric_fields": ReconstructionEntry.metric_fields,
         }
         return render(request, "reconstruction.html", context)
@@ -202,7 +237,9 @@ class DetailView(UserPassesTestMixin, generic.DetailView):
         )
         context["image_paths"] = [
             (
-                SAMPLE_FRAMES_DIRECTORY / self.model.PREFIX / subpath.with_suffix(".webp"),
+                SAMPLE_FRAMES_DIRECTORY
+                / self.model.PREFIX
+                / subpath.with_suffix(".webp"),
                 entry.sample_directory.relative_to(MEDIA_DIRECTORY) / subpath,
             )
             for subpath in subpaths
@@ -276,7 +313,9 @@ class CompareView(View):
             (
                 entry_1.sample_directory.relative_to(MEDIA_DIRECTORY) / subpath,
                 entry_2.sample_directory.relative_to(MEDIA_DIRECTORY) / subpath,
-                SAMPLE_FRAMES_DIRECTORY / self.model.PREFIX / subpath.with_suffix(".webp")
+                SAMPLE_FRAMES_DIRECTORY
+                / self.model.PREFIX
+                / subpath.with_suffix(".webp"),
             )
             for subpath in sorted(list(subpaths))
         ]
