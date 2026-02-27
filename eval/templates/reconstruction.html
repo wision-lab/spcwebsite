@@ -4,19 +4,18 @@
 {% block content %}
 
 {% if page_obj %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const tableRows = document.querySelectorAll('tbody tr.entry');
         const compareBtn = document.getElementById('compare-btn');
         const toggle = document.getElementById('collapse-toggle');
         var selectedRows = [];
-
+ 
         compareBtn.addEventListener('click', function() {
             event.preventDefault();
             window.location.href = 'compare/' + selectedRows.join("/");
         });
-
+ 
         tableRows.forEach(row => {
             row.addEventListener('click', function() {                
                 if (this.classList.contains('selected-row')) {
@@ -30,13 +29,13 @@
                     // Turn on and shift out any extra rows 
                     this.classList.add('selected-row');
                     selectedRows.push(this.id)
-
+ 
                     if (selectedRows.length > 2) {
                         var to_remove = selectedRows.shift();
                         document.getElementById(to_remove).classList.toggle('selected-row');
                     }
                 }
-
+ 
                 if (selectedRows.length == 2) {
                     compareBtn.style.display = 'flex';
                 } else {
@@ -44,30 +43,39 @@
                 }
             });
         });
-
-        toggle.addEventListener('change', function() {
-            const url = new URL(window.location.href);
-            if (this.checked) {
-                url.searchParams.set('collapse', '1');
-            } else {
-                url.searchParams.delete('collapse');
-            }
-            // Reset to page 1 when toggling
-            url.searchParams.delete('page');
-            window.location.href = url.toString();
-        });
+ 
+        if (toggle) {
+            toggle.addEventListener('change', function() {
+                const url = new URL(window.location.href);
+                if (this.checked) {
+                    url.searchParams.set('collapse', '1');
+                } else {
+                    url.searchParams.delete('collapse');
+                }
+                // Reset to page 1 when toggling
+                url.searchParams.delete('page');
+                window.location.href = url.toString();
+            });
+        }
     });
 </script>
 
 <div class="reconstruction-header">
-    <h4>Reconstruction Results</h4>
-    <label class="toggle-container" title="Show only the top-ranked entry for each participant (for the selected metric)">
-        <span>Collapse Users</span>
-        <div class="toggle-switch">
-            <input type="checkbox" id="collapse-toggle" {% if collapse %}checked{% endif %}>
-            <span class="toggle-slider"></span>
-        </div>
-    </label>
+    <h4 style="margin: 0;">Reconstruction Results</h4>
+    {% if creator is not none %}
+        <span class="filter-status">
+            {% if user.id|stringformat:"s" == creator %}Viewing your entries{% else %}Viewing entries of selected user{% endif %}
+            <a href="{% url 'eval:reconstruction' %}{% if sortby %}?sortby={% if not direction %}-{% endif %}{{ sortby }}{% endif %}" class="clear-filter" title="Show all entries">×</a>
+        </span>
+    {% else %}
+        <label class="toggle-container" title="Show only the top-ranked entry for each participant (for the selected metric)">
+            <span>Collapse Users</span>
+            <div class="toggle-switch">
+                <input type="checkbox" id="collapse-toggle" {% if collapse %}checked{% endif %}>
+                <span class="toggle-slider"></span>
+            </div>
+        </label>
+    {% endif %}
 </div>
 
 <div style="overflow-x:auto;">
@@ -81,8 +89,8 @@
         </th>
         
         {% for metric in metric_fields %}
-        <th class="{% if forloop.counter0|divisibleby:3 %}leftbig{% endif %} clickable">
-            <a href="{% url 'eval:reconstruction' %}?sortby={% if direction and sortby == metric.name %}-{% endif %}{{ metric.name }}{% if collapse %}&collapse=1{% endif %}">
+        <th class="{% if forloop.counter0|divisibleby:3 %}leftbig{% endif %} clickable {% if sortby == metric.name %}sorted-col{% endif %}">
+            <a href="{% url 'eval:reconstruction' %}?sortby={% if direction and sortby == metric.name %}-{% endif %}{{ metric.name }}{% if collapse %}&collapse=1{% endif %}{% if creator is not none %}&creator={{ creator }}{% endif %}">
                 <p style="display: inline;">{{ metric.verbose_name|linebreaksbr }}</p>
                 <span style="display: inline;">{% if sortby == metric.name %}{% if not direction %}▲{% else %}▼{% endif %}{% endif %}</span>
             </a>
@@ -98,16 +106,26 @@
         <td>
             <div class="namebox">
                 <a href="{% url 'eval:detail' entry.id %}">
-                    {% if entry.visibility == "PRIV" %}<span style="font-size: small;">{% if entry.creator.id != user.id %}🥸{% else %}🚫{% endif %}</span>&nbsp;&nbsp;{% endif %}{{ entry.name }}
+                    {% if entry.visibility == "PRIV" %}<span style="font-size: small;">{% if entry.creator.id != user.id %}🥸{% else %}🚫{% endif %}</span>&nbsp;&nbsp;{% endif %}{{ entry.name|truncatechars:50 }}
                 </a>
-                {% if entry.collapsed_count > 1 %}<span class="collapsed-badge">{% if direction %}Best{% else %}Worst{% endif %} of {{ entry.collapsed_count }}</span>{% endif %}
-                {% if entry.visibility != "ANON" and entry.code_url|length > 0 %}
-                    &nbsp;<a href="{{ entry.code_url }}" target="_blank" rel="noopener noreferrer" class="codebutton">code</a>
-                {% endif %}
+                <div style="margin-left: auto; display: flex; gap: 5px; align-items: center;">
+                    {% if entry.visibility != "ANON" and entry.code_url|length > 0 %}
+                        <a href="{{ entry.code_url }}" target="_blank" rel="noopener noreferrer" class="badge">Code</a>
+                    {% endif %}
+                    {% if entry.collapsed_count > 1 %}
+                    <a href="{% url 'eval:reconstruction' %}?creator={{ entry.creator.id }}{% if sortby %}&sortby={% if not direction %}-{% endif %}{{ sortby }}{% endif %}" class="collapsed-badge-link">
+                        <span class="badge" title="Click to view all {{ entry.collapsed_count }} submissions by this user.">
+                            {% if direction %}Best{% else %}Worst{% endif %} of {{ entry.collapsed_count }}
+                        </span>
+                    </a>
+                    {% endif %}
+                </div>
             </div>
         </td>
-        {% for metric in entry.metrics %}
-        <td class="num {% if forloop.counter0|divisibleby:3 %}leftbig{% endif %}">{{ metric|na_if_missing:3 }}</td>
+        {% for m_field, metric_val in metric_fields|zip:entry.metrics %}
+        <td class="num {% if forloop.counter0|divisibleby:3 %}leftbig{% endif %} {% if sortby == m_field.name %}sorted-col{% endif %}">
+            {{ metric_val|na_if_missing:3 }}
+        </td>
         {% endfor %}
     </tr>
     <tr>
@@ -130,8 +148,8 @@
 <div class="pagination">
     <nav>
         {% if page_obj.has_previous %}
-            <a href="?page=1{% if sortby %}&sortby={% if not direction %}-{% endif %}{{ sortby }}{% endif %}{% if collapse %}&collapse=1{% endif %}">&laquo; First</a>
-            <a href="?page={{ page_obj.previous_page_number }}{% if sortby %}&sortby={% if not direction %}-{% endif %}{{ sortby }}{% endif %}{% if collapse %}&collapse=1{% endif %}">Previous</a>
+            <a href="?page=1{% if sortby %}&sortby={% if not direction %}-{% endif %}{{ sortby }}{% endif %}{% if collapse %}&collapse=1{% endif %}{% if creator is not none %}&creator={{ creator }}{% endif %}">&laquo; First</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if sortby %}&sortby={% if not direction %}-{% endif %}{{ sortby }}{% endif %}{% if collapse %}&collapse=1{% endif %}{% if creator is not none %}&creator={{ creator }}{% endif %}">Previous</a>
         {% endif %}
 
         <span class="current">
@@ -139,8 +157,8 @@
         </span>
 
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}{% if sortby %}&sortby={% if not direction %}-{% endif %}{{ sortby }}{% endif %}{% if collapse %}&collapse=1{% endif %}">Next</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}{% if sortby %}&sortby={% if not direction %}-{% endif %}{{ sortby }}{% endif %}{% if collapse %}&collapse=1{% endif %}">Last &raquo;</a>
+            <a href="?page={{ page_obj.next_page_number }}{% if sortby %}&sortby={% if not direction %}-{% endif %}{{ sortby }}{% endif %}{% if collapse %}&collapse=1{% endif %}{% if creator is not none %}&creator={{ creator }}{% endif %}">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}{% if sortby %}&sortby={% if not direction %}-{% endif %}{{ sortby }}{% endif %}{% if collapse %}&collapse=1{% endif %}{% if creator is not none %}&creator={{ creator }}{% endif %}">Last &raquo;</a>
         {% endif %}
     </nav>
 </div>

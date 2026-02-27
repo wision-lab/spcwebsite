@@ -511,26 +511,29 @@ div.namebox {
 }
 
 
-a.codebutton,
-a.codebutton:visited {
-    margin: 0;
+.badge,
+.badge:visited {
+    display: inline-flex;
+    align-items: center;
+    background: var(--accent-bg);
     border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
     color: var(--text-light);
-    padding: 0.25rem 0.75rem;
-    text-decoration: none;
-    line-height: 1;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    background: var(--bg);
+    padding: 0.1rem 0.6rem;
+    border-radius: 12px;
+    vertical-align: middle;
+    white-space: nowrap;
     transition: all 0.2s ease;
+    text-decoration: none !important;
 }
 
-a.codebutton:hover {
+.badge:hover {
     border-color: var(--accent);
     color: var(--accent);
     background: var(--accent-soft);
-    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 td,
@@ -1230,22 +1233,56 @@ input:checked+.toggle-slider:before {
     filter: brightness(0.95);
 }
 
-.collapsed-badge {
-    display: inline-flex;
-    align-items: center;
-    background: var(--accent-bg);
-    border: 1px solid var(--border);
-    color: var(--text-light);
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 0.1rem 0.5rem;
-    border-radius: 12px;
-    margin-left: auto;
-    vertical-align: middle;
-    white-space: nowrap;
+.collapsed-badge-link {
+    text-decoration: none !important;
 }
 
-.collapsed-badge i {
-    margin-right: 3px;
-    font-size: 0.7rem;
+.collapsed-badge-link:hover .badge {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filter-status {
+    background: var(--accent-soft);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border);
+    color: var(--text-main);
+}
+
+.clear-filter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    background: var(--accent-soft);
+    color: var(--text-main);
+    border-radius: 50%;
+    font-size: 14px;
+    line-height: 1;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+}
+
+.clear-filter:hover {
+    background: var(--accent-hover);
+    color: white;
+}
+
+.sorted-col {
+    background-color: rgba(0, 0, 0, 0.03) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+    .sorted-col {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+    }
 }

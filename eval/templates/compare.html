@@ -39,11 +39,10 @@
                             {% if entry_1.creator.id != user.id %}🥸{% else %}🚫{% endif %}
                         </span>&nbsp;
                         {% endif %}
-                        <a href="{% url 'eval:detail' entry_1.id %}">{{ entry_1.name }}</a>
+                        <a href="{% url 'eval:detail' entry_1.id %}">{{ entry_1.name|truncatechars:50 }}</a>
                     </span>
-                    {% if entry.visibility != "ANON" and entry.code_url|length > 0 %}
-                    &nbsp;<a href="{{ entry_1.code_url }}" target="_blank" rel="noopener noreferrer"
-                        class="codebutton">code</a>
+                    {% if entry_1.visibility != "ANON" and entry_1.code_url|length > 0 %}
+                    &nbsp;<a href="{{ entry_1.code_url }}" target="_blank" rel="noopener noreferrer" class="badge">Code</a>
                     {% endif %}
                 </div>
             </td>
@@ -63,11 +62,10 @@
                         {% if entry_2.visibility == "PRIV" %}
                         <span style="font-size: small;">
                             {% if entry_2.creator.id != user.id %}🥸{% else %}🚫{% endif %}</span>&nbsp;{% endif %}
-                        <a href="{% url 'eval:detail' entry_2.id %}">{{ entry_2.name }}</a>
+                        <a href="{% url 'eval:detail' entry_2.id %}">{{ entry_2.name|truncatechars:50 }}</a>
                     </span>
-                    {% if entry.visibility != "ANON" and entry.code_url|length > 0 %}
-                    &nbsp;<a href="{{ entry_2.code_url }}" target="_blank" rel="noopener noreferrer"
-                        class="codebutton">code</a>
+                    {% if entry_2.visibility != "ANON" and entry_2.code_url|length > 0 %}
+                    &nbsp;<a href="{{ entry_2.code_url }}" target="_blank" rel="noopener noreferrer" class="badge">Code</a>
                     {% endif %}
                 </div>
             </td>

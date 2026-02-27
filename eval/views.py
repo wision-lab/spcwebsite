@@ -3,8 +3,9 @@ import random
 from pathlib import Path
 from zipfile import BadZipFile, ZipFile
 
-from django.core.paginator import Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.paginator import Paginator
+from django.db.models import Case, Count, F, OuterRef, Q, Subquery, Value, When
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
@@ -15,8 +16,6 @@ from django.views import View, generic
 from .constants import EVAL_FILES, MEDIA_DIRECTORY, SAMPLE_FRAMES_DIRECTORY
 from .forms import EditResultEntryForm, UploadFileForm
 from .models import EntryStatus, EntryVisibility, ReconstructionEntry
-from django.db import models
-from django.db.models import Q, OuterRef, Subquery, Count, Case, When, F, Value
 
 
 class ReconstructionEntriesView(View):
@@ -25,6 +24,7 @@ class ReconstructionEntriesView(View):
     def get(self, request):
         sortby = request.GET.get("sortby", "")
         collapse_users = request.GET.get("collapse", "0") == "1"
+        creator_id = request.GET.get("creator")
         sortby_col = sortby.removeprefix("-")
         direction = not sortby.startswith("-")
 
@@ -49,23 +49,38 @@ class ReconstructionEntriesView(View):
         if not request.user.is_superuser:
             entries = entries.filter(visible_q)
 
+        # Filter by creator if requested
+        if creator_id is not None:
+            entries = entries.filter(creator_id=creator_id)
+            collapse_users = False
+
         # Order by selected metric, respect higher-is-better or not
         entries = entries.order_by(sortby)
 
         if collapse_users:
-            if request.user.is_superuser:
-                # Superusers see everything grouped by user
-                group_field = "creator_id"
+            if request.user.is_authenticated:
+                if request.user.is_superuser:
+                    # Superusers see everything grouped by user
+                    group_field = "creator_id"
+                else:
+                    # Anonymous entries are treated as their own group (not collapsed), unless they are the user's own
+                    # entry, in which case they are collapsed with the user's other entries (including private entries)
+                    entries = entries.annotate(
+                        grouping_key=Case(
+                            When(
+                                Q(visibility=EntryVisibility.ANON)
+                                & ~Q(creator_id=request.user),
+                                then=F("id"),
+                            ),
+                            default=F("creator_id"),
+                        )
+                    )
+                    group_field = "grouping_key"
             else:
-                # Anonymous entries are treated as their own group (not collapsed), unless they are the user's own
-                # entry, in which case they are collapsed with the user's other entries (including private entries)
+                # Anonymous entries are treated as their own group when not logged in.
                 entries = entries.annotate(
                     grouping_key=Case(
-                        When(
-                            Q(visibility=EntryVisibility.ANON)
-                            & ~Q(creator_id=request.user),
-                            then=F("id"),
-                        ),
+                        When(Q(visibility=EntryVisibility.ANON), then=F("id")),
                         default=F("creator_id"),
                     )
                 )
@@ -93,7 +108,7 @@ class ReconstructionEntriesView(View):
         else:
             entries = entries.annotate(collapsed_count=Value(1))
 
-        paginator = Paginator(entries, 50)
+        paginator = Paginator(entries, 25)
         page_number = request.GET.get("page")
         page_obj = paginator.get_page(page_number)
 
@@ -102,6 +117,7 @@ class ReconstructionEntriesView(View):
             "sortby": sortby_col,
             "direction": direction,
             "collapse": collapse_users,
+            "creator": creator_id,
             "metric_fields": ReconstructionEntry.metric_fields,
         }
         return render(request, "reconstruction.html", context)
