@@ -61,7 +61,7 @@
 
 <div class="reconstruction-header">
     <h4>Reconstruction Results</h4>
-    <label class="toggle-container" title="Show only the best entry for each participant (for the selected metric)">
+    <label class="toggle-container" title="Show only the top-ranked entry for each participant (for the selected metric)">
         <span>Collapse Users</span>
         <div class="toggle-switch">
             <input type="checkbox" id="collapse-toggle" {% if collapse %}checked{% endif %}>
@@ -100,7 +100,7 @@
                 <a href="{% url 'eval:detail' entry.id %}">
                     {% if entry.visibility == "PRIV" %}<span style="font-size: small;">{% if entry.creator.id != user.id %}🥸{% else %}🚫{% endif %}</span>&nbsp;&nbsp;{% endif %}{{ entry.name }}
                 </a>
-                {% if entry.collapsed_count > 1 %}<span class="collapsed-badge" title="Only the best out of {{ entry.collapsed_count }} submissions by this user is shown.">Best of {{ entry.collapsed_count }}</span>{% endif %}
+                {% if entry.collapsed_count > 1 %}<span class="collapsed-badge">{% if direction %}Best{% else %}Worst{% endif %} of {{ entry.collapsed_count }}</span>{% endif %}
                 {% if entry.visibility != "ANON" and entry.code_url|length > 0 %}
                     &nbsp;<a href="{{ entry.code_url }}" target="_blank" rel="noopener noreferrer" class="codebutton">code</a>
                 {% endif %}
