@@ -1,12 +1,12 @@
 from django import forms
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
+from django.utils.safestring import mark_safe
 from django_admin_action_forms import (
     AdminActionForm,
     AdminActionFormsMixin,
     action_with_form,
 )
-from django.utils.safestring import mark_safe
 
 from .models import EntryVisibility, ReconstructionEntry, ResultSample
 
