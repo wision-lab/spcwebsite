@@ -51,7 +51,7 @@ class ResultEntryAdmin(AdminActionFormsMixin, admin.ModelAdmin):
         ResultSamplesInline,
     ]
     ordering = ("pub_date",)
-    list_filter = ("visibility", "process_status", "creator", "pub_date")
+    list_filter = ("visibility", "is_active", "process_status", "creator", "pub_date")
 
     @action_with_form(
         ChangeVisibilityForm,

@@ -46,6 +46,7 @@ class ReconstructionEntriesView(View):
         if request.user.is_authenticated:
             visible_q |= Q(creator=request.user)
 
+        # Filter out private entries if user is not the creator
         if not request.user.is_superuser:
             entries = entries.filter(visible_q)
 
@@ -272,19 +273,24 @@ class CompareView(View):
         # inheriting from mixin in order to pass the pks around
         if pk1 is None and pk2 is None:
             try:
-                # Select random pks and redirect
-                pk1, pk2 = random.sample(
-                    [
-                        entry.pk
-                        for entry in self.model.objects.exclude(
-                            visibility=EntryVisibility.PRIV
-                        ).filter(
-                            is_active=True,
-                            process_status=EntryStatus.SUCCESS,
-                        )
-                    ],
-                    2,
+                # Get all successful entries
+                entries = self.model.objects.filter(
+                    process_status=EntryStatus.SUCCESS, is_active=True
                 )
+
+                # Base visibility filter
+                visible_q = Q(
+                    visibility__in=[EntryVisibility.PUBL, EntryVisibility.ANON]
+                )
+                if request.user.is_authenticated:
+                    visible_q |= Q(creator=request.user)
+
+                # Filter out private entries if user is not the creator
+                if not request.user.is_superuser:
+                    entries = entries.filter(visible_q)
+
+                # Select random pks and redirect
+                pk1, pk2 = random.sample([entry.pk for entry in entries], 2)
                 return redirect("eval:compare", pk1=pk1, pk2=pk2)
             except ValueError:
                 # If there's not enough entries, redirect to leaderboard
