@@ -88,17 +88,12 @@ document.addEventListener('DOMContentLoaded', function () {
         currentSliderIndex = sliders.indexOf(slider);
 
         // Clone the slider's light-DOM children (the <figure> slots) into the overlay slider
-        overlaySlider.innerHTML = '';
+        const clones = Array.from(slider.children).map(child => child.cloneNode(true));
+        overlaySlider.replaceChildren(...clones);
         overlaySlider.dataset.gt = slider.dataset.gt; // Copy ground truth path
 
         // Copy reco path for detail view, only if it exists, otherwise swap will be enabled
-        if (slider.dataset.reco) {
-            overlaySlider.dataset.reco = slider.dataset.reco;
-        }
-
-        Array.from(slider.children).forEach(function (child) {
-            overlaySlider.appendChild(child.cloneNode(true));
-        });
+        if (slider.dataset.reco) overlaySlider.dataset.reco = slider.dataset.reco;
 
         // Apply current swap state if applicable
         applySwap(overlaySlider, isSwapped);
@@ -108,26 +103,22 @@ document.addEventListener('DOMContentLoaded', function () {
         if (heldKeys.has('2')) toggleGT(overlaySlider, 'second', true);
 
         // Set shortcuts description: show swipe hints on touch devices
-        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-        if (isTouchDevice) {
-            overlayShortcuts.innerHTML = '<p><b>Swipe Up / Down</b> to cycle through images. &nbsp;&bull;&nbsp; <b>Tap backdrop</b> to close.</p>';
-        } else {
-            const footer = document.querySelector('.shortcuts-footer');
-            if (footer) {
-                overlayShortcuts.innerHTML = footer.innerHTML;
+        // Only do this if the overlay is not already open to prevent content flashing
+        if (overlay.hidden) {
+            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            if (isTouchDevice) {
+                overlayShortcuts.innerHTML = '<p><b>Swipe Up / Down</b> to cycle through images. &nbsp;&bull;&nbsp; <b>Tap backdrop</b> to close.</p>';
+            } else {
+                const footer = document.querySelector('.shortcuts-footer');
+                if (footer) {
+                    overlayShortcuts.innerHTML = footer.innerHTML;
+                }
             }
         }
 
         overlaySlider.parentElement.classList.add('slider-zoomed');
         document.body.style.overflow = 'hidden';
         overlay.hidden = false;
-
-        // Set initial value to match source slider if possible
-        if (slider.value !== undefined) {
-            overlaySlider.value = slider.value;
-        } else {
-            overlaySlider.value = 50;
-        }
 
         // Delay focus slightly to ensure element is visible and transition has started
         // Also use requestAnimationFrame for better browser compatibility

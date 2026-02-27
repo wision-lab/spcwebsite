@@ -83,16 +83,16 @@
 </div>
 </br>
 <div class="auto-grid">
-    {% for path in image_subpaths %}
-    <img-comparison-slider data-gt="{% get_static_prefix %}{{ gt_dir }}/{{ path }}">
+    {% for path_1, path_2, path_gt in image_subpaths %}
+    <img-comparison-slider data-gt="{% get_static_prefix %}{{ path_gt }}">
         <figure slot="first" class="before">
-            <img slot="first" src="{% get_media_prefix %}{{ samples_dir_1 }}/{{ path }}"
-                data-original="{% get_media_prefix %}{{ samples_dir_1 }}/{{ path }}" />
+            <img slot="first" src="{% get_media_prefix %}{{ path_1 }}"
+                data-original="{% get_media_prefix %}{{ path_1 }}" loading="lazy" decoding="async" />
             <figcaption>#1</figcaption>
         </figure>
         <figure slot="second" class="after">
-            <img slot="second" src="{% get_media_prefix %}{{ samples_dir_2 }}/{{ path }}"
-                data-original="{% get_media_prefix %}{{ samples_dir_2 }}/{{ path }}" />
+            <img slot="second" src="{% get_media_prefix %}{{ path_2 }}"
+                data-original="{% get_media_prefix %}{{ path_2 }}" loading="lazy" decoding="async" />
             <figcaption>#2</figcaption>
         </figure>
     </img-comparison-slider>

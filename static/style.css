@@ -433,7 +433,7 @@ table {
     border-collapse: separate;
     border-spacing: 0;
     width: 100%;
-    margin: 2rem 0;
+    margin: 1rem 0;
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     overflow: hidden;
@@ -969,9 +969,7 @@ img-comparison-slider.labels-hidden figcaption {
     -webkit-backdrop-filter: blur(12px);
     display: flex;
     align-items: center;
-    justify-content: center;
     flex-direction: column;
-    gap: 20px;
     transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
@@ -981,6 +979,7 @@ img-comparison-slider.labels-hidden figcaption {
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
     border-radius: 8px;
     overflow: hidden;
+    margin: auto;
 }
 
 #slider-overlay[hidden] {
@@ -1026,6 +1025,7 @@ img-comparison-slider.labels-hidden figcaption {
     border-radius: 30px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     max-width: 90%;
+    margin-bottom: 24px;
 }
 
 .overlay-shortcuts b {

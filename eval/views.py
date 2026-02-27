@@ -197,7 +197,7 @@ class DetailView(UserPassesTestMixin, generic.DetailView):
         )
         context["image_paths"] = [
             (
-                SAMPLE_FRAMES_DIRECTORY / self.model.PREFIX / subpath,
+                SAMPLE_FRAMES_DIRECTORY / self.model.PREFIX / subpath.with_suffix(".webp"),
                 entry.sample_directory.relative_to(MEDIA_DIRECTORY) / subpath,
             )
             for subpath in subpaths
@@ -267,14 +267,19 @@ class CompareView(View):
             Path(s.file.path).relative_to(entry_2.sample_directory.resolve())
             for s in entry_2.samples.all()
         )
+        image_subpaths = [
+            (
+                entry_1.sample_directory.relative_to(MEDIA_DIRECTORY) / subpath,
+                entry_2.sample_directory.relative_to(MEDIA_DIRECTORY) / subpath,
+                SAMPLE_FRAMES_DIRECTORY / self.model.PREFIX / subpath.with_suffix(".webp")
+            )
+            for subpath in sorted(list(subpaths))
+        ]
         context = {
             "entry_1": entry_1,
             "entry_2": entry_2,
             "emphasis": emphasis,
-            "samples_dir_1": entry_1.sample_directory.relative_to(MEDIA_DIRECTORY),
-            "samples_dir_2": entry_2.sample_directory.relative_to(MEDIA_DIRECTORY),
-            "gt_dir": SAMPLE_FRAMES_DIRECTORY / self.model.PREFIX,
-            "image_subpaths": sorted(list(subpaths)),
+            "image_subpaths": image_subpaths,
         }
         return render(request, self.template_name, context=context)
 

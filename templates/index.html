@@ -15,8 +15,7 @@
 <div class="teaserimg">
     <figure>
         <picture>
-            <source srcset="{% static 'teaserimage-dark.png' %}" media="(prefers-color-scheme: dark)">
-            <img src="{% static 'teaserimage-light.png' %}" alt="Teaser image">
+            <img src="{% static 'teaserimage.webp' %}" alt="Teaser image" fetchpriority="high" decoding="async">
         </picture>
         <figcaption>
             Single-photon cameras are capable of detecting individual photons, making them extremely sensitive,

@@ -46,7 +46,7 @@ class Command(BaseCommand):
                 )
                 if (
                     root / SAMPLE_FRAMES_DIRECTORY / ReconstructionEntry.PREFIX / p
-                ).exists():
+                ).with_suffix(".webp").exists():
                     # These frames will be shown to the user to allow for qualitative
                     # comparisons with the test set. Since we will leak some of the test
                     # set because of this, we DO NOT calculate test metrics on these samples.
