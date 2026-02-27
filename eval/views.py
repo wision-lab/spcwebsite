@@ -303,4 +303,7 @@ class EditView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
         return get_object_or_404(self.model, pk=pk, is_active=True)
 
     def get_success_url(self):
-        return reverse_lazy("eval:detail", kwargs={"pk": self.object.id})
+        if self.object.process_status == EntryStatus.SUCCESS:
+            return reverse_lazy("eval:detail", kwargs={"pk": self.object.id})
+        else:
+            return reverse_lazy("core:user")
