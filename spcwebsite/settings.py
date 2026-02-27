@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import ast
 import os
+import socket
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -34,7 +35,7 @@ ALLOWED_HOSTS = [
     ".localhost",
     "127.0.0.1",
     "[::1]",
-]
+] + [socket.gethostbyname(socket.gethostname())]
 
 CSRF_TRUSTED_ORIGINS = ["https://singlephotonchallenge.com"]
 CSRF_COOKIE_SECURE = True
