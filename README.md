@@ -74,7 +74,11 @@ python manage.py evaluate_submissions
 
 # Acknowledgements  
 
-This website is loosely inspired off of the [Spring Benchmark website](https://spring-benchmark.org/) with the following notable modifications:
+This website is loosely inspired off of the [Spring Benchmark website](https://spring-benchmark.org/) with many modifications.
+
+<details>
+<summary>List of notable modifications</summary>
+
 - Split user account logic and benchmark logic into separate apps (core vs eval)
 - User.is_verified refers to user's email address, and is_active is true by default
 - Logout action is now a POST request, as logout on GET was deprecated due to security concerns 
@@ -93,3 +97,11 @@ This website is loosely inspired off of the [Spring Benchmark website](https://s
 - Ensure user uploaded submissions that are non-public are properly auth'd, use caddy's forward_auth for this
 - Save user uploaded samples as a `ResultSample`, enables deleting of assets when user or submission is deleted
 - Ensure evaluation cron job doesn't run if already running via flock, enables more frequent evals 
+- Add overlay view for qualitative evaluation, enableing zoomed in views of samples with intuitive keyboard navigation
+- Add admin actions to change visibility and metrics of multiple entries at once
+- Add pagination to results table
+- Optionally collapse user submissions on results page, showing only top result per user
+- Filter results by user
+- Overhaul CSS to look more modern and be more mobile-friendly
+
+</details>
