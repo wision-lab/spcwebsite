@@ -215,6 +215,11 @@ class Command(BaseCommand):
                     psnr_mean=random.uniform(0, 50),
                     ssim_mean=random.uniform(0, 1),
                     lpips_mean=random.uniform(0, 1),
+                    code_url=(
+                        "https://singlephotonchallenge.com/"
+                        if random.uniform(0, 1) < 0.5
+                        else None
+                    ),
                 )
                 entry.save()
                 progress.update(task, advance=1)
