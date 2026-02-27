@@ -905,6 +905,7 @@ img-comparison-slider {
     display: inherit;
     outline: none;
     border-radius: 8px;
+    touch-action: manipulation;
 }
 
 .shortcuts-footer {

@@ -283,6 +283,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
         btn.addEventListener('click', function () { openOverlay(slider); });
 
+        // Double click/tap to open overlay
+        let lastTap = 0;
+        slider.addEventListener('touchstart', function (e) {
+            const currentTime = Date.now();
+            const tapLength = currentTime - lastTap;
+            if (tapLength < 300 && tapLength > 0) {
+                e.preventDefault(); // Prevent double-tap-to-zoom
+                openOverlay(slider);
+            }
+            lastTap = currentTime;
+        }, { passive: false });
+
+        slider.addEventListener('dblclick', function () {
+            openOverlay(slider);
+        });
+
         // Hide labels + button while the user drags the slider
         function hide() { wrapper.classList.add('labels-hidden'); }
         function show() { wrapper.classList.remove('labels-hidden'); }
