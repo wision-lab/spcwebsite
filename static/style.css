@@ -101,8 +101,7 @@ h1,
 h2,
 h3,
 h4,
-h5,
-h6 {
+h5 {
     line-height: 1.25;
     margin-top: 2.5rem;
     margin-bottom: 1.5rem;
@@ -145,10 +144,10 @@ h4 {
     }
 }
 
-div.teaserimg {
+/* Teaser image for index page */
+.teaserimg {
     display: block;
-    margin-left: auto;
-    margin-right: auto;
+    margin: auto;
     width: 100%;
     max-width: 900px;
     text-align: center;
@@ -156,21 +155,20 @@ div.teaserimg {
     box-sizing: border-box;
 }
 
-div.teaserimg img {
+.teaserimg img {
     border-radius: var(--radius);
     box-shadow: none;
     max-width: 100%;
     height: auto;
 }
 
-div.teaserimg figcaption {
+.teaserimg figcaption {
     margin-top: 1.5rem;
     font-size: 0.95rem;
     line-height: 1.6;
     color: var(--text-light);
     max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
 }
 
 table.logotable {
@@ -253,15 +251,7 @@ input:disabled,
 select:disabled,
 textarea:disabled {
     cursor: not-allowed;
-    background-color: var(--disabled)
-}
-
-input[type=range] {
-    padding: 0
-}
-
-abbr {
-    cursor: help
+    background-color: var(--disabled);
 }
 
 [role=button]:focus,
@@ -360,37 +350,6 @@ details[open]>:last-child {
     margin-bottom: 0
 }
 
-.user-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 0;
-    font-size: 0.85rem;
-    border-top: 1px solid var(--border);
-    margin-top: 0.5rem;
-}
-
-.user-nav-left,
-.user-nav-right {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.namebox {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-}
-
-.auth-link {
-    background: var(--accent-soft);
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-weight: 600;
-}
-
 .partner-logos {
     display: flex;
     flex-wrap: wrap;
@@ -421,11 +380,7 @@ details[open]>:last-child {
 }
 
 @media only screen and (max-width: 600px) {
-    .user-nav {
-        flex-direction: column;
-        gap: 0.5rem;
-        text-align: center;
-    }
+
 
     .partner-logos {
         gap: 1rem;
@@ -467,48 +422,15 @@ th {
     font-style: normal;
 }
 
-div.startbutton {
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    margin-right: 1%;
-    margin-bottom: 1%;
-    width: 110px;
-    float: left;
-}
-
-div.startbutton:hover {
-    border-color: var(--accent)
-}
-
-div.startbutton h1 {
-    margin: 0;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-    text-align: center;
-}
-
-div.startbutton p {
-    margin: 0;
-    padding-bottom: 1rem;
-    text-align: center;
-}
-
-div.startbutton a,
-div.startbutton a:visited {
-    color: var(--text);
-    text-decoration: none;
-}
-
-div.startbutton a:hover {
-    color: var(--accent);
-}
-
-div.namebox {
+.namebox {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
+    width: 100%;
 }
+
+
 
 
 .badge,
@@ -583,9 +505,9 @@ th.clickable a {
 td.citation {
     border: none;
     font-size: 0.7rem;
-    padding-top: 0;
-    padding-bottom: .1rem;
-    padding-left: 0.4rem;
+    color: var(--text-light);
+    padding: 0;
+    font-style: italic;
 }
 
 td.noborder {
@@ -606,13 +528,9 @@ form table th {
     background: none;
 }
 
-/* tr:nth-child(even) {
-    background: var(--accent-bg)
-} */
-
 table caption {
     font-weight: 600;
-    margin-bottom: .5rem
+    margin-bottom: .5rem;
 }
 
 input,
@@ -753,31 +671,13 @@ blockquote {
     padding: .4rem .8rem;
     border-left: .35rem solid var(--accent);
     color: var(--text-light);
-    font-style: italic
-}
-
-cite {
-    font-size: .9rem;
-    color: var(--text-light);
-    font-style: normal
+    font-style: italic;
 }
 
 code,
-kbd,
-pre,
-pre span,
-samp {
-    /* font-size: 1.075rem; */
+pre {
     font-family: var(--mono-font);
-    color: var(--text-light)
-}
-
-kbd {
-    color: var(--preformatted);
-    border: 1px solid var(--preformatted);
-    border-bottom: 3px solid var(--preformatted);
-    border-radius: 5px;
-    padding: .1rem
+    color: var(--text-light);
 }
 
 pre {
@@ -788,14 +688,14 @@ pre {
     color: var(--preformatted);
     background: var(--accent-bg);
     border: 1px solid var(--border);
-    border-radius: 5px
+    border-radius: 5px;
 }
 
 pre code {
     color: var(--preformatted);
     background: 0 0;
     margin: 0;
-    padding: 0
+    padding: 0;
 }
 
 /* Make the logout button look like a link */
