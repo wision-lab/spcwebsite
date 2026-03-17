@@ -5,6 +5,7 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.models import Group
 from django.urls import reverse
 from django.utils.html import format_html
+from django.db.models import Count
 
 from eval.models import ReconstructionEntry
 
@@ -35,6 +36,7 @@ class UserAdmin(BaseUserAdmin):
     # that reference specific fields on auth.User.
     list_display = (
         "email",
+        "num_entries",
         "maildomain",
         "university",
         "is_verified",
@@ -66,6 +68,17 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ("email", "university")
     ordering = ("email",)
     filter_horizontal = ()
+
+    def num_entries(self, obj):
+        return obj.num_entries
+
+    num_entries.admin_order_field = "num_entries"
+    num_entries.short_description = "Number of entries"
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.annotate(num_entries=Count("entries"))
+        return queryset
 
     def entries(self, obj):
         entries_list = []
