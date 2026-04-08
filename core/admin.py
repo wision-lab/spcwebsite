@@ -87,8 +87,15 @@ class UserAdmin(BaseUserAdmin):
             change_url = reverse(
                 f"admin:{ReconstructionEntry._meta.db_table}_change", args=(entry.id,)
             )
+            detail_url = reverse("eval:detail", args=(entry.id,))
+
             entries_list.append(
-                format_html('<a href="{}">{}</a>', change_url, entry.name)
+                format_html(
+                    '<a href="{}">{}</a> <a href="{}" title="View details">🔍</a>',
+                    change_url,
+                    entry.name,
+                    detail_url,
+                )
             )
 
         return format_html(", ".join(entries_list))
