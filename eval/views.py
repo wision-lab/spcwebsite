@@ -261,6 +261,24 @@ class DetailView(UserPassesTestMixin, generic.DetailView):
             )
             for subpath in subpaths
         ]
+
+        # Find prev/next active public submissions for keyboard navigation
+        public_entries = self.model.objects.filter(
+            is_active=True,
+            process_status=EntryStatus.SUCCESS,
+            visibility__in=[EntryVisibility.PUBL, EntryVisibility.ANON],
+        )
+        prev_entry = (
+            public_entries.filter(pk__lt=entry.pk).order_by("-pk").first()
+            or public_entries.order_by("-pk").first()
+        )
+        next_entry = (
+            public_entries.filter(pk__gt=entry.pk).order_by("pk").first()
+            or public_entries.order_by("pk").first()
+        )
+        context["prev_entry_id"] = prev_entry.pk if prev_entry else None
+        context["next_entry_id"] = next_entry.pk if next_entry else None
+
         return context
 
 
