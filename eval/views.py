@@ -18,6 +18,25 @@ from .forms import EditResultEntryForm, UploadFileForm
 from .models import EntryStatus, EntryVisibility, ReconstructionEntry
 
 
+def get_visible_entries(request, model):
+    # Get all SUCCESS and active entries
+    entries = model.objects.filter(
+        process_status=EntryStatus.SUCCESS, is_active=True
+    )
+
+    # Base visibility filter
+    visible_q = Q(
+        visibility__in=[EntryVisibility.PUBL, EntryVisibility.ANON]
+    )
+    if request.user.is_authenticated:
+        visible_q |= Q(creator=request.user)
+
+    # Filter out private entries if user is not the creator
+    if not request.user.is_superuser:
+        entries = entries.filter(visible_q)
+    return entries
+
+
 class ReconstructionEntriesView(View):
     VALID_KEYS = {m.name: m.verbose_name for m in ReconstructionEntry.metric_fields}
 
@@ -36,19 +55,8 @@ class ReconstructionEntriesView(View):
         if "↑" in self.VALID_KEYS[sortby_col]:
             sortby = f"-{sortby}" if direction else sortby.removeprefix("-")
 
-        # Base query: SUCCESS and active entries
-        entries = ReconstructionEntry.objects.filter(
-            process_status=EntryStatus.SUCCESS, is_active=True
-        ).exclude(**{sortby_col: -1.0})
-
-        # Base visibility filter
-        visible_q = Q(visibility__in=[EntryVisibility.PUBL, EntryVisibility.ANON])
-        if request.user.is_authenticated:
-            visible_q |= Q(creator=request.user)
-
-        # Filter out private entries if user is not the creator
-        if not request.user.is_superuser:
-            entries = entries.filter(visible_q)
+        # Visible entries are SUCCESS, active, and either user's entries or not-private
+        entries = get_visible_entries(request, ReconstructionEntry).exclude(**{sortby_col: -1.0})
 
         # Filter by creator if requested
         if creator_id is not None:
@@ -262,19 +270,15 @@ class DetailView(UserPassesTestMixin, generic.DetailView):
             for subpath in subpaths
         ]
 
-        # Find prev/next active public submissions for keyboard navigation
-        public_entries = self.model.objects.filter(
-            is_active=True,
-            process_status=EntryStatus.SUCCESS,
-            visibility__in=[EntryVisibility.PUBL, EntryVisibility.ANON],
-        )
+        # Find prev/next visible submissions for keyboard navigation
+        entries = get_visible_entries(self.request, self.model)
         prev_entry = (
-            public_entries.filter(pk__lt=entry.pk).order_by("-pk").first()
-            or public_entries.order_by("-pk").first()
+            entries.filter(pk__lt=entry.pk).order_by("-pk").first()
+            or entries.order_by("-pk").first()
         )
         next_entry = (
-            public_entries.filter(pk__gt=entry.pk).order_by("pk").first()
-            or public_entries.order_by("pk").first()
+            entries.filter(pk__gt=entry.pk).order_by("pk").first()
+            or entries.order_by("pk").first()
         )
         context["prev_entry_id"] = prev_entry.pk if prev_entry else None
         context["next_entry_id"] = next_entry.pk if next_entry else None
@@ -291,23 +295,8 @@ class CompareView(View):
         # inheriting from mixin in order to pass the pks around
         if pk1 is None and pk2 is None:
             try:
-                # Get all successful entries
-                entries = self.model.objects.filter(
-                    process_status=EntryStatus.SUCCESS, is_active=True
-                )
-
-                # Base visibility filter
-                visible_q = Q(
-                    visibility__in=[EntryVisibility.PUBL, EntryVisibility.ANON]
-                )
-                if request.user.is_authenticated:
-                    visible_q |= Q(creator=request.user)
-
-                # Filter out private entries if user is not the creator
-                if not request.user.is_superuser:
-                    entries = entries.filter(visible_q)
-
                 # Select random pks and redirect
+                entries = get_visible_entries(request, self.model)
                 pk1, pk2 = random.sample([entry.pk for entry in entries], 2)
                 return redirect("eval:compare", pk1=pk1, pk2=pk2)
             except ValueError:
