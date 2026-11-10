@@ -61,7 +61,7 @@
             <a href="{% url 'competition' %}" {% if request.resolver_match.view_name == "competition" %}class="current"{% endif %}>Competition</a>
             <a href="{% url 'eval:reconstruction' %}" {% if request.resolver_match.view_name == "eval:reconstruction" %}class="current"{% endif %}>Reconstruction</a>
             <a href="{% url 'eval:submit' %}" {% if request.resolver_match.view_name == "eval:submit" %}class="current"{% endif %}>Submit</a>            
-            <a href="https://visionsim.readthedocs.io/en/latest/">VisionSIM Toolkit</a>
+            <a href="https://wision-lab.github.io/visionsim/">VisionSIM Engine</a>
             <a href="{% url 'faq' %}" {% if request.resolver_match.view_name == "faq" %}class="current"{% endif %}>FAQ</a>
         </nav>
         <div style="padding: 0 1rem; overflow: hidden;">
